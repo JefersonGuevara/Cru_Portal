@@ -1,0 +1,287 @@
+create database PrototipoCRU
+
+create table TipoIdentificacion(
+id_tipoidentificacion int not null,
+valor_tipoidentificacion varchar(50) not null,
+primary key (id_tipoidentificacion)
+);
+
+create table estadocivil(
+id_estadocivil int not null,
+valor_estadocivil varchar(20) not null,
+primary key  (id_estadocivil)
+);
+
+create table estudiante(
+id_estudiante int not null,
+nombres_estudiante varchar (100) not null,
+apellidos_estudiante varchar (100) not null,
+Noidentificacion varchar(15) not null,
+tipoidentificacion_estudiante int  not null,
+fechanacimiento_estudiante date not null,
+estadocivil_estudiante int not null,
+primary key (id_estudiante),
+	CONSTRAINT  fk_tipodocumento_estudiante
+    	FOREIGN KEY (  tipoidentificacion_estudiante )
+    	REFERENCES    TipoIdentificacion  (  id_tipoidentificacion ),
+	CONSTRAINT  fk_estadocivil_estudiante
+    	FOREIGN KEY (  estadocivil_estudiante )
+    	REFERENCES    estadocivil  ( id_estadocivil)
+
+);
+
+create table cargo (
+id_cargo int not null,
+valor_cargo varchar(20) not null,
+primary key  (id_cargo)
+);
+
+
+create table empleado(
+id_empleado int not null,
+nombres_empleado varchar (100) not null,
+apellidos_empleado varchar (100) not null,
+Noidentificacion_empleado varchar(15) not null,
+tipoidentificacion_empleado int  not null,
+fechanacimiento_empleado date not null,
+estadocivil_empleado int not null,
+cargo_empleado int not null,
+primary key (id_empleado),
+	CONSTRAINT  fk_tipodocumento_empleado
+    	FOREIGN KEY (  tipoidentificacion_empleado )
+    	REFERENCES    TipoIdentificacion  (  id_tipoidentificacion ),
+
+	CONSTRAINT  fk_estadocivil_empleado
+    	FOREIGN KEY (  estadocivil_empleado )
+    	REFERENCES    estadocivil (  id_estadocivil ),
+
+	CONSTRAINT  fk_cargo_empleado
+    	FOREIGN KEY (cargo_empleado )
+    	REFERENCES    cargo (  id_cargo )
+);
+
+
+create table tipo_expediente(
+id_tipo_exp int not null,
+valortipoexp varchar (50) not null,
+primary key  (id_tipo_exp)
+);
+
+
+
+create table usuario_ingre(
+id_usuario_login int not null,
+usuario_login varchar(8) not null,
+contrasena_usuario varchar (12) not null,
+id_estudiante_usuario int,
+id_empleado_usuario int,
+primary key (id_usuario_login),
+	CONSTRAINT  fk_usuarioingreso_estudiante
+    	FOREIGN KEY (  id_estudiante_usuario )
+    	REFERENCES    estudiante  ( id_estudiante),
+    CONSTRAINT  fk_usuarioingreso_empleado
+    	FOREIGN KEY (  id_empleado_usuario )
+    	REFERENCES    empleado  ( id_empleado)
+    );
+
+create table expediente (
+id_expediente int not null,
+id_tipo_exp int not null,
+id_estudiante_exp int not null,
+id_empleado_expediente int not null,
+fecha_expediente date not null,
+descripcion_Expediente varchar(500) not null,
+primary key (id_expediente),
+    CONSTRAINT  fk_empleado_expediente
+    	FOREIGN KEY (  id_empleado_expediente )
+    	REFERENCES    empleado  ( id_empleado),
+    CONSTRAINT  fk_estudiante_eexpediente
+    	FOREIGN KEY (  id_estudiante_exp)
+    	REFERENCES    estudiante ( id_estudiante),
+    CONSTRAINT  fk_tipo_exo
+    	FOREIGN KEY (  id_tipo_exp )
+    	REFERENCES    tipo_expediente  ( id_tipo_exp)
+);
+
+
+create table tipo_solicitud(
+id_tipo_solicitud int not null,
+valor_tipo_solicitud varchar (50) not null,
+primary key (id_tipo_solicitud)
+);
+create table estado_solicitud(
+id_estado_solciitud int not null,
+valor_estado_solciitud varchar (50) not null,
+primary key (id_estado_solciitud)
+);
+create table prioridad_solcitud(
+id_prioridad_solciitud int not null,
+valor_prioridad_solciitud varchar (50) not null,
+primary key (id_prioridad_solciitud)
+);
+create table ubicacion_espacio(
+id_ubicacion_espacio int not null,
+valor_ubicacion_espacio varchar (10) not null,
+primary key (id_ubicacion_espacio)
+ );
+create table tipo_espacio(
+id_tipo_espacio int not null,
+valor_tipo_espacio varchar (20) not null,
+primary key (id_tipo_espacio)
+ );
+create table espacio (
+id_espacio int not null,
+descripcion_espacio varchar (100) not null,
+id_tipo_espacio_ int not null,
+id_ubicacion_espacio_ int not null,
+id_estudiante_espacio int ,
+id_empleado_espacio int ,
+primary key (id_espacio),
+    CONSTRAINT  fk_espacio_ubicacion
+    	FOREIGN KEY (  id_ubicacion_espacio_ )
+    	REFERENCES    ubicacion_espacio ( id_ubicacion_espacio),
+    CONSTRAINT  fk_tipo_espacio
+    	FOREIGN KEY (  id_tipo_espacio_ )
+    	REFERENCES    tipo_espacio ( id_tipo_espacio),
+    CONSTRAINT  fk_espacio_empleado
+    	FOREIGN KEY (  id_empleado_espacio )
+    	REFERENCES    empleado  ( id_empleado),
+   CONSTRAINT  fk_espacio_estudiante
+    	FOREIGN KEY (  id_estudiante_espacio )
+    	REFERENCES    estudiante  ( id_estudiante)
+);
+
+create table tipo_elemento (
+id_tipo_elemento int not null,
+valor_tipo_elemento varchar (30) not null,
+primary key (id_tipo_elemento)
+);
+
+create table elemento(
+id_elemento int not null,
+id_tipo_elemento_ int not null,
+descripcion varchar(50) not null,
+marca varchar(50) ,
+serrial varchar (50),
+primary key (id_elemento),
+   CONSTRAINT  fk_tipo_elemento
+    	FOREIGN KEY (  id_tipo_elemento_ )
+    	REFERENCES    tipo_elemento  ( id_tipo_elemento)
+);
+
+create table invenario_espacio(
+id_inventario_esp int not null,
+id_elemento_inventario_espacio int not null,
+cantidad_inventario_elemento_espacio int not null,
+fecha_inventario_espacio date not null,
+id_espacio_inventario__ int not null,
+primary key (id_inventario_esp),
+   CONSTRAINT  fk_elemento_inventario
+    	FOREIGN KEY (  id_elemento_inventario_espacio )
+    	REFERENCES    elemento  ( id_elemento),
+   CONSTRAINT  fk_espacio_inventario
+    	FOREIGN KEY (  id_espacio_inventario__)
+    	REFERENCES    espacio  ( id_espacio)
+);
+
+
+create table reparacion_espacio(
+id_reparacion int not null,
+fecha_reparacion_espacio date  not null,
+descripcion_reparacion varchar (500) not null,
+
+id_espacio_reparacion int not null,
+id_empleado_reparacion int not null,
+
+primary key (id_reparacion),
+   CONSTRAINT  fk_espacio_reparacion
+    	FOREIGN KEY (  id_espacio_reparacion)
+    	REFERENCES    espacio  ( id_espacio),
+
+   CONSTRAINT  fk_eempleado_reparacion
+    	FOREIGN KEY (  id_empleado_reparacion)
+    	REFERENCES    empleado ( id_empleado)
+
+);
+
+create table solicitud (
+id_solicitud int not null,
+id_tipo_solicitud__ int not null,
+id_estado_solicitud__ int not null,
+id_espacio_solicitud int not null,
+id_prioridad_solciitud__ int not null,
+descripcion_solicitud varchar (200) not null,
+id_estudiante_solicitud int not null,
+primary key (id_solicitud),
+
+
+
+   CONSTRAINT  fk_tipo_solicitud
+    	FOREIGN KEY ( id_tipo_solicitud__ )
+    	REFERENCES    tipo_solicitud (id_tipo_solicitud),
+   CONSTRAINT  fk_estado_solicitud
+    	FOREIGN KEY ( id_estado_solicitud__ )
+    	REFERENCES    estado_solicitud ( id_estado_solciitud),
+
+   CONSTRAINT  fk_espacio_solcitud
+    	FOREIGN KEY ( id_espacio_solicitud )
+    	REFERENCES    espacio (id_espacio ),
+   CONSTRAINT  fk_prioridad_solicitud
+    	FOREIGN KEY ( id_prioridad_solciitud__ )
+    	REFERENCES    prioridad_solcitud (id_prioridad_solciitud ),
+   CONSTRAINT  fk_estudiante_solcitud
+    	FOREIGN KEY ( id_estudiante_solicitud )
+    	REFERENCES    estudiante (id_estudiante )
+);
+
+
+
+
+
+
+
+create table historico_solicitud(
+id_historico_solicitud int not null,
+id_caso_anotacion int not null,
+descripcionanotacion_ varchar (200) not null,
+primary key (id_historico_solicitud),
+   CONSTRAINT  fk_solcitud_historio
+    	FOREIGN KEY (  id_caso_anotacion)
+    	REFERENCES    solicitud ( id_solicitud)
+
+);
+
+
+create table solucion(
+id_solucion int not null,
+descripcion_solucion varchar(100) not null,
+primary  key (id_solucion),
+id_solicitud_solucion int not null,
+   CONSTRAINT  fk_solucion_solicitud
+    	FOREIGN KEY (  id_solicitud_solucion)
+    	REFERENCES    solicitud ( id_solicitud)
+);
+
+create table escalado(
+id_escalado int not null,
+id_empleado_escalado int not null,
+id_solicitud_escalado int not null,
+
+primary key (id_escalado),
+
+   CONSTRAINT  fk_empleado_escalado
+    	FOREIGN KEY (  id_empleado_escalado)
+    	REFERENCES    empleado ( id_empleado),
+
+
+    	   CONSTRAINT  fk_solcitud_escalado
+    	FOREIGN KEY (  id_solicitud_escalado)
+    	REFERENCES    solicitud ( id_solicitud)
+
+
+
+
+
+
+);
+
