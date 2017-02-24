@@ -1,4 +1,8 @@
 create database PrototipoCRU
+go
+use PrototipoCRU
+go
+
 
 create table TipoIdentificacion(
 id_tipoidentificacion int not null,
