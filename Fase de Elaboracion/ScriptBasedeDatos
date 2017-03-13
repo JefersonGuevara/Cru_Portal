@@ -11,11 +11,15 @@ primary key (id_tipoidentificacion)
 );
 
 create table estadocivil(
-id_estadocivil int not null,
+id_estadocivil int Identity(1,1),
 valor_estadocivil varchar(20) not null,
 primary key  (id_estadocivil)
 );
-
+CREATE TABLE EstadoCRU(
+	Id_EstadoCRU int Identity(1,1),
+	Descripcion_EstadoCRU nchar(30) NOT NULL
+	);
+GO
 create table estudiante(
 id_estudiante int not null,
 nombres_estudiante varchar (100) not null,
@@ -24,13 +28,17 @@ Noidentificacion varchar(15) not null,
 tipoidentificacion_estudiante int  not null,
 fechanacimiento_estudiante date not null,
 estadocivil_estudiante int not null,
+EstadoCRU_estudiante int not null,
 primary key (id_estudiante),
 	CONSTRAINT  fk_tipodocumento_estudiante
     	FOREIGN KEY (  tipoidentificacion_estudiante )
     	REFERENCES    TipoIdentificacion  (  id_tipoidentificacion ),
 	CONSTRAINT  fk_estadocivil_estudiante
     	FOREIGN KEY (  estadocivil_estudiante )
-    	REFERENCES    estadocivil  ( id_estadocivil)
+    	REFERENCES    estadocivil  ( id_estadocivil),
+    CONSTRAINT  fk_estadoCRU_estudiante
+    	FOREIGN KEY (  EstadoCRU_estudiante )
+    	REFERENCES    EstadoCRU  ( Id_EstadoCRU)
 
 );
 
@@ -173,7 +181,7 @@ primary key (id_elemento),
     	REFERENCES    tipo_elemento  ( id_tipo_elemento)
 );
 
-create table invenario_espacio(
+create table inventario_espacio(
 id_inventario_esp int not null,
 id_elemento_inventario_espacio int not null,
 cantidad_inventario_elemento_espacio int not null,
@@ -197,6 +205,8 @@ descripcion_reparacion varchar (500) not null,
 id_espacio_reparacion int not null,
 id_empleado_reparacion int not null,
 
+id_solicitud_reparacion_espacio int null|,
+
 primary key (id_reparacion),
    CONSTRAINT  fk_espacio_reparacion
     	FOREIGN KEY (  id_espacio_reparacion)
@@ -204,7 +214,11 @@ primary key (id_reparacion),
 
    CONSTRAINT  fk_eempleado_reparacion
     	FOREIGN KEY (  id_empleado_reparacion)
-    	REFERENCES    empleado ( id_empleado)
+    	REFERENCES    empleado ( id_empleado),
+    CONSTRAINT  fk_solicitud_reparacion
+    	FOREIGN KEY (  id_solicitud_reparacion_espacio)
+    	REFERENCES    solicitud ( id_solicitud)
+
 
 );
 
