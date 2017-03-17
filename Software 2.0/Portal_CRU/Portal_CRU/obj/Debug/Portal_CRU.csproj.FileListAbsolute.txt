@@ -77,6 +77,6 @@ C:\Users\JEFERSON\Documents\GitHub\Cru_Portal\Software 2.0\Portal_CRU\Portal_CRU
 C:\Users\JEFERSON\Documents\GitHub\Cru_Portal\Software 2.0\Portal_CRU\Portal_CRU\bin\Microsoft.Owin.Security.Google.xml
 C:\Users\JEFERSON\Documents\GitHub\Cru_Portal\Software 2.0\Portal_CRU\Portal_CRU\bin\Microsoft.Owin.Security.Twitter.xml
 C:\Users\JEFERSON\Documents\GitHub\Cru_Portal\Software 2.0\Portal_CRU\Portal_CRU\bin\Microsoft.Owin.Security.MicrosoftAccount.xml
-C:\Users\JEFERSON\Documents\GitHub\Cru_Portal\Software 2.0\Portal_CRU\Portal_CRU\obj\Debug\Portal_CRU.csprojResolveAssemblyReference.cache
 C:\Users\JEFERSON\Documents\GitHub\Cru_Portal\Software 2.0\Portal_CRU\Portal_CRU\obj\Debug\Portal_CRU.dll
 C:\Users\JEFERSON\Documents\GitHub\Cru_Portal\Software 2.0\Portal_CRU\Portal_CRU\obj\Debug\Portal_CRU.pdb
+C:\Users\JEFERSON\Documents\GitHub\Cru_Portal\Software 2.0\Portal_CRU\Portal_CRU\obj\Debug\Portal_CRU.csprojResolveAssemblyReference.cache

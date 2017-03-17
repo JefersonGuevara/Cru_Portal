@@ -2214,8 +2214,8 @@ fieldset[disabled] .btn-danger.active {
 
 .btn-success {
   color: #ffffff;
-  background-color: #5cb85c;
-  border-color: #4cae4c;
+  background-color: #3d7430;
+  border-color: #3d7430;
 }
 
 .btn-success:hover,
@@ -4144,8 +4144,10 @@ textarea.input-group-sm > .input-group-btn > .btn {
 
 .container > .navbar-header,
 .container > .navbar-collapse {
-  margin-right: -15px;
-  margin-left: -15px;
+  margin-right: auto;
+  margin-left: auto;
+      background-color: #3d7430;
+
 }
 
 @media (min-width: 768px) {
@@ -4501,12 +4503,12 @@ textarea.input-group-sm > .input-group-btn > .btn {
 }
 
 .navbar-inverse {
-  background-color: #222222;
+  background-color: #3d7430;
   border-color: #080808;
 }
 
 .navbar-inverse .navbar-brand {
-  color: #999999;
+  color: #f9f9f9;
 }
 
 .navbar-inverse .navbar-brand:hover,
@@ -4520,7 +4522,7 @@ textarea.input-group-sm > .input-group-btn > .btn {
 }
 
 .navbar-inverse .navbar-nav > li > a {
-  color: #999999;
+  color: #ffffff;
 }
 
 .navbar-inverse .navbar-nav > li > a:hover,

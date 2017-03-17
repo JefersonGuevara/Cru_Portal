@@ -29,5 +29,7 @@ namespace Portal_CRU.Models
         {
             return new ApplicationDbContext();
         }
+
+        public System.Data.Entity.DbSet<Portal_CRU.Models.Espacios> Espacios { get; set; }
     }
 }
