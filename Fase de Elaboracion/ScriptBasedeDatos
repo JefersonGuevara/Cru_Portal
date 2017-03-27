@@ -12,11 +12,18 @@
     primary key (id_tipoidentificacion)
     );
 
+    INSERT INTO TipoIdentificacion (valor_tipoidentificacion) VALUES ('Cedula'),('Tarjeta de Identidad'),('Cedula Extranjeria')
+        go
+
     create table estadocivil(
     id_estadocivil int Identity(1,1) not null,
     valor_estadocivil varchar(20) not null,
     primary key  (id_estadocivil)
     );
+
+
+    INSERT INTO estadocivil (valor_estadocivil) VALUES ('Soltero'),('Casado'),('Union libre'), ('Divorciado'), ('Viudo')
+        go
     CREATE TABLE Estado_estudiante_CRU(
         Id_Estado_estudiante_CRU int Identity(1,1),
         Descripcion_Estado_estudiante_CRU nchar(30) NOT NULL,
@@ -24,74 +31,128 @@
         );
     GO
 
-
+    INSERT INTO Estado_estudiante_CRU (Descripcion_Estado_estudiante_CRU) VALUES ('Activo'),('Retirado'),('Admitido'), ('En proceso Admision'), ('Expulsado')
+        go
     create table cargo (
     id_cargo int  IDENTITY(1,1) not null,
     valor_cargo varchar(20) not null,
     primary key  (id_cargo)
     );
-
+INSERT INTO cargo (valor_cargo) VALUES ('Director'),('Psicologo'),('Gestor Social'), ('Mantenimiento')
+        go
 
     create table tipo_expediente(
     id_tipo_exp int   IDENTITY(1,1) not null,
     valortipoexp varchar (50) not null,
     primary key  (id_tipo_exp)
     );
-
+INSERT INTO tipo_expediente (valortipoexp) VALUES ('Psicologico'),('Social')
+        go
     create table rol(
     id_rol int  IDENTITY(1,1) not null,
     descripcion_rol varchar (50) not null,
     primary key  (id_rol)
     );
+    INSERT INTO rol (descripcion_rol) VALUES ('Administrador'),('Empleado'), ('Estudiante'), ('Mantenimiento')
+        go
 
     create table tipo_solicitud(
     id_tipo_solicitud int  IDENTITY(1,1) not null,
     valor_tipo_solicitud varchar (50) not null,
     primary key (id_tipo_solicitud)
     );
+  INSERT INTO tipo_solicitud (valor_tipo_solicitud) VALUES ('Cita'),('Reparacion'), ('Administrativa')
+        go
+
     create table estado_solicitud(
     id_estado_solciitud int   IDENTITY(1,1) not null,
     valor_estado_solciitud varchar (50) not null,
     primary key (id_estado_solciitud)
     );
+ INSERT INTO tipo_solicitud (valor_tipo_solicitud) VALUES ('Recibida'),('Atendiendo'), ('Suspendida'), ('Solucionada'), ('Cancelada'), ('Proceso de aprobacion')
+        go
+
+
     create table prioridad_solicitud(
     id_prioridad_solciitud int  IDENTITY(1,1) not null,
     valor_prioridad_solciitud varchar (50) not null,
     primary key (id_prioridad_solciitud)
     );
+ INSERT INTO prioridad_solicitud (valor_prioridad_solciitud) VALUES ('Alta'),('Media'), ('Baja'), ('Urgente')
+        go
+
+    --cargar todos los numero del 101 hasta el 111 y hasta el 13
     create table ubicacion_espacio(
     id_ubicacion_espacio int  IDENTITY(1,1) not null,
     valor_ubicacion_espacio varchar (10) not null,
     primary key (id_ubicacion_espacio)
      );
+
+    --
     create table tipo_espacio(
     id_tipo_espacio int  IDENTITY(1,1) not null,
     valor_tipo_espacio varchar (20) not null,
     primary key (id_tipo_espacio)
      );
+INSERT INTO tipo_espacio (valor_tipo_espacio) VALUES ('Residencial'),('Recreativo'), ('Almacenamiento')
+        go
+
 
     create table tipo_elemento (
     id_tipo_elemento int  IDENTITY(1,1) not null,
     valor_tipo_elemento varchar (30) not null,
     primary key (id_tipo_elemento)
     );
+INSERT INTO tipo_elemento (valor_tipo_elemento) VALUES ('Uso Residencial'),('Uso Recreativo'), ('Tecnologico')
+        go
+
+
     create table archivo_adjunto(
     id_archivo_adjunto int  IDENTITY(1,1)  not null,
     direccion_archivo varchar (500) not null,
     primary key (id_archivo_adjunto)
     );
-
+--Cargar todos los departementos 32 
     Create Table Departamento (
         id_departamento int IDENTITY(1,1) not null,
         descripcion_departamento varchar (100) not null,
         primary key (id_departamento)
        );
 
+
+INSERT INTO Departamento (descripcion_departamento) VALUES
+                    ('ANTIOQUIA'),                    ('ATLANTICO'),
+                    ('BOGOTA'),                    ('BOLIVAR'),
+                    ('BOYACA'),                    ('CALDAS'),
+                    ('CAQUETA'),                    ('CAUCA'),
+                    ('CESAR'),                    ('CORDOBA'),
+                    ('CUNDINAMARCA'),                    ('CHOCO'),
+                    ('HUILA'),                    ('LA GUAJIRA'),
+                    ('MAGDALENA'),                    ('META'),
+                    ('NARIÑO'),                    ('N. DE SANTANDER'),
+                    ('QUINDIO'),                    ('RISARALDA'),
+                    ('SANTANDER'),                    ('SUCRE'),
+                    ('TOLIMA'),                    ('VALLE DEL CAUCA'),
+                    ('ARAUCA'),                    ('CASANARE'),
+                    ('PUTUMAYO'),                    ('SAN ANDRES'),
+                    ('AMAZONAS'),                    ('GUAINIA'),
+                    ('GUAVIARE'),                    ('VAUPES'),
+                    ('VICHADA')
+
     create table pais(
             id_pais int IDENTITY(1,1) not null,
             descripcionPais varchar(100) not null,
             primary key (id_pais)
             );
+    INSERT INTO pais (descripcionPais) VALUES
+                            ('ARGENTINA'),  ('BOLIVIA'),
+                            ('BRASIL'),     ('COLOMBIA'),
+                            ('CHILE'),      ('ECUADOR'),
+                            ('GUYANA'),     ('PARAGUAY'),
+                            ('PERU'),       ('SURINAM'),
+                            ('URUGUAY'),    ('VENEZUELA'),
+                            ('GUAYANA FRANCESA'), ('ISLAS MALVINAS')
+
 
     create table raza (
     id_raza int IDENTITY (1,1) not null,
@@ -162,7 +223,7 @@
 
     apoyouniversidada varchar (2) not null,
     descripcion_apoyo_ varchar(100),
-
+raza_estudiante int not null,
 
 
     primary key (id_estudiante),
@@ -188,6 +249,11 @@
         CONSTRAINT  fk_estadocivil_estudiante
             FOREIGN KEY (  estadocivil_estudiante )
             REFERENCES    estadocivil  ( id_estadocivil),
+
+         CONSTRAINT  fk_raza_estudiante
+            FOREIGN KEY (  raza_estudiante )
+            REFERENCES    raza  ( id_raza),
+                  
         CONSTRAINT  fk_Estado_estudiante_CRU_estudiante
             FOREIGN KEY (  Estado_estudiante_CRU_estudiante )
             REFERENCES    Estado_estudiante_CRU  ( Id_Estado_estudiante_CRU)
@@ -204,7 +270,12 @@
     telefono_acudiente varchar (20) not null,
     parentezo_acudiente varchar (100) not null,
     correo_acudiente varchar (100) not null,
-    primary key (id_acudiente)
+    id_estudiante_acu int not null,
+    primary key (id_acudiente),
+
+     CONSTRAINT  fk_acudiente_estudiante
+            FOREIGN KEY (  id_estudiante_acu )
+            REFERENCES    estudiante  ( id_estudiante)
     );
 
     create table archivo_estudiante(
