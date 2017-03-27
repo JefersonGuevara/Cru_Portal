@@ -89,6 +89,7 @@ Noidentificacion varchar(15) not null,
 tipoidentificacion_estudiante int  not null,
 fechanacimiento_estudiante date not null,
 estadocivil_estudiante int not null,
+
 Estado_estudiante_CRU_estudiante int not null,
 primary key (id_estudiante),
     CONSTRAINT  fk_tipodocumento_estudiante
@@ -141,7 +142,22 @@ primary key (id_empleado),
         REFERENCES    cargo (  id_cargo )
 );
 
+create table Historico_estudiante(
+id_historico_expediente int not null,
+id_estudiante int not null,
+fecha_historico_expediente date not null,
+descripcion_historico_expediente varchar (500) not null,
+id_empleado_historico_estudiante int,
+primary key (id_historico_expediente),
 
+  CONSTRAINT  fk_estudiante_historico
+        FOREIGN KEY (id_estudiante )
+        REFERENCES    estudiante ( id_estudiante ),
+  CONSTRAINT  fk_empleado_historico_estudiante
+        FOREIGN KEY (id_empleado_historico_estudiante )
+        REFERENCES    empleado( id_empleado )
+
+);
 
 
 create table login(
