@@ -7,31 +7,89 @@ go
 
 
 create table TipoIdentificacion(
-id_tipoidentificacion int not null,
+id_tipoidentificacion int  IDENTITY(1,1) not null,
 valor_tipoidentificacion varchar(50) not null,
 primary key (id_tipoidentificacion)
 );
 
 create table estadocivil(
-id_estadocivil int Identity(1,1),
+id_estadocivil int Identity(1,1) not null,
 valor_estadocivil varchar(20) not null,
 primary key  (id_estadocivil)
 );
-CREATE TABLE EstadoCRU(
-    Id_EstadoCRU int Identity(1,1),
-    Descripcion_EstadoCRU nchar(30) NOT NULL,
-    primary key (Id_EstadoCRU)
+CREATE TABLE Estado_estudiante_CRU(
+    Id_Estado_estudiante_CRU int Identity(1,1),
+    Descripcion_Estado_estudiante_CRU nchar(30) NOT NULL,
+    primary key (Id_Estado_estudiante_CRU)
     );
 GO
+
+
+create table cargo (
+id_cargo int  IDENTITY(1,1) not null,
+valor_cargo varchar(20) not null,
+primary key  (id_cargo)
+);
+
+
+create table tipo_expediente(
+id_tipo_exp int   IDENTITY(1,1) not null,
+valortipoexp varchar (50) not null,
+primary key  (id_tipo_exp)
+);
+
+create table rol(
+id_rol int  IDENTITY(1,1) not null,
+descripcion_rol varchar (50) not null,
+primary key  (id_rol)
+);
+
+create table tipo_solicitud(
+id_tipo_solicitud int  IDENTITY(1,1) not null,
+valor_tipo_solicitud varchar (50) not null,
+primary key (id_tipo_solicitud)
+);
+create table estado_solicitud(
+id_estado_solciitud int   IDENTITY(1,1) not null,
+valor_estado_solciitud varchar (50) not null,
+primary key (id_estado_solciitud)
+);
+create table prioridad_solicitud(
+id_prioridad_solciitud int  IDENTITY(1,1) not null,
+valor_prioridad_solciitud varchar (50) not null,
+primary key (id_prioridad_solciitud)
+);
+create table ubicacion_espacio(
+id_ubicacion_espacio int  IDENTITY(1,1) not null,
+valor_ubicacion_espacio varchar (10) not null,
+primary key (id_ubicacion_espacio)
+ );
+create table tipo_espacio(
+id_tipo_espacio int  IDENTITY(1,1) not null,
+valor_tipo_espacio varchar (20) not null,
+primary key (id_tipo_espacio)
+ );
+
+create table tipo_elemento (
+id_tipo_elemento int  IDENTITY(1,1) not null,
+valor_tipo_elemento varchar (30) not null,
+primary key (id_tipo_elemento)
+);
+create table archivo_adjunto(
+id_archivo_adjunto int  IDENTITY(1,1)  not null,
+direccion_archivo varchar (500) not null,
+primary key (id_archivo_adjunto)
+
+);
 create table estudiante(
-id_estudiante int not null,
+id_estudiante int  IDENTITY(1,1) not null,
 nombres_estudiante varchar (100) not null,
 apellidos_estudiante varchar (100) not null,
 Noidentificacion varchar(15) not null,
 tipoidentificacion_estudiante int  not null,
 fechanacimiento_estudiante date not null,
 estadocivil_estudiante int not null,
-EstadoCRU_estudiante int not null,
+Estado_estudiante_CRU_estudiante int not null,
 primary key (id_estudiante),
     CONSTRAINT  fk_tipodocumento_estudiante
         FOREIGN KEY (  tipoidentificacion_estudiante )
@@ -39,21 +97,29 @@ primary key (id_estudiante),
     CONSTRAINT  fk_estadocivil_estudiante
         FOREIGN KEY (  estadocivil_estudiante )
         REFERENCES    estadocivil  ( id_estadocivil),
-    CONSTRAINT  fk_estadoCRU_estudiante
-        FOREIGN KEY (  EstadoCRU_estudiante )
-        REFERENCES    EstadoCRU  ( Id_EstadoCRU)
+    CONSTRAINT  fk_Estado_estudiante_CRU_estudiante
+        FOREIGN KEY (  Estado_estudiante_CRU_estudiante )
+        REFERENCES    Estado_estudiante_CRU  ( Id_Estado_estudiante_CRU)
 
 );
 
-create table cargo (
-id_cargo int not null,
-valor_cargo varchar(20) not null,
-primary key  (id_cargo)
+create table archivo_estudiante(
+
+id_archivo int not null,
+id_estudiante int not null,
+primary key (id_archivo, id_estudiante),
+ CONSTRAINT  fk_archivo_estudiante
+        FOREIGN KEY (  id_archivo )
+        REFERENCES    archivo_adjunto  (  id_archivo_adjunto ),
+CONSTRAINT  fk_estudiante_archivo
+        FOREIGN KEY (  id_estudiante )
+        REFERENCES    estudiante  (  id_estudiante )
+
 );
 
 
 create table empleado(
-id_empleado int not null,
+id_empleado int  IDENTITY(1,1) not null,
 nombres_empleado varchar (100) not null,
 apellidos_empleado varchar (100) not null,
 Noidentificacion_empleado varchar(15) not null,
@@ -76,19 +142,14 @@ primary key (id_empleado),
 );
 
 
-create table tipo_expediente(
-id_tipo_exp int not null,
-valortipoexp varchar (50) not null,
-primary key  (id_tipo_exp)
-);
 
 
-
-create table usuario_ingre(
-id_usuario_login int not null,
+create table login(
+id_usuario_login int   IDENTITY(1,1) not null,
 usuario_login varchar(8) not null,
-contrasena_usuario varchar (12) not null,
+contrasena_login varchar (12) not null,
 id_estudiante_usuario int,
+id_rol_login int,
 id_empleado_usuario int,
 primary key (id_usuario_login),
     CONSTRAINT  fk_usuarioingreso_estudiante
@@ -96,11 +157,14 @@ primary key (id_usuario_login),
         REFERENCES    estudiante  ( id_estudiante),
     CONSTRAINT  fk_usuarioingreso_empleado
         FOREIGN KEY (  id_empleado_usuario )
-        REFERENCES    empleado  ( id_empleado)
+        REFERENCES    empleado  ( id_empleado),
+        CONSTRAINT  fk_rol_login
+        FOREIGN KEY (  id_rol_login )
+        REFERENCES    rol  ( id_rol)
     );
 
 create table expediente (
-id_expediente int not null,
+id_expediente int  IDENTITY(1,1) not null,
 id_tipo_exp int not null,
 id_estudiante_exp int not null,
 
@@ -116,38 +180,14 @@ primary key (id_expediente),
 );
 
 
-create table tipo_solicitud(
-id_tipo_solicitud int not null,
-valor_tipo_solicitud varchar (50) not null,
-primary key (id_tipo_solicitud)
-);
-create table estado_solicitud(
-id_estado_solciitud int not null,
-valor_estado_solciitud varchar (50) not null,
-primary key (id_estado_solciitud)
-);
-create table prioridad_solicitud(
-id_prioridad_solciitud int not null,
-valor_prioridad_solciitud varchar (50) not null,
-primary key (id_prioridad_solciitud)
-);
-create table ubicacion_espacio(
-id_ubicacion_espacio int not null,
-valor_ubicacion_espacio varchar (10) not null,
-primary key (id_ubicacion_espacio)
- );
-create table tipo_espacio(
-id_tipo_espacio int not null,
-valor_tipo_espacio varchar (20) not null,
-primary key (id_tipo_espacio)
- );
+
 create table espacio (
-id_espacio int not null,
+id_espacio int  IDENTITY(1,1) not null,
 descripcion_espacio varchar (100) not null,
 id_tipo_espacio_ int not null,
 id_ubicacion_espacio_ int not null,
 id_estudiante_espacio int ,
-id_empleado_espacio int ,
+
 primary key (id_espacio),
     CONSTRAINT  fk_espacio_ubicacion
         FOREIGN KEY (  id_ubicacion_espacio_ )
@@ -155,22 +195,16 @@ primary key (id_espacio),
     CONSTRAINT  fk_tipo_espacio
         FOREIGN KEY (  id_tipo_espacio_ )
         REFERENCES    tipo_espacio ( id_tipo_espacio),
-    CONSTRAINT  fk_espacio_empleado
-        FOREIGN KEY (  id_empleado_espacio )
-        REFERENCES    empleado  ( id_empleado),
+  
    CONSTRAINT  fk_espacio_estudiante
         FOREIGN KEY (  id_estudiante_espacio )
         REFERENCES    estudiante  ( id_estudiante)
 );
 
-create table tipo_elemento (
-id_tipo_elemento int not null,
-valor_tipo_elemento varchar (30) not null,
-primary key (id_tipo_elemento)
-);
+
 
 create table elemento(
-id_elemento int not null,
+id_elemento int  IDENTITY(1,1) not null,
 id_tipo_elemento_ int not null,
 descripcion varchar(50) not null,
 marca varchar(50) ,
@@ -182,31 +216,37 @@ primary key (id_elemento),
 );
 
 create table inventario_espacio(
-id_inventario_esp int not null,
+id_inventario_esp int   IDENTITY(1,1) not null,
 id_elemento_inventario_espacio int not null,
 cantidad_inventario_elemento_espacio int not null,
 fecha_inventario_espacio date not null,
 id_espacio_inventario__ int not null,
+id_empleado_inventario int,
 primary key (id_inventario_esp),
    CONSTRAINT  fk_elemento_inventario
         FOREIGN KEY (  id_elemento_inventario_espacio )
         REFERENCES    elemento  ( id_elemento),
    CONSTRAINT  fk_espacio_inventario
         FOREIGN KEY (  id_espacio_inventario__)
-        REFERENCES    espacio  ( id_espacio)
+        REFERENCES    espacio  ( id_espacio),
+  CONSTRAINT  fk_empleado_inventario
+        FOREIGN KEY (  id_empleado_inventario)
+        REFERENCES    empleado ( id_empleado),
+     
 );
 
 
 
 
 create table solicitud (
-id_solicitud int not null,
+id_solicitud int  IDENTITY(1,1) not null,
 id_tipo_solicitud__ int not null,
 id_estado_solicitud__ int not null,
 id_espacio_solicitud int not null,
 id_prioridad_solciitud__ int not null,
 descripcion_solicitud varchar (200) not null,
 id_estudiante_solicitud int not null,
+id_empleado_solicitud int not null,
 primary key (id_solicitud),
 
 
@@ -224,14 +264,18 @@ primary key (id_solicitud),
    CONSTRAINT  fk_prioridad_solicitud
         FOREIGN KEY ( id_prioridad_solciitud__ )
         REFERENCES    prioridad_solicitud (id_prioridad_solciitud ),
+        CONSTRAINT  fk_empleado_solicitud
+        FOREIGN KEY (  id_empleado_solicitud)
+        REFERENCES    empleado ( id_empleado),
    CONSTRAINT  fk_estudiante_solcitud
         FOREIGN KEY ( id_estudiante_solicitud )
         REFERENCES    estudiante (id_estudiante )
 );
 
 
+
 create table reparacion_espacio(
-id_reparacion int not null,
+id_reparacion int  IDENTITY(1,1) not null,
 fecha_reparacion_espacio date  not null,
 descripcion_reparacion varchar (500) not null,
 
@@ -260,52 +304,40 @@ primary key (id_reparacion),
 
 
 create table historico_solicitud(
-id_historico_solicitud int not null,
+id_historico_solicitud int  IDENTITY(1,1) not null,
 id_caso_anotacion int not null,
-descripcionanotacion_ varchar (200) not null,
+descripcion_anotacion varchar (200) not null,
+fecha_modificacion date not null,
+id_empleado_historico int,
 primary key (id_historico_solicitud),
    CONSTRAINT  fk_solcitud_historio
         FOREIGN KEY (  id_caso_anotacion)
-        REFERENCES    solicitud ( id_solicitud)
+        REFERENCES    solicitud ( id_solicitud),
+   CONSTRAINT  fk_empleado_historio
+        FOREIGN KEY (  id_empleado_historico)
+        REFERENCES    empleado ( id_empleado)
 
 );
 
 
 create table solucion(
-id_solucion int not null,
+id_solucion int  IDENTITY(1,1) not null,
 descripcion_solucion varchar(100) not null,
+id_empleado_solucion int,
+fecha_solucion date, 
 primary  key (id_solucion),
 id_solicitud_solucion int not null,
    CONSTRAINT  fk_solucion_solicitud
         FOREIGN KEY (  id_solicitud_solucion)
-        REFERENCES    solicitud ( id_solicitud)
+        REFERENCES    solicitud ( id_solicitud),
+    CONSTRAINT  fk_empleado_solucion
+        FOREIGN KEY (  id_empleado_solucion)
+        REFERENCES    empleado ( id_empleado)
 );
 
-create table escalado(
-id_escalado int not null,
-id_empleado_escalado int not null,
-id_solicitud_escalado int not null,
-
-primary key (id_escalado),
-
-   CONSTRAINT  fk_empleado_escalado
-        FOREIGN KEY (  id_empleado_escalado)
-        REFERENCES    empleado ( id_empleado),
-
-
-           CONSTRAINT  fk_solcitud_escalado
-        FOREIGN KEY (  id_solicitud_escalado)
-        REFERENCES    solicitud ( id_solicitud)
-
-
-
-
-
-
-);
 
 create table cita(
-    id_cita int not null,
+    id_cita int  IDENTITY(1,1)not null,
      id_estudiante_cita int not null, 
      id_empleado_cita int not null, 
      id_solicitud_cita int not null,
