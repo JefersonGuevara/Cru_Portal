@@ -112,7 +112,7 @@ INSERT INTO tipo_elemento (valor_tipo_elemento) VALUES ('Uso Residencial'),('Uso
     direccion_archivo varchar (500) not null,
     primary key (id_archivo_adjunto)
     );
---Cargar todos los departementos 32 
+
     Create Table Departamento (
         id_departamento int IDENTITY(1,1) not null,
         descripcion_departamento varchar (100) not null,
@@ -296,10 +296,11 @@ raza_estudiante int not null,
 
     create table empleado(
     id_empleado int  IDENTITY(1,1) not null,
+    tipoidentificacion_empleado int  not null,
+    Noidentificacion_empleado varchar(15) not null,
     nombres_empleado varchar (100) not null,
     apellidos_empleado varchar (100) not null,
-    Noidentificacion_empleado varchar(15) not null,
-    tipoidentificacion_empleado int  not null,
+    
     fechanacimiento_empleado date not null,
     estadocivil_empleado int not null,
     correo_empleado varchar (100) not null,
@@ -317,6 +318,19 @@ raza_estudiante int not null,
             FOREIGN KEY (cargo_empleado )
             REFERENCES    cargo (  id_cargo )
     );
+
+ INSERT INTO empleado ( tipoidentificacion_empleado,
+                        Noidentificacion_empleado,
+                        nombres_empleado,
+                        apellidos_empleado,
+                        fechanacimiento_empleado,
+                        estadocivil_empleado,
+                        correo_empleado,
+                        cargo_empleado) VALUES (1,'1012383756','Jeferson', 'Guevara','01-01-2010',1,'guevarajeferson@gmail.com',1),
+                                               (1,'1026289202','Alejandra', 'Leal','31-08-2000',1,'malp@gmail.com',2)
+    go
+
+
 
     create table Historico_estudiante(
     id_historico_expediente int not null,
