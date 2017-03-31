@@ -31,7 +31,17 @@
         );
     GO
 
-    INSERT INTO Estado_estudiante_CRU (Descripcion_Estado_estudiante_CRU) VALUES ('Activo'),('Retirado'),('Admitido'), ('En proceso Admision'), ('Expulsado')
+ INSERT INTO Estado_estudiante_CRU (Descripcion_Estado_estudiante_CRU) VALUES ('Activo'),('Retirado'),('Admitido'), ('En proceso Admision'), ('Expulsado')
+       --cargar todos los numero del 101 hasta el 111 y hasta el 13
+    create table piso(
+    id_piso int  IDENTITY(1,1) not null,
+    valor_piso varchar (2) not null,
+    primary key (id_piso)
+     );
+
+    INSERT INTO piso (valor_piso) VALUES ('1'),('2'),('3'),('4'),('5'),('6'),('7'),('8'),('9'),('10'),('11'),('12'),('13')
+
+   
         go
     create table cargo (
     id_cargo int  IDENTITY(1,1) not null,
@@ -81,12 +91,6 @@ INSERT INTO tipo_expediente (valortipoexp) VALUES ('Psicologico'),('Social')
  INSERT INTO prioridad_solicitud (valor_prioridad_solciitud) VALUES ('Alta'),('Media'), ('Baja'), ('Urgente')
         go
 
-    --cargar todos los numero del 101 hasta el 111 y hasta el 13
-    create table ubicacion_espacio(
-    id_ubicacion_espacio int  IDENTITY(1,1) not null,
-    valor_ubicacion_espacio varchar (10) not null,
-    primary key (id_ubicacion_espacio)
-     );
 
     --
     create table tipo_espacio(
@@ -107,11 +111,6 @@ INSERT INTO tipo_elemento (valor_tipo_elemento) VALUES ('Uso Residencial'),('Uso
         go
 
 
-    create table archivo_adjunto(
-    id_archivo_adjunto int  IDENTITY(1,1)  not null,
-    direccion_archivo varchar (500) not null,
-    primary key (id_archivo_adjunto)
-    );
 
     Create Table Departamento (
         id_departamento int IDENTITY(1,1) not null,
@@ -127,7 +126,7 @@ INSERT INTO Departamento (descripcion_departamento) VALUES
                     ('CAQUETA'),                    ('CAUCA'),
                     ('CESAR'),                    ('CORDOBA'),
                     ('CUNDINAMARCA'),                    ('CHOCO'),
-                    ('HUILA'),                    ('LA GUAJIRA'),
+                    ('HUILA'),                    ('GUAVIARE'),
                     ('MAGDALENA'),                    ('META'),
                     ('NARIÑO'),                    ('N. DE SANTANDER'),
                     ('QUINDIO'),                    ('RISARALDA'),
@@ -136,7 +135,7 @@ INSERT INTO Departamento (descripcion_departamento) VALUES
                     ('ARAUCA'),                    ('CASANARE'),
                     ('PUTUMAYO'),                    ('SAN ANDRES'),
                     ('AMAZONAS'),                    ('GUAINIA'),
-                    ('GUAVIARE'),                    ('VAUPES'),
+                    ('LA GUAJIRA'),                    ('VAUPES'),
                     ('VICHADA')
 
     create table pais(
@@ -184,116 +183,6 @@ INSERT INTO Departamento (descripcion_departamento) VALUES
 
 
 
-    create table estudiante(
-    id_estudiante int  IDENTITY(1,1) not null,
-    Estado_estudiante_CRU_estudiante int not null,
-    nombres_estudiante varchar (100) not null,
-    apellidos_estudiante varchar (100) not null,
-    Noidentificacion varchar(15) not null,
-    tipoidentificacion_estudiante int  not null,
-    estadocivil_estudiante int not null,
-    Direccion_estudiante varchar (100) not null,
-    telefono_estudiante_ varchar (20) not null,
-    correo_estudiante varchar (100) not null,
-    tipo_sangre_estudiante int not null,
-
-    fechanacimiento_estudiante date not null,
-    municipioNacimiento varchar(100) not null,
-    DepartamentoNacimiento int not null,
-    Paisnacimiento int not null,
-    Servicio_Salid varchar (200) not null,
-
-    Universidad_estudiante varchar (200) not null,
-    Facultad_estudiante varchar (200) not null,
-    Programa_estudiante varchar (200) not null,
-    Puntaje_Basico_Matricula varchar (20) not null,
-    Promedio_Academico_estudiante varchar (20),
-    Fecha_ingreso_Universidad_ date not null,
-    Porcentaje_Avance varchar (10),
-
-    Dispacidad_estudiante varchar (2) not  null,
-    descripcion_dispacacidad_estudainte varchar (200),
-
-    Situaciondesplazamientoestudiante varchar (2) not null,
-
-    Numerohermanos int not null,
-    estrato varchar (1) not null,
-
-    tipodevivienda_estudiante int not null,
-
-    apoyouniversidada varchar (2) not null,
-    descripcion_apoyo_ varchar(100),
-raza_estudiante int not null,
-
-
-    primary key (id_estudiante),
-        CONSTRAINT  fk_tipovivienda_estudiante
-            FOREIGN KEY (  tipodevivienda_estudiante )
-            REFERENCES    tipodevivienda  ( id_tipodevivienda  ),
-
-        CONSTRAINT  fk_tipodocumento_estudiante
-            FOREIGN KEY (  tipoidentificacion_estudiante )
-            REFERENCES    TipoIdentificacion  (  id_tipoidentificacion ),
-
-        CONSTRAINT  fk_tiposangre_estudiante
-            FOREIGN KEY (  tipo_sangre_estudiante)
-            REFERENCES    Tipodesangre  (  id_tipo_sangre ),
-    CONSTRAINT  fk_pais_estudiante
-            FOREIGN KEY (  Paisnacimiento)
-            REFERENCES    Pais  (  id_pais ),
-
-      CONSTRAINT  fk_departamento_estudiante
-            FOREIGN KEY (  DepartamentoNacimiento)
-            REFERENCES    Departamento  (  id_departamento ),
-
-        CONSTRAINT  fk_estadocivil_estudiante
-            FOREIGN KEY (  estadocivil_estudiante )
-            REFERENCES    estadocivil  ( id_estadocivil),
-
-         CONSTRAINT  fk_raza_estudiante
-            FOREIGN KEY (  raza_estudiante )
-            REFERENCES    raza  ( id_raza),
-                  
-        CONSTRAINT  fk_Estado_estudiante_CRU_estudiante
-            FOREIGN KEY (  Estado_estudiante_CRU_estudiante )
-            REFERENCES    Estado_estudiante_CRU  ( Id_Estado_estudiante_CRU)
-
-    );
-
-
-    create table acudiente_estudiante(
-    id_acudiente  int IDENTITY(1,1) not null,
-    dependencia_econo_ varchar (2) not null,
-    nombre_acudiente varchar (100)  not null,
-    ocupacion_acudiente varchar (100) not null,
-    direccion_acudiente varchar(200) not null,
-    telefono_acudiente varchar (20) not null,
-    parentezo_acudiente varchar (100) not null,
-    correo_acudiente varchar (100) not null,
-    id_estudiante_acu int not null,
-    primary key (id_acudiente),
-
-     CONSTRAINT  fk_acudiente_estudiante
-            FOREIGN KEY (  id_estudiante_acu )
-            REFERENCES    estudiante  ( id_estudiante)
-    );
-
-    create table archivo_estudiante(
-
-    id_archivo int not null,
-    id_estudiante int not null,
-    descripcion_archivo varchar (100) not null,
-    primary key (id_archivo, id_estudiante),
-     CONSTRAINT  fk_archivo_estudiante
-            FOREIGN KEY (  id_archivo )
-            REFERENCES    archivo_adjunto  (  id_archivo_adjunto ),
-    CONSTRAINT  fk_estudiante_archivo
-            FOREIGN KEY (  id_estudiante )
-            REFERENCES    estudiante  (  id_estudiante )
-
-    );
-
-
     create table empleado(
     id_empleado int  IDENTITY(1,1) not null,
     tipoidentificacion_empleado int  not null,
@@ -326,9 +215,230 @@ raza_estudiante int not null,
                         fechanacimiento_empleado,
                         estadocivil_empleado,
                         correo_empleado,
-                        cargo_empleado) VALUES (1,'1012383756','Jeferson', 'Guevara','01-01-2010',1,'guevarajeferson@gmail.com',1),
-                                               (1,'1026289202','Alejandra', 'Leal','31-08-2000',1,'malp@gmail.com',2)
+                        cargo_empleado) VALUES (1,'1012383756','Juan', 'Guevara','1998-1-10',1,'guevarajeferson@gmail.com',1),
+                                               (1,'1026289202','Alejandra', 'Leal','1997-8-5',1,'malp@gmail.com',2),
+                                                (1,'104587412','Carlos', 'Gutierrez','1994-5-20',2,'carlos@gmail.com',4)
     go
+
+    create table estado_espacio (
+        id_estado_espacio int IDENTITY (1,1) not null primary key,
+        valor_estado_espacio varchar (10) not null,
+        );
+
+    insert into estado_espacio (valor_estado_espacio) values ('Disponible'), ('Ocupado'), ('Reparacion')
+        go
+
+    create table espacio (
+    id_espacio int  IDENTITY(1,1) not null,
+    descripcion_espacio varchar (100) not null,
+    id_tipo_espacio_ int not null,
+    id_piso_espacio int not null,
+    capacidad int not null,
+     estado_espacio_o int not null,
+    primary key (id_espacio),
+        CONSTRAINT  fk_espacio_piso
+            FOREIGN KEY (  id_piso_espacio )
+            REFERENCES    piso ( id_piso),
+        CONSTRAINT  fk_tipo_espacio
+            FOREIGN KEY (  id_tipo_espacio_ )
+            REFERENCES    tipo_espacio ( id_tipo_espacio),
+      CONSTRAINT  fk_estado_espacio
+            FOREIGN KEY (  estado_espacio_o )
+            REFERENCES   estado_espacio ( id_estado_espacio)
+      
+      
+    );
+
+        insert into espacio (descripcion_espacio,id_tipo_espacio_,id_piso_espacio,capacidad,estado_espacio_o) values 
+                                ('301',1,3,1,2),
+                                ('401',1,4,1,2),
+                                ('Bodega',3,1,4,1)
+go
+
+
+    create table estudiante(
+    id_estudiante int  IDENTITY(1,1) not null,
+    Estado_estudiante_CRU_estudiante int not null, --Tabla
+    
+    tipoidentificacion_estudiante int  not null, -- Tabla
+    Noidentificacion varchar(15) not null,
+    
+    nombres_estudiante varchar (100) not null,
+    apellidos_estudiante varchar (100) not null,
+   
+    estadocivil_estudiante int not null,        -- Tabla
+    Direccion_estudiante varchar (100) not null,
+    telefono_estudiante_ varchar (20) not null,
+    correo_estudiante varchar (100) not null,
+    tipo_sangre_estudiante int not null,        --Tabla
+
+    fechanacimiento_estudiante date not null,
+    municipioNacimiento varchar(100) not null,
+    DepartamentoNacimiento int not null,        --Tabla
+    Paisnacimiento int not null,                --Tabla
+    Servicio_Salud varchar (200) not null,
+
+    Dispacidad_estudiante varchar (2) not  null,
+    descripcion_dispacacidad_estudainte varchar (200),
+    Situaciondesplazamientoestudiante varchar (2) not null,
+    Numerohermanos int not null,
+    estrato int  not null,
+    tipodevivienda_estudiante int not null, --Tabla
+    apoyouniversidad varchar (2) not null,
+    descripcion_apoyo_ varchar(100),
+raza_estudiante int not null,               --Tabla
+id_espacio_estudiante int,
+
+
+    primary key (id_estudiante),
+        CONSTRAINT  fk_tipovivienda_estudiante
+            FOREIGN KEY (  tipodevivienda_estudiante )
+            REFERENCES    tipodevivienda  ( id_tipodevivienda  ),
+
+        CONSTRAINT  fk_tipodocumento_estudiante
+            FOREIGN KEY (  tipoidentificacion_estudiante )
+            REFERENCES    TipoIdentificacion  (  id_tipoidentificacion ),
+
+        CONSTRAINT  fk_tiposangre_estudiante
+            FOREIGN KEY (  tipo_sangre_estudiante)
+            REFERENCES    Tipodesangre  (  id_tipo_sangre ),
+    CONSTRAINT  fk_pais_estudiante
+            FOREIGN KEY (  Paisnacimiento)
+            REFERENCES    Pais  (  id_pais ),
+
+      CONSTRAINT  fk_departamento_estudiante
+            FOREIGN KEY (  DepartamentoNacimiento)
+            REFERENCES    Departamento  (  id_departamento ),
+
+        CONSTRAINT  fk_estadocivil_estudiante
+            FOREIGN KEY (  estadocivil_estudiante )
+            REFERENCES    estadocivil  ( id_estadocivil),
+
+         CONSTRAINT  fk_raza_estudiante
+            FOREIGN KEY (  raza_estudiante )
+            REFERENCES    raza  ( id_raza),
+                  
+        CONSTRAINT  fk_Estado_estudiante_CRU_estudiante
+            FOREIGN KEY (  Estado_estudiante_CRU_estudiante )
+            REFERENCES    Estado_estudiante_CRU  ( Id_Estado_estudiante_CRU),
+        CONSTRAINT  fk_espacio_estudiante
+            FOREIGN KEY (id_espacio_estudiante   )
+            REFERENCES    espacio ( id_espacio)
+
+    );
+
+
+    INSERT into estudiante (Estado_estudiante_CRU_estudiante,
+                            tipoidentificacion_estudiante,
+                            Noidentificacion,
+                            nombres_estudiante,
+                            apellidos_estudiante,
+                            estadocivil_estudiante,
+                            Direccion_estudiante,
+                            telefono_estudiante_,
+                            correo_estudiante,
+                            tipo_sangre_estudiante,
+                            fechanacimiento_estudiante,
+                            municipioNacimiento,
+                            DepartamentoNacimiento,
+                            Paisnacimiento,
+                            Servicio_Salud,
+                            Dispacidad_estudiante,
+                            descripcion_dispacacidad_estudainte,
+                            Situaciondesplazamientoestudiante,
+                            Numerohermanos,
+                            estrato,
+                            tipodevivienda_estudiante,
+                            apoyouniversidad,
+                            descripcion_apoyo_,
+                            raza_estudiante,
+                            id_espacio_estudiante
+                            )
+                        VALUES  (1,1,'1012333333','Jefer.','Leal',1,'Cra 45 No 52 - 25','2225552','jefers@gmail.com',4,'01-01-1992','Bogota',11,4,'Compensar','No','Ninguna','No',0,3,1,'No','Ninguno',7,1 ),
+                                (1,1,'1012666666','Oscar.','Leal',1,'Cll 45 No 52 - 25','2225552','oscars@gmail.com',2,'02-09-1992','Mesa',23,4,'Famisanar','No','Ninguna','No',2,3,3,'No','Ninguno',7,1)
+
+
+    create table datosuniversidad (
+        id_datosuniversidad int IDENTITY (1,1) not null primary key,
+    Universidad_estudiante varchar (200) not null,
+    Facultad_estudiante varchar (200) not null,
+    Programa_estudiante varchar (200) not null,
+    Puntaje_Basico_Matricula varchar (20) not null,-- 0  a 50
+    Promedio_Academico_estudiante varchar (20),
+   Año_ingreso_Universidad_ varchar  (4) not null,
+   semestre_ingreso_universidad int not null,
+    Porcentaje_Avance varchar (2),
+    id_estudiante_datosuniversidad int not null ,
+
+ CONSTRAINT  fk_datosuniversidad_estudiante
+            FOREIGN KEY ( id_estudiante_datosuniversidad )
+            REFERENCES    estudiante ( id_estudiante)
+
+    );
+
+INSERT into datosuniversidad (Universidad_estudiante,
+                            Facultad_estudiante,
+                            Programa_estudiante, 
+                            Puntaje_Basico_Matricula,
+                            Promedio_Academico_estudiante,
+                            Año_ingreso_Universidad_,
+                            semestre_ingreso_universidad,
+                            Porcentaje_Avance,
+                            id_estudiante_datosuniversidad
+                            ) VALUES 
+                            ('Universidad Nacional','Ingenieria','Ing. sistemas','9.112','4.5','2012',1,'50',1),
+                            ('Universidad Nacional','Ingenieria','Ing. sistemas','8.412','4.8','2011',1,'80',2)
+
+
+    create table acudiente_estudiante(
+    id_acudiente  int IDENTITY(1,1) not null,
+    dependencia_econo_ varchar (2) not null,
+    nombre_acudiente varchar (100)  not null,
+    apellidos_acudiente varchar (100) not null,
+    ocupacion_acudiente varchar (100) not null,
+    direccion_acudiente varchar(200) not null,
+    Departamento_acudiente int not null,
+    telefono_acudiente varchar (20) not null,
+    parentezo_acudiente varchar (100) not null,
+    correo_acudiente varchar (100) not null,
+    id_estudiante_acu int not null,
+    primary key (id_acudiente),
+     CONSTRAINT  fk_acudiente_departamento
+            FOREIGN KEY (  Departamento_acudiente )
+            REFERENCES    Departamento ( id_departamento),
+     CONSTRAINT  fk_acudiente_estudiante
+            FOREIGN KEY (  id_estudiante_acu )
+            REFERENCES    estudiante  ( id_estudiante)
+    );
+
+INSERT into acudiente_estudiante (dependencia_econo_,
+                                nombre_acudiente,
+                                apellidos_acudiente,
+                                ocupacion_acudiente,
+                                direccion_acudiente,
+                                Departamento_acudiente,
+                                telefono_acudiente,
+                                parentezo_acudiente,
+                                correo_acudiente,
+                                id_estudiante_acu
+                                ) values    ('No','Jose', 'Gonzalez', 'Empleado','Call 4 No 2 - 1 ',   8 ,'320000005','Abuelo','jose@hotmail.com',1),
+                                            ('No','Miria','Espinosa', 'Empleado','Calle 5 No 85 -  15',13,'6363636','Tia','Miria@hotmail.com',2)
+   
+
+    create table archivo_estudiante(
+
+    id_archivo int not null,
+    id_estudiante_archi int not null,
+    descripcion_archivo varchar (100) not null,
+    direccion_archivo varchar (500) not null,
+    primary key (id_archivo),
+     CONSTRAINT  fk_archivo_estudiante
+            FOREIGN KEY (  id_estudiante_archi )
+            REFERENCES    estudiante  (  id_estudiante ),
+    
+    );
+
+
 
 
 
@@ -369,43 +479,21 @@ raza_estudiante int not null,
             REFERENCES    rol  ( id_rol)
         );
 
-    create table expediente (
-    id_expediente int  IDENTITY(1,1) not null,
-    id_tipo_exp int not null,
-    id_estudiante_exp int not null,
-
-    fecha_expediente date not null,
-    descripcion_Expediente varchar(500) not null,
-    primary key (id_expediente),
-        CONSTRAINT  fk_estudiante_eexpediente
-            FOREIGN KEY (  id_estudiante_exp)
-            REFERENCES    estudiante ( id_estudiante),
-        CONSTRAINT  fk_tipo_exo
-            FOREIGN KEY (  id_tipo_exp )
-            REFERENCES    tipo_expediente  ( id_tipo_exp)
-    );
+    INSERT into login (usuario_login,
+                       contrasena_login,
+                       id_estudiante_usuario,
+                       id_rol_login,
+                       id_empleado_usuario )values 
+                        ('jeferlea','123456',1,3,null),
+                        ('oscarlea','123456',2,3,null),
+                        ('juanguev','123456',null,1,1),
+                        ('alejleal','123456',null,2,2),
+                        ('carlosgu','123456',null,4,3)
 
 
 
-    create table espacio (
-    id_espacio int  IDENTITY(1,1) not null,
-    descripcion_espacio varchar (100) not null,
-    id_tipo_espacio_ int not null,
-    id_ubicacion_espacio_ int not null,
-    id_estudiante_espacio int ,
 
-    primary key (id_espacio),
-        CONSTRAINT  fk_espacio_ubicacion
-            FOREIGN KEY (  id_ubicacion_espacio_ )
-            REFERENCES    ubicacion_espacio ( id_ubicacion_espacio),
-        CONSTRAINT  fk_tipo_espacio
-            FOREIGN KEY (  id_tipo_espacio_ )
-            REFERENCES    tipo_espacio ( id_tipo_espacio),
-      
-       CONSTRAINT  fk_espacio_estudiante
-            FOREIGN KEY (  id_estudiante_espacio )
-            REFERENCES    estudiante  ( id_estudiante)
-    );
+ 
 
 
 
@@ -479,7 +567,7 @@ raza_estudiante int not null,
     );
 
 
-
+   
     create table reparacion_espacio(
     id_reparacion int  IDENTITY(1,1) not null,
     fecha_reparacion_espacio date  not null,
@@ -542,6 +630,42 @@ raza_estudiante int not null,
     );
 
 
+
+    create table estado_cita(
+    id_estado_cita int   IDENTITY(1,1) not null,
+    valor_estado_cita varchar (50) not null,
+    primary key (id_estado_cita)
+    );
+ INSERT INTO estado_cita (valor_estado_cita) VALUES ('Pendiente'), ('Atendida'),('No asistio'),('Cancelada');
+        go
+
+
+ create table expediente (
+    id_expediente int  IDENTITY(1,1) not null,
+    id_tipo_exp int not null,
+    id_estudiante_exp int not null,
+
+    fecha_expediente date not null,
+    descripcion_Expediente varchar(500) not null,
+    id_empleado_expediente int not null,
+
+    primary key (id_expediente),
+        CONSTRAINT  fk_estudiante_eexpediente
+            FOREIGN KEY (  id_estudiante_exp)
+            REFERENCES    estudiante ( id_estudiante),
+        CONSTRAINT  fk_tipo_exo
+            FOREIGN KEY (  id_tipo_exp )
+            REFERENCES    tipo_expediente  ( id_tipo_exp),
+         CONSTRAINT  fk_expediente_empleado
+            FOREIGN KEY (  id_empleado_expediente )
+            REFERENCES    empleado  ( id_empleado)
+    );
+
+    insert INTO expediente (id_tipo_exp, id_estudiante_exp, fecha_expediente, descripcion_Expediente, id_empleado_expediente) 
+                    values (1,2,'02-03-2017','el joven presenta visiones en la noche de personas muertas',2),
+                           (2,1,'02-02-2017','el joven tiene problemas de toleracia a los compaeros estudiantes',2)
+
+
     create table cita(
         id_cita int  IDENTITY(1,1)not null,
          id_estudiante_cita int not null, 
@@ -560,12 +684,28 @@ raza_estudiante int not null,
             FOREIGN KEY (  id_empleado_cita)
             REFERENCES    empleado ( id_empleado),
             
-            CONSTRAINT  fk_cita_solicitud
+            CONSTRAINT  fk_cita__solicitud
             FOREIGN KEY (  id_solicitud_cita)
             REFERENCES    solicitud ( id_solicitud),
             
             CONSTRAINT  fk_cita_expediente
             FOREIGN KEY (  id_expediente_cita)
-            REFERENCES    expediente ( id_expediente)
+            REFERENCES    expediente ( id_expediente),
+
+
+            CONSTRAINT  fk_cita_estado
+            FOREIGN KEY ( estado_cita )
+            REFERENCES    estado_cita ( id_estado_cita)
             
     );
+
+go
+
+
+
+create proc crearcargo
+@id_carg varchar(4),
+@nombre_carg varchar(45)
+as 
+insert into Cargo values (@id_carg,@nombre_carg )
+go
