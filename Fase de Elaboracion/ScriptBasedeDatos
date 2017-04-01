@@ -79,7 +79,7 @@ INSERT INTO tipo_expediente (valortipoexp) VALUES ('Psicologico'),('Social')
     valor_estado_solciitud varchar (50) not null,
     primary key (id_estado_solciitud)
     );
- INSERT INTO tipo_solicitud (valor_tipo_solicitud) VALUES ('Recibida'),('Atendiendo'), ('Suspendida'), ('Solucionada'), ('Cancelada'), ('Proceso de aprobacion')
+ INSERT INTO estado_solicitud (valor_estado_solciitud) VALUES ('Recibida'),('Atendiendo'), ('Suspendida'), ('Solucionada'), ('Cancelada'), ('Proceso de aprobacion')
         go
 
 
@@ -458,8 +458,15 @@ INSERT into acudiente_estudiante (dependencia_econo_,
             REFERENCES    empleado( id_empleado )
 
     );
-
-
+-- Estos registros se crear por medio de proco por observaciones del empleado
+        insert into  Historico_estudiante (id_estudiante,
+                                         fecha_historico_expediente, 
+                                         descripcion_historico_expediente,
+                                          id_empleado_historico_estudiante) 
+                                        values 
+                                        (1, '2017-01-05','Se registra el estudiante', null),
+                                        (2, '2017-01-05','Se registra el estudiante', null),
+                                        (3, '2017-01-06','Se actualiza acudiente' , 2)
     create table login(
     id_usuario_login int   IDENTITY(1,1) not null,
     usuario_login varchar(8) not null,
@@ -509,6 +516,13 @@ INSERT into acudiente_estudiante (dependencia_econo_,
             REFERENCES    tipo_elemento  ( id_tipo_elemento)
     );
 
+
+    INSERT INTO elemento (id_tipo_elemento_,descripcion, marca, serrial)values 
+                        (1,'Cama',null,null),
+                        (1,'Estufa','HACEB', null),
+                        (3,'Computador','HP', 'MXJasg3s5')
+
+    go
     create table inventario_espacio(
     id_inventario_esp int   IDENTITY(1,1) not null,
     id_elemento_inventario_espacio int not null,
@@ -529,6 +543,19 @@ INSERT into acudiente_estudiante (dependencia_econo_,
          
     );
 
+INSERT into inventario_espacio (
+                                id_elemento_inventario_espacio,
+                                cantidad_inventario_elemento_espacio,
+                                fecha_inventario_espacio,
+                                id_espacio_inventario__,
+                                id_empleado_inventario
+                                )values 
+
+                                    (1,2,'2017-2-1',1,3),
+                                    (2,1,'2017-2-1',1,3),
+                                    (1,1,'2017-2-1',2,3),
+                                    (2,1,'2017-2-1',2,3)
+                                    go
 
 
 
@@ -566,6 +593,17 @@ INSERT into acudiente_estudiante (dependencia_econo_,
             REFERENCES    estudiante (id_estudiante )
     );
 
+insert into solicitud  (
+                          id_tipo_solicitud__,
+                            id_estado_solicitud__,
+                            id_espacio_solicitud,
+                            id_prioridad_solciitud__,
+                            descripcion_solicitud,
+                            id_estudiante_solicitud,
+                            id_empleado_solicitud
+                            ) values (1,4,1,2,'No puedo dormir biem. tengo muchas pesadillas', 1,2),
+                                    (1,4,1,2,'Se rompio el lavamanos',1,3)
+
 
    
     create table reparacion_espacio(
@@ -575,7 +613,7 @@ INSERT into acudiente_estudiante (dependencia_econo_,
 
     id_espacio_reparacion int not null,
     id_empleado_reparacion int not null,
-
+    costo bigint not null,
     id_solicitud_reparacion_espacio int not null,
 
     primary key (id_reparacion),
@@ -593,7 +631,15 @@ INSERT into acudiente_estudiante (dependencia_econo_,
 
 
     );
+insert into reparacion_espacio (fecha_reparacion_espacio,
+                                descripcion_reparacion,
+                                id_espacio_reparacion,
+                                id_empleado_reparacion,
+                                costo,
+                                id_solicitud_reparacion_espacio
+                                ) values ('2017-02-03','Se realiza compra de lavamanos e instalacion',1,3,100000,2)
 
+go
 
 
 
@@ -639,7 +685,6 @@ INSERT into acudiente_estudiante (dependencia_econo_,
  INSERT INTO estado_cita (valor_estado_cita) VALUES ('Pendiente'), ('Atendida'),('No asistio'),('Cancelada');
         go
 
-
  create table expediente (
     id_expediente int  IDENTITY(1,1) not null,
     id_tipo_exp int not null,
@@ -647,7 +692,7 @@ INSERT into acudiente_estudiante (dependencia_econo_,
 
     fecha_expediente date not null,
     descripcion_Expediente varchar(500) not null,
-    id_empleado_expediente int not null,
+    id_cita_exp int not null,
 
     primary key (id_expediente),
         CONSTRAINT  fk_estudiante_eexpediente
@@ -656,16 +701,16 @@ INSERT into acudiente_estudiante (dependencia_econo_,
         CONSTRAINT  fk_tipo_exo
             FOREIGN KEY (  id_tipo_exp )
             REFERENCES    tipo_expediente  ( id_tipo_exp),
-         CONSTRAINT  fk_expediente_empleado
-            FOREIGN KEY (  id_empleado_expediente )
-            REFERENCES    empleado  ( id_empleado)
+         CONSTRAINT  fk_expediente_cita
+            FOREIGN KEY (  id_cita_exp )
+            REFERENCES    cita  ( id_cita)
     );
 
-    insert INTO expediente (id_tipo_exp, id_estudiante_exp, fecha_expediente, descripcion_Expediente, id_empleado_expediente) 
-                    values (1,2,'02-03-2017','el joven presenta visiones en la noche de personas muertas',2),
+    insert INTO expediente (id_tipo_exp, id_estudiante_exp, fecha_expediente, descripcion_Expediente, id_cita_exp) 
+                    values (1,2,'02-03-2017','el joven presenta visiones en la noche de personas muertas',1),
                            (2,1,'02-02-2017','el joven tiene problemas de toleracia a los compaeros estudiantes',2)
 
-
+go
     create table cita(
         id_cita int  IDENTITY(1,1)not null,
          id_estudiante_cita int not null, 
@@ -703,9 +748,35 @@ go
 
 
 
-create proc crearcargo
-@id_carg varchar(4),
-@nombre_carg varchar(45)
-as 
-insert into Cargo values (@id_carg,@nombre_carg )
-go
+
+--procedimientos almacenados
+
+
+create proc insertarempleado
+    @valor_tipoidenti varchar (20),
+    @Noidentificacion_empleado varchar(15) ,
+    @nombres_empleado varchar (100) ,
+    @apellidos_empleado varchar (100) ,
+    @fechanacimiento_empleado date ,
+    @estadocivil_empleado int , --
+    @valor_estadoci varchar(20),
+    @correo_empleado varchar (100) ,
+    @valor_carg varchar(20)
+    as 
+    BEGIN
+        declare @tipo_ide int, @estad_civ int, @cargo_empl int
+        set @tipo_ide = (select id_tipoidentificacion from TipoIdentificacion where valor_tipoidentificacion=@valor_tipoidenti);
+        set @estad_civ = (select id_estadocivil from estadocivil where valor_estadocivil=@valor_estadoci);
+        set @cargo_empl = (select id_cargo from cargo where valor_cargo = @valor_carg);
+    insert into empleado  ( tipoidentificacion_empleado,
+                        Noidentificacion_empleado,
+                        nombres_empleado,
+                        apellidos_empleado,
+                        fechanacimiento_empleado,
+                        estadocivil_empleado,
+                        correo_empleado,
+                        cargo_empleado) values (@tipo_ide,@Noidentificacion_empleado,@nombres_empleado, @apellidos_empleado,@fechanacimiento_empleado,@estad_civ, @correo_empleado, @cargo_empl) ;
+
+
+   END
+   GO
