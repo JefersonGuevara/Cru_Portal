@@ -6,13 +6,13 @@
     go
 
 
-    create table TipoIdentificacion(
+    create table tipoidentificacion(
     id_tipoidentificacion int  IDENTITY(1,1) not null,
     valor_tipoidentificacion varchar(50) not null,
     primary key (id_tipoidentificacion)
     );
 
-    INSERT INTO TipoIdentificacion (valor_tipoidentificacion) VALUES ('Cedula'),('Tarjeta de Identidad'),('Cedula Extranjeria')
+    INSERT INTO tipoidentificacion (valor_tipoidentificacion) VALUES ('Cedula'),('Tarjeta de Identidad'),('Cedula Extranjeria')
         go
 
     create table estadocivil(
@@ -24,14 +24,14 @@
 
     INSERT INTO estadocivil (valor_estadocivil) VALUES ('Soltero'),('Casado'),('Union libre'), ('Divorciado'), ('Viudo')
         go
-    CREATE TABLE Estado_estudiante_CRU(
-        Id_Estado_estudiante_CRU int Identity(1,1),
-        Descripcion_Estado_estudiante_CRU nchar(30) NOT NULL,
-        primary key (Id_Estado_estudiante_CRU)
+    CREATE TABLE estado_usuario_cru(
+        Id_estado_usuario_cru int Identity(1,1),
+        Descripcion_estado_usuario_cru varchar(30) NOT NULL,
+        primary key (Id_estado_usuario_cru)
         );
     GO
 
- INSERT INTO Estado_estudiante_CRU (Descripcion_Estado_estudiante_CRU) VALUES ('Activo'),('Retirado'),('Admitido'), ('En proceso Admision'), ('Expulsado')
+ INSERT INTO estado_usuario_cru (Descripcion_estado_usuario_cru) VALUES ('Activo'),('Retirado'),('Admitido'), ('En proceso Admision'), ('Expulsado'), ('Inactivo')
        --cargar todos los numero del 101 hasta el 111 y hasta el 13
     create table piso(
     id_piso int  IDENTITY(1,1) not null,
@@ -112,14 +112,14 @@ INSERT INTO tipo_elemento (valor_tipo_elemento) VALUES ('Uso Residencial'),('Uso
 
 
 
-    Create Table Departamento (
+    Create Table departamento (
         id_departamento int IDENTITY(1,1) not null,
         descripcion_departamento varchar (100) not null,
         primary key (id_departamento)
        );
 
 
-INSERT INTO Departamento (descripcion_departamento) VALUES
+INSERT INTO departamento (descripcion_departamento) VALUES
                     ('ANTIOQUIA'),                    ('ATLANTICO'),
                     ('BOGOTA'),                    ('BOLIVAR'),
                     ('BOYACA'),                    ('CALDAS'),
@@ -162,12 +162,12 @@ INSERT INTO Departamento (descripcion_departamento) VALUES
     go
 
     --Todos los posibles de tipos de sangre 
-    create table Tipodesangre(
+    create table tipodesangre(
         id_tipo_sangre int IDENTITY(1,1)  not null,
         descripcion_tipo_sangre varchar(11) not null,
         primary key(id_tipo_sangre)
     );
-    INSERT INTO Tipodesangre (descripcion_tipo_sangre) VALUES   ('O negativo'),('O positivo'),
+    INSERT INTO tipodesangre (descripcion_tipo_sangre) VALUES   ('O negativo'),('O positivo'),
                                                                 ('A negativo'),('A positivo'),
                                                                 ('B negativo'),('B positivo'),
                                                                 ('AB negativo'),('AB positivo')                                                        
@@ -194,15 +194,18 @@ INSERT INTO Departamento (descripcion_departamento) VALUES
     estadocivil_empleado int not null,
     correo_empleado varchar (100) not null,
     cargo_empleado int not null,
+    estado_usuario_cru int not null,
     primary key (id_empleado),
         CONSTRAINT  fk_tipodocumento_empleado
             FOREIGN KEY (  tipoidentificacion_empleado )
-            REFERENCES    TipoIdentificacion  (  id_tipoidentificacion ),
+            REFERENCES    tipoidentificacion  (  id_tipoidentificacion ),
 
         CONSTRAINT  fk_estadocivil_empleado
             FOREIGN KEY (  estadocivil_empleado )
             REFERENCES    estadocivil (  id_estadocivil ),
-
+ CONSTRAINT  fk_estado_empleado
+            FOREIGN KEY (estado_usuario_cru )
+            REFERENCES    estado_usuario_cru (  Id_estado_usuario_cru ),
         CONSTRAINT  fk_cargo_empleado
             FOREIGN KEY (cargo_empleado )
             REFERENCES    cargo (  id_cargo )
@@ -215,9 +218,10 @@ INSERT INTO Departamento (descripcion_departamento) VALUES
                         fechanacimiento_empleado,
                         estadocivil_empleado,
                         correo_empleado,
-                        cargo_empleado) VALUES (1,'1012383756','Juan', 'Guevara','1998-1-10',1,'guevarajeferson@gmail.com',1),
-                                               (1,'1026289202','Alejandra', 'Leal','1997-8-5',1,'malp@gmail.com',2),
-                                                (1,'104587412','Carlos', 'Gutierrez','1994-5-20',2,'carlos@gmail.com',4)
+                        cargo_empleado,estado_usuario_cru) 
+                                        VALUES (1,'1012383756','Juan', 'Guevara','1998-1-10',1,'guevarajeferson@gmail.com',1,1),
+                                               (1,'1026289202','Alejandra', 'Leal','1997-8-5',1,'malp@gmail.com',2,1),
+                                                (1,'104587412','Carlos', 'Gutierrez','1994-5-20',2,'carlos@gmail.com',4,1)
     go
 
     create table estado_espacio (
@@ -258,7 +262,7 @@ go
 
     create table estudiante(
     id_estudiante int  IDENTITY(1,1) not null,
-    Estado_estudiante_CRU_estudiante int not null, --Tabla
+    estado_usuario_cru_estudiante int not null, --Tabla
     
     tipoidentificacion_estudiante int  not null, -- Tabla
     Noidentificacion varchar(15) not null,
@@ -274,7 +278,7 @@ go
 
     fechanacimiento_estudiante date not null,
     municipioNacimiento varchar(100) not null,
-    DepartamentoNacimiento int not null,        --Tabla
+    departamentoNacimiento int not null,        --Tabla
     Paisnacimiento int not null,                --Tabla
     Servicio_Salud varchar (200) not null,
 
@@ -297,18 +301,18 @@ id_espacio_estudiante int,
 
         CONSTRAINT  fk_tipodocumento_estudiante
             FOREIGN KEY (  tipoidentificacion_estudiante )
-            REFERENCES    TipoIdentificacion  (  id_tipoidentificacion ),
+            REFERENCES    tipoidentificacion  (  id_tipoidentificacion ),
 
         CONSTRAINT  fk_tiposangre_estudiante
             FOREIGN KEY (  tipo_sangre_estudiante)
-            REFERENCES    Tipodesangre  (  id_tipo_sangre ),
+            REFERENCES    tipodesangre  (  id_tipo_sangre ),
     CONSTRAINT  fk_pais_estudiante
             FOREIGN KEY (  Paisnacimiento)
             REFERENCES    Pais  (  id_pais ),
 
       CONSTRAINT  fk_departamento_estudiante
-            FOREIGN KEY (  DepartamentoNacimiento)
-            REFERENCES    Departamento  (  id_departamento ),
+            FOREIGN KEY (  departamentoNacimiento)
+            REFERENCES    departamento  (  id_departamento ),
 
         CONSTRAINT  fk_estadocivil_estudiante
             FOREIGN KEY (  estadocivil_estudiante )
@@ -318,9 +322,9 @@ id_espacio_estudiante int,
             FOREIGN KEY (  raza_estudiante )
             REFERENCES    raza  ( id_raza),
                   
-        CONSTRAINT  fk_Estado_estudiante_CRU_estudiante
-            FOREIGN KEY (  Estado_estudiante_CRU_estudiante )
-            REFERENCES    Estado_estudiante_CRU  ( Id_Estado_estudiante_CRU),
+        CONSTRAINT  fk_estado_usuario_cru_estudiante
+            FOREIGN KEY (  estado_usuario_cru_estudiante )
+            REFERENCES    estado_usuario_cru  ( Id_estado_usuario_cru),
         CONSTRAINT  fk_espacio_estudiante
             FOREIGN KEY (id_espacio_estudiante   )
             REFERENCES    espacio ( id_espacio)
@@ -328,7 +332,7 @@ id_espacio_estudiante int,
     );
 
 
-    INSERT into estudiante (Estado_estudiante_CRU_estudiante,
+    INSERT into estudiante (estado_usuario_cru_estudiante,
                             tipoidentificacion_estudiante,
                             Noidentificacion,
                             nombres_estudiante,
@@ -340,7 +344,7 @@ id_espacio_estudiante int,
                             tipo_sangre_estudiante,
                             fechanacimiento_estudiante,
                             municipioNacimiento,
-                            DepartamentoNacimiento,
+                            departamentoNacimiento,
                             Paisnacimiento,
                             Servicio_Salud,
                             Dispacidad_estudiante,
@@ -397,15 +401,15 @@ INSERT into datosuniversidad (Universidad_estudiante,
     apellidos_acudiente varchar (100) not null,
     ocupacion_acudiente varchar (100) not null,
     direccion_acudiente varchar(200) not null,
-    Departamento_acudiente int not null,
+    departamento_acudiente int not null,
     telefono_acudiente varchar (20) not null,
     parentezo_acudiente varchar (100) not null,
     correo_acudiente varchar (100) not null,
     id_estudiante_acu int not null,
     primary key (id_acudiente),
      CONSTRAINT  fk_acudiente_departamento
-            FOREIGN KEY (  Departamento_acudiente )
-            REFERENCES    Departamento ( id_departamento),
+            FOREIGN KEY (  departamento_acudiente )
+            REFERENCES    departamento ( id_departamento),
      CONSTRAINT  fk_acudiente_estudiante
             FOREIGN KEY (  id_estudiante_acu )
             REFERENCES    estudiante  ( id_estudiante)
@@ -416,7 +420,7 @@ INSERT into acudiente_estudiante (dependencia_econo_,
                                 apellidos_acudiente,
                                 ocupacion_acudiente,
                                 direccion_acudiente,
-                                Departamento_acudiente,
+                                departamento_acudiente,
                                 telefono_acudiente,
                                 parentezo_acudiente,
                                 correo_acudiente,
@@ -442,31 +446,31 @@ INSERT into acudiente_estudiante (dependencia_econo_,
 
 
 
-    create table Historico_estudiante(
-    id_historico_expediente int not null,
+    create table historicoestudiante(
+    id_historico_expediente int  IDENTITY(1,1) not null,
     id_estudiante int not null,
     fecha_historico_expediente date not null,
     descripcion_historico_expediente varchar (500) not null,
-    id_empleado_historico_estudiante int,
+    id_empleado_historicoestudiante int,
     primary key (id_historico_expediente),
 
       CONSTRAINT  fk_estudiante_historico
             FOREIGN KEY (id_estudiante )
             REFERENCES    estudiante ( id_estudiante ),
-      CONSTRAINT  fk_empleado_historico_estudiante
-            FOREIGN KEY (id_empleado_historico_estudiante )
+      CONSTRAINT  fk_empleado_historicoestudiante
+            FOREIGN KEY (id_empleado_historicoestudiante )
             REFERENCES    empleado( id_empleado )
 
     );
 -- Estos registros se crear por medio de proco por observaciones del empleado
-        insert into  Historico_estudiante (id_estudiante,
+        insert into  historicoestudiante (id_estudiante,
                                          fecha_historico_expediente, 
                                          descripcion_historico_expediente,
-                                          id_empleado_historico_estudiante) 
+                                          id_empleado_historicoestudiante) 
                                         values 
                                         (1, '2017-01-05','Se registra el estudiante', null),
                                         (2, '2017-01-05','Se registra el estudiante', null),
-                                        (3, '2017-01-06','Se actualiza acudiente' , 2)
+                                        (2, '2017-01-06','Se actualiza acudiente' , 2)
     create table login(
     id_usuario_login int   IDENTITY(1,1) not null,
     usuario_login varchar(8) not null,
@@ -692,7 +696,7 @@ go
 
     fecha_expediente date not null,
     descripcion_Expediente varchar(500) not null,
-    id_cita_exp int not null,
+   
 
     primary key (id_expediente),
         CONSTRAINT  fk_estudiante_eexpediente
@@ -700,23 +704,15 @@ go
             REFERENCES    estudiante ( id_estudiante),
         CONSTRAINT  fk_tipo_exo
             FOREIGN KEY (  id_tipo_exp )
-            REFERENCES    tipo_expediente  ( id_tipo_exp),
-         CONSTRAINT  fk_expediente_cita
-            FOREIGN KEY (  id_cita_exp )
-            REFERENCES    cita  ( id_cita)
+            REFERENCES    tipo_expediente  ( id_tipo_exp)
     );
 
-    insert INTO expediente (id_tipo_exp, id_estudiante_exp, fecha_expediente, descripcion_Expediente, id_cita_exp) 
-                    values (1,2,'02-03-2017','el joven presenta visiones en la noche de personas muertas',1),
-                           (2,1,'02-02-2017','el joven tiene problemas de toleracia a los compaeros estudiantes',2)
-
-go
     create table cita(
         id_cita int  IDENTITY(1,1)not null,
          id_estudiante_cita int not null, 
          id_empleado_cita int not null, 
          id_solicitud_cita int not null,
-         estado_cita varchar(100) not null, 
+         estado_cita_ int not null, 
          id_expediente_cita int null, 
          fecha_cita date not null,
          primary key (id_cita),
@@ -739,7 +735,7 @@ go
 
 
             CONSTRAINT  fk_cita_estado
-            FOREIGN KEY ( estado_cita )
+            FOREIGN KEY ( estado_cita_ )
             REFERENCES    estado_cita ( id_estado_cita)
             
     );
@@ -748,9 +744,11 @@ go
 
 
 
+ 
+
+go
 
 --procedimientos almacenados
-
 
 create proc insertarempleado
     @valor_tipoidenti varchar (20),
@@ -758,16 +756,17 @@ create proc insertarempleado
     @nombres_empleado varchar (100) ,
     @apellidos_empleado varchar (100) ,
     @fechanacimiento_empleado date ,
-    @estadocivil_empleado int , --
     @valor_estadoci varchar(20),
     @correo_empleado varchar (100) ,
-    @valor_carg varchar(20)
+    @valor_carg varchar(20),
+    @valor_estado varchar(30)
     as 
     BEGIN
-        declare @tipo_ide int, @estad_civ int, @cargo_empl int
-        set @tipo_ide = (select id_tipoidentificacion from TipoIdentificacion where valor_tipoidentificacion=@valor_tipoidenti);
+        declare @tipo_ide int, @estad_civ int, @cargo_empl int, @estado int
+        set @tipo_ide = (select id_tipoidentificacion from tipoidentificacion where valor_tipoidentificacion=@valor_tipoidenti);
         set @estad_civ = (select id_estadocivil from estadocivil where valor_estadocivil=@valor_estadoci);
         set @cargo_empl = (select id_cargo from cargo where valor_cargo = @valor_carg);
+        set @estado = (select Id_estado_usuario_cru from  estado_usuario_cru where Descripcion_estado_usuario_cru = @valor_estado);
     insert into empleado  ( tipoidentificacion_empleado,
                         Noidentificacion_empleado,
                         nombres_empleado,
@@ -775,8 +774,75 @@ create proc insertarempleado
                         fechanacimiento_empleado,
                         estadocivil_empleado,
                         correo_empleado,
-                        cargo_empleado) values (@tipo_ide,@Noidentificacion_empleado,@nombres_empleado, @apellidos_empleado,@fechanacimiento_empleado,@estad_civ, @correo_empleado, @cargo_empl) ;
+                        cargo_empleado,
+                        estado_usuario_cru
+                        ) values (@tipo_ide,@Noidentificacion_empleado,@nombres_empleado, @apellidos_empleado,@fechanacimiento_empleado,@estad_civ, @correo_empleado, @cargo_empl,@estado) ;
 
 
    END
    GO
+
+create proc consultartodosempleados
+    as 
+  SELECT    tipoidentificacion.valor_tipoidentificacion, empleado.Noidentificacion_empleado, empleado.nombres_empleado, empleado.apellidos_empleado, empleado.fechanacimiento_empleado, 
+              empleado.correo_empleado, estadocivil.valor_estadocivil, cargo.valor_cargo, estado_usuario_cru.Descripcion_estado_usuario_cru
+                        FROM            tipoidentificacion INNER JOIN
+                         empleado ON tipoidentificacion.id_tipoidentificacion = empleado.tipoidentificacion_empleado INNER JOIN
+                         cargo ON empleado.cargo_empleado = cargo.id_cargo INNER JOIN
+                         estadocivil ON empleado.estadocivil_empleado = estadocivil.id_estadocivil  INNER JOIN
+                         estado_usuario_cru ON empleado.estado_usuario_cru = estado_usuario_cru.Id_estado_usuario_cru;
+                     
+   GO
+
+
+create proc consultaremplead_pornombre_id
+    @identificacion varchar (20),
+    @nombre varchar(100)
+    as 
+    BEGIN
+        
+    if @identificacion = null
+    SELECT    tipoidentificacion.valor_tipoidentificacion, empleado.Noidentificacion_empleado, empleado.nombres_empleado, empleado.apellidos_empleado, empleado.fechanacimiento_empleado, 
+              empleado.correo_empleado, estadocivil.valor_estadocivil, cargo.valor_cargo, estado_usuario_cru.Descripcion_estado_usuario_cru
+                        FROM            tipoidentificacion INNER JOIN
+                         empleado ON tipoidentificacion.id_tipoidentificacion = empleado.tipoidentificacion_empleado INNER JOIN
+                         cargo ON empleado.cargo_empleado = cargo.id_cargo INNER JOIN
+                         estadocivil ON empleado.estadocivil_empleado = estadocivil.id_estadocivil  INNER JOIN
+                         estado_usuario_cru ON empleado.estado_usuario_cru = estado_usuario_cru.Id_estado_usuario_cru
+                         where @nombre = empleado.nombres_empleado;
+
+    else 
+        SELECT    tipoidentificacion.valor_tipoidentificacion, empleado.Noidentificacion_empleado, empleado.nombres_empleado, empleado.apellidos_empleado, empleado.fechanacimiento_empleado, 
+              empleado.correo_empleado, estadocivil.valor_estadocivil, cargo.valor_cargo, estado_usuario_cru.Descripcion_estado_usuario_cru
+                        FROM            tipoidentificacion INNER JOIN
+                         empleado ON tipoidentificacion.id_tipoidentificacion = empleado.tipoidentificacion_empleado INNER JOIN
+                         cargo ON empleado.cargo_empleado = cargo.id_cargo INNER JOIN
+                         estadocivil ON empleado.estadocivil_empleado = estadocivil.id_estadocivil  INNER JOIN
+                         estado_usuario_cru ON empleado.estado_usuario_cru = estado_usuario_cru.Id_estado_usuario_cru
+                         where @identificacion = empleado.Noidentificacion_empleado;
+
+
+
+   END
+   GO
+
+
+
+create proc actualizarempleado
+
+    @valor_estadoci varchar(20),
+    @correo_empleado varchar (100) ,
+    @valor_carg varchar(20),
+    @valor_estado varchar(30)
+    as 
+    BEGIN
+        declare @estad_civ int, @cargo_empl int, @estado int
+       
+        set @estad_civ = (select id_estadocivil from estadocivil where valor_estadocivil=@valor_estadoci);
+        set @cargo_empl = (select id_cargo from cargo where valor_cargo = @valor_carg);
+        set @estado = (select Id_estado_usuario_cru from  estado_usuario_cru where Descripcion_estado_usuario_cru = @valor_estado);
+    update empleado set estadocivil_empleado=@estad_civ , cargo_empleado=@cargo_empl, estado_usuario_cru=@estado, correo_empleado=@correo_empleado;
+    
+   END
+   GO
+
