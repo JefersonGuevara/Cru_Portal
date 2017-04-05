@@ -48,7 +48,7 @@
     valor_cargo varchar(20) not null,
     primary key  (id_cargo)
     );
-INSERT INTO cargo (valor_cargo) VALUES ('Director'),('Psicologo'),('Gestor Social'), ('Mantenimiento')
+INSERT INTO cargo (valor_cargo) VALUES ('Psicologo'),('Gestor Social'), ('Mantenimiento'),('Director')
         go
 
     create table tipo_expediente(
@@ -63,7 +63,7 @@ INSERT INTO tipo_expediente (valortipoexp) VALUES ('Psicologico'),('Social')
     descripcion_rol varchar (50) not null,
     primary key  (id_rol)
     );
-    INSERT INTO rol (descripcion_rol) VALUES ('Administrador'),('Empleado'), ('Estudiante'), ('Mantenimiento')
+    INSERT INTO rol (descripcion_rol) VALUES ('Empleado'), ('Estudiante'), ('Mantenimiento'),('Administrador')
         go
 
     create table tipo_solicitud(
@@ -189,7 +189,7 @@ INSERT INTO departamento (descripcion_departamento) VALUES
     Noidentificacion_empleado varchar(15) not null,
     nombres_empleado varchar (100) not null,
     apellidos_empleado varchar (100) not null,
-    
+    Telefonoempleado varchar (10) not null,
     fechanacimiento_empleado date not null,
     estadocivil_empleado int not null,
     correo_empleado varchar (100) not null,
@@ -218,10 +218,11 @@ INSERT INTO departamento (descripcion_departamento) VALUES
                         fechanacimiento_empleado,
                         estadocivil_empleado,
                         correo_empleado,
-                        cargo_empleado,estado_usuario_cru) 
-                                        VALUES (1,'1012383756','Juan', 'Guevara','1998-1-10',1,'guevarajeferson@gmail.com',1,1),
-                                               (1,'1026289202','Alejandra', 'Leal','1997-8-5',1,'malp@gmail.com',2,1),
-                                                (1,'104587412','Carlos', 'Gutierrez','1994-5-20',2,'carlos@gmail.com',4,1)
+                        cargo_empleado,estado_usuario_cru,
+                        Telefonoempleado) 
+                                        VALUES (1,'1012383756','Juan', 'Guevara','1998-1-10',1,'guevarajeferson@gmail.com',1,1,'3333333'),
+                                               (1,'1026289202','Alejandra', 'Leal','1997-8-5',1,'malp@gmail.com',2,1,'88888888'),
+                                                (1,'104587412','Carlos', 'Gutierrez','1994-5-20',2,'carlos@gmail.com',4,1,'55555555')
     go
 
     create table estado_espacio (
@@ -751,22 +752,19 @@ go
 --procedimientos almacenados
 
 create proc insertarempleado
-    @valor_tipoidenti varchar (20),
+    @valor_tipoidenti int,
     @Noidentificacion_empleado varchar(15) ,
     @nombres_empleado varchar (100) ,
     @apellidos_empleado varchar (100) ,
     @fechanacimiento_empleado date ,
-    @valor_estadoci varchar(20),
+    @valor_estadoci int,
     @correo_empleado varchar (100) ,
-    @valor_carg varchar(20),
-    @valor_estado varchar(30)
+    @valor_carg int,
+    @valor_estado int,
+    @telefono_empl varchar (10)
     as 
     BEGIN
-        declare @tipo_ide int, @estad_civ int, @cargo_empl int, @estado int
-        set @tipo_ide = (select id_tipoidentificacion from tipoidentificacion where valor_tipoidentificacion=@valor_tipoidenti);
-        set @estad_civ = (select id_estadocivil from estadocivil where valor_estadocivil=@valor_estadoci);
-        set @cargo_empl = (select id_cargo from cargo where valor_cargo = @valor_carg);
-        set @estado = (select Id_estado_usuario_cru from  estado_usuario_cru where Descripcion_estado_usuario_cru = @valor_estado);
+       
     insert into empleado  ( tipoidentificacion_empleado,
                         Noidentificacion_empleado,
                         nombres_empleado,
@@ -775,8 +773,18 @@ create proc insertarempleado
                         estadocivil_empleado,
                         correo_empleado,
                         cargo_empleado,
-                        estado_usuario_cru
-                        ) values (@tipo_ide,@Noidentificacion_empleado,@nombres_empleado, @apellidos_empleado,@fechanacimiento_empleado,@estad_civ, @correo_empleado, @cargo_empl,@estado) ;
+                        estado_usuario_cru,
+                        Telefonoempleado
+                        ) values ( @valor_tipoidenti,
+                        @Noidentificacion_empleado,
+                        @nombres_empleado, 
+                        @apellidos_empleado,
+                        @fechanacimiento_empleado,
+                        @valor_estadoci,
+                        @correo_empleado, 
+                        @valor_carg,
+                        @valor_estado,
+                        @telefono_empl) ;
 
 
    END
@@ -785,7 +793,7 @@ create proc insertarempleado
 create proc consultartodosempleados
     as 
   SELECT    tipoidentificacion.valor_tipoidentificacion, empleado.Noidentificacion_empleado, empleado.nombres_empleado, empleado.apellidos_empleado, empleado.fechanacimiento_empleado, 
-              empleado.correo_empleado, estadocivil.valor_estadocivil, cargo.valor_cargo, estado_usuario_cru.Descripcion_estado_usuario_cru
+              empleado.correo_empleado, estadocivil.valor_estadocivil, cargo.valor_cargo, estado_usuario_cru.Descripcion_estado_usuario_cru, empleado.Telefonoempleado
                         FROM            tipoidentificacion INNER JOIN
                          empleado ON tipoidentificacion.id_tipoidentificacion = empleado.tipoidentificacion_empleado INNER JOIN
                          cargo ON empleado.cargo_empleado = cargo.id_cargo INNER JOIN
@@ -803,7 +811,7 @@ create proc consultaremplead_pornombre_id
         
     if @identificacion = null
     SELECT    tipoidentificacion.valor_tipoidentificacion, empleado.Noidentificacion_empleado, empleado.nombres_empleado, empleado.apellidos_empleado, empleado.fechanacimiento_empleado, 
-              empleado.correo_empleado, estadocivil.valor_estadocivil, cargo.valor_cargo, estado_usuario_cru.Descripcion_estado_usuario_cru
+              empleado.correo_empleado, estadocivil.valor_estadocivil, cargo.valor_cargo, estado_usuario_cru.Descripcion_estado_usuario_cru, empleado.Telefonoempleado
                         FROM            tipoidentificacion INNER JOIN
                          empleado ON tipoidentificacion.id_tipoidentificacion = empleado.tipoidentificacion_empleado INNER JOIN
                          cargo ON empleado.cargo_empleado = cargo.id_cargo INNER JOIN
@@ -813,7 +821,7 @@ create proc consultaremplead_pornombre_id
 
     else 
         SELECT    tipoidentificacion.valor_tipoidentificacion, empleado.Noidentificacion_empleado, empleado.nombres_empleado, empleado.apellidos_empleado, empleado.fechanacimiento_empleado, 
-              empleado.correo_empleado, estadocivil.valor_estadocivil, cargo.valor_cargo, estado_usuario_cru.Descripcion_estado_usuario_cru
+              empleado.correo_empleado, estadocivil.valor_estadocivil, cargo.valor_cargo, estado_usuario_cru.Descripcion_estado_usuario_cru, empleado.Telefonoempleado
                         FROM            tipoidentificacion INNER JOIN
                          empleado ON tipoidentificacion.id_tipoidentificacion = empleado.tipoidentificacion_empleado INNER JOIN
                          cargo ON empleado.cargo_empleado = cargo.id_cargo INNER JOIN
@@ -833,7 +841,8 @@ create proc actualizarempleado
     @valor_estadoci varchar(20),
     @correo_empleado varchar (100) ,
     @valor_carg varchar(20),
-    @valor_estado varchar(30)
+    @valor_estado varchar(30),
+    @telefono_empl varchar (10)
     as 
     BEGIN
         declare @estad_civ int, @cargo_empl int, @estado int
@@ -841,8 +850,25 @@ create proc actualizarempleado
         set @estad_civ = (select id_estadocivil from estadocivil where valor_estadocivil=@valor_estadoci);
         set @cargo_empl = (select id_cargo from cargo where valor_cargo = @valor_carg);
         set @estado = (select Id_estado_usuario_cru from  estado_usuario_cru where Descripcion_estado_usuario_cru = @valor_estado);
-    update empleado set estadocivil_empleado=@estad_civ , cargo_empleado=@cargo_empl, estado_usuario_cru=@estado, correo_empleado=@correo_empleado;
+    update empleado set estadocivil_empleado=@estad_civ , cargo_empleado=@cargo_empl, estado_usuario_cru=@estado, correo_empleado=@correo_empleado, Telefonoempleado =@telefono_empl;
     
    END
    GO
 
+create proc Tiposidentificacion_consultar
+as
+SELECT        id_tipoidentificacion, valor_tipoidentificacion
+FROM            tipoidentificacion
+go
+
+create proc Cargo_consultar
+as
+SELECT        id_cargo, valor_cargo
+FROM            cargo
+go
+
+create proc Estadocivile_consultar
+as
+SELECT        id_estadocivil, valor_estadocivil
+FROM            estadocivil
+go
