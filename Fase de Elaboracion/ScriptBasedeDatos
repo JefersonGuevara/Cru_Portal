@@ -528,7 +528,7 @@ go
                                 set @id_role=4
                             END
                          END
-                           
+
                           insert into DirectorioActivo (correo_directorio ,contrasena ,id_rol_Directorio ,
                                                           Estado_directorio_CRU , TipoIdentificacion   , NumeroIdentificacion ,
                                                   Nombres              ,
@@ -564,9 +564,9 @@ go
 
 --**********************************************************
      --
-                            VALUES  (1,1,'1012333333','Jefer.','Leal',1,'Cra 45 No 52 - 25','2225552','jefers@gmail.com',4,'01-01-1992','Bogota',11,4,'Compensar','No','Ninguna','No',0,3,1,'No','Ninguno',7,1,'123456',2 ),
-                                    (1,1,'1012666666','Oscar.','Leal',1,'Cll 45 No 52 - 25','2225552','oscars@gmail.com',2,'02-09-1992','Mesa',23,4,'Famisanar','No','Ninguna','No',2,3,3,'No','Ninguno',7,1,'123456',2)
-go
+--                            VALUES  (1,1,'1012333333','Jefer.','Leal',1,'Cra 45 No 52 - 25','2225552','jefers@gmail.com',4,'01-01-1992','Bogota',11,4,'Compensar','No','Ninguna','No',0,3,1,'No','Ninguno',7,1,'123456',2 ),
+  --                                  (1,1,'1012666666','Oscar.','Leal',1,'Cll 45 No 52 - 25','2225552','oscars@gmail.com',2,'02-09-1992','Mesa',23,4,'Famisanar','No','Ninguna','No',2,3,3,'No','Ninguno',7,1,'123456',2)
+--go
 
 
 
@@ -590,18 +590,18 @@ go
         );
         go
 
-    INSERT into datosuniversidad (Universidad_estudiante,
-                                Facultad_estudiante,
-                                Programa_estudiante, 
-                                Puntaje_Basico_Matricula,
-                                Promedio_Academico_estudiante,
-                                Año_ingreso_Universidad_,
-                                semestre_ingreso_universidad,
-                                Porcentaje_Avance,
-                                id_estudiante_datosuniversidad
-                                ) VALUES 
-                                ('Universidad Nacional','Ingenieria','Ing. sistemas','9.112','4.5','2012',1,'50',1),
-                                ('Universidad Nacional','Ingenieria','Ing. sistemas','8.412','4.8','2011',1,'80',2)
+   -- INSERT into datosuniversidad (Universidad_estudiante,
+   --                             Facultad_estudiante,
+     --                           Programa_estudiante, 
+       --                         Puntaje_Basico_Matricula,
+         --                       Promedio_Academico_estudiante,
+           --                     Año_ingreso_Universidad_,
+             --                   semestre_ingreso_universidad,
+               --                 Porcentaje_Avance,
+                 --               id_estudiante_datosuniversidad
+                   --             ) VALUES 
+                     --           ('Universidad Nacional','Ingenieria','Ing. sistemas','9.112','4.5','2012',1,'50',1),
+                       --         ('Universidad Nacional','Ingenieria','Ing. sistemas','8.412','4.8','2011',1,'80',2)
 
 
         create table acudiente_estudiante(
@@ -626,18 +626,18 @@ go
         );
         go
 
-    INSERT into acudiente_estudiante (dependencia_econo_,
-                                    nombre_acudiente,
-                                    apellidos_acudiente,
-                                    ocupacion_acudiente,
-                                    direccion_acudiente,
-                                    departamento_acudiente,
-                                    telefono_acudiente,
-                                    parentezo_acudiente,
-                                    correo_acudiente,
-                                    id_estudiante_acu
-                                    ) values    ('No','Jose', 'Gonzalez', 'Empleado','Call 4 No 2 - 1 ',   8 ,'320000005','Abuelo','jose@hotmail.com',1),
-                                                ('No','Miria','Espinosa', 'Empleado','Calle 5 No 85 -  15',13,'6363636','Tia','Miria@hotmail.com',2)
+ --   INSERT into acudiente_estudiante (dependencia_econo_,
+  --                                  nombre_acudiente,
+ --                                   apellidos_acudiente,
+ --                                   ocupacion_acudiente,
+ --                                   direccion_acudiente,
+  --                                  departamento_acudiente,
+ --                                   telefono_acudiente,
+--                                      parentezo_acudiente,
+ --                                   correo_acudiente,
+ --                                   id_estudiante_acu
+ --                                   ) values    ('No','Jose', 'Gonzalez', 'Empleado','Call 4 No 2 - 1 ',   8 ,'320000005','Abuelo','jose@hotmail.com',1),
+ --                                               ('No','Miria','Espinosa', 'Empleado','Calle 5 No 85 -  15',13,'6363636','Tia','Miria@hotmail.com',2)
        
 go
         create table archivo_estudiante(
@@ -675,22 +675,22 @@ go
         );
         go
     -- Estos registros se crear por medio de proco por observaciones del empleado
-            insert into  historicoestudiante (id_estudiante,
-                                             fecha_historico_expediente, 
-                                             descripcion_historico_expediente,
-                                              id_empleado_historicoestudiante) 
-                                            values 
-                                            (1, '2017-01-05','Se registra el estudiante', null),
-                                            (2, '2017-01-05','Se registra el estudiante', null),
-                                            (2, '2017-01-06','Se actualiza acudiente' , 2)
-       
+  --          insert into  historicoestudiante (id_estudiante,
+  --                                           fecha_historico_expediente, 
+  --                                           descripcion_historico_expediente,
+  --                                            id_empleado_historicoestudiante) 
+  --                                          values 
+  --                                          (1, '2017-01-05','Se registra el estudiante', null),
+  --                                          (2, '2017-01-05','Se registra el estudiante', null),
+  --                                          (2, '2017-01-06','Se actualiza acudiente' , 2)
+  --      go
 
 
 
      
 
 
-go
+
         create table elemento(
         id_elemento int  IDENTITY(1,1) not null,
         id_tipo_elemento_ int not null,
@@ -703,7 +703,7 @@ go
                 REFERENCES    tipo_elemento  ( id_tipo_elemento)
         );
 
-go
+        go
         INSERT INTO elemento (id_tipo_elemento_,descripcion, marca, Modelo)values 
                             (1,'Cama',null,null),
                             (1,'Estufa','HACEB', null),
@@ -730,19 +730,19 @@ go
         );
         go
 
-    INSERT into inventario_espacio (
-                                    id_elemento_inventario_espacio,
-                                    cantidad_inventario_elemento_espacio,
-                                    fecha_inventario_espacio,
-                                    id_espacio_inventario__,
-                                    id_empleado_inventario
-                                    )values 
-
-                                        (1,2,'2017-2-1',1,3),
-                                        (2,1,'2017-2-1',1,3),
-                                        (1,1,'2017-2-1',2,3),
-                                        (2,1,'2017-2-1',2,3)
-                                        go
+   -- INSERT into inventario_espacio (
+    --                                id_elemento_inventario_espacio,
+  --                                 cantidad_inventario_elemento_espacio,
+  --                                  fecha_inventario_espacio,
+   --                                 id_espacio_inventario__,
+   --                                 id_empleado_inventario
+   --                                 )values 
+--
+   --                                     (1,2,'2017-2-1',1,3),
+   --                                     (2,1,'2017-2-1',1,3),
+   --                                     (1,1,'2017-2-1',2,3),
+   --                                     (2,1,'2017-2-1',2,3)
+    --                                    go
 
 
 
@@ -778,16 +778,16 @@ go
                 REFERENCES    estudiante (id_estudiante )
         );
 go
-    insert into solicitud  (
-                              id_tipo_solicitud__,
-                                id_estado_solicitud__,
-                              
-                                id_prioridad_solciitud__,
-                                descripcion_solicitud,
-                                id_estudiante_solicitud,
-                                id_empleado_solicitud
-                                ) values (1,4,2,'No puedo dormir biem. tengo muchas pesadillas', 1,2),
-                                        (1,4,2,'Se rompio el lavamanos',1,3)
+  --  insert into solicitud  (
+  --                            id_tipo_solicitud__,
+   --                             id_estado_solicitud__,
+  --                            
+   --                             id_prioridad_solciitud__,
+  --                              descripcion_solicitud,
+   --                             id_estudiante_solicitud,
+   --                             id_empleado_solicitud
+   --                             ) values (1,4,2,'No puedo dormir biem. tengo muchas pesadillas', 1,2),
+   --                                     (1,4,2,'Se rompio el lavamanos',1,3)
 
 
        go
@@ -797,7 +797,7 @@ go
         descripcion_reparacion varchar (500) not null,
 
         id_espacio_reparacion int not null,
-        id_empleado_reparacion int not null,
+        
         costo bigint not null,
         id_solicitud_reparacion_espacio int not null,
 
@@ -806,9 +806,6 @@ go
                 FOREIGN KEY (  id_espacio_reparacion)
                 REFERENCES    espacio  ( id_espacio),
 
-    CONSTRAINT  fk_empleado_reparacion
-                FOREIGN KEY (  id_empleado_reparacion)
-                REFERENCES    empleado  ( id_empleado),
         
             CONSTRAINT  fk_solicitud_reparacion
                 FOREIGN KEY (  id_solicitud_reparacion_espacio)
@@ -817,16 +814,16 @@ go
 
         );
         go
-    insert into reparacion_espacio (fecha_reparacion_espacio,
-                                    descripcion_reparacion,
-                                    id_espacio_reparacion,
+  --  insert into reparacion_espacio (fecha_reparacion_espacio,
+   --                                 descripcion_reparacion,
+  --                                  id_espacio_reparacion,
                                    
-                                    costo,
-                                    id_solicitud_reparacion_espacio,
-                                    id_empleado_reparacion
-                                    ) values ('2017-02-03','Se realiza compra de lavamanos e instalacion',1,100000,2,3)
+   --                                 costo,
+--id_solicitud_reparacion_espacio,
+   --                                 id_empleado_reparacion
+    --                                ) values ('2017-02-03','Se realiza compra de lavamanos e instalacion',1,100000,2,3)
 
-    go
+   -- go
 
 
 
@@ -924,14 +921,102 @@ go
 
 
      
+--*************************************************
 
-    go
+    --Procedimientos almacenados version 12-04-2017
 
-    --procedimientos almacenados
-    --Prcedimiento almacenado con encriptacion de clave
- 
+    --1. Consulta el corre y contraseña y me devuelve el numero de identificacion
+    CREATE PROCEDURE Consultar_Login
+        @correo varchar (100), 
+        @pass varchar (300)
+
+        AS
+        DECLARE @PassEncode As varchar(300)
+        DECLARE @PassDecode As varchar(50)
+
+        BEGIN
+
+                SELECT @PassEncode = DirectorioActivo.contrasena From DirectorioActivo WHERE DirectorioActivo.correo_directorio = @correo
+                SET @PassDecode = DECRYPTBYPASSPHRASE('P4zZW0r4', @PassEncode)
+                SELECT DirectorioActivo.NumeroIdentificacion FROM DirectorioActivo WHERE (DirectorioActivo.correo_directorio = @correo AND @PassDecode=@pass)
+           
+
+        END
+        GO
+
+    --2. consultar los permisos por rol del usuarios con el correo
+
+    create procedure Consultar_Permisos_por_Usuario
+                @correo varchar (100)
+
+                as
 
 
+                begin
+
+                           SELECT        Permiso_id_, descripcion,
+                                        FROM            Permiso_Rol INNER JOIN
+                                         Permiso ON Permiso_Rol.Permiso_id_ = Permiso.Permiso_id INNER JOIN
+                                         rol ON Permiso_Rol.Rol_id = rol.id_rol INNER JOIN
+                                         DirectorioActivo ON rol.id_rol = DirectorioActivo.id_rol_Directorio
+                                         where DirectorioActivo.correo_directorio= @correo;
+                        END 
+
+go
+
+
+
+
+--3. Cargar Direnctorio Activo
+
+                        --Estudiante
+EXEC    Insertar_Nuevo_Directorio 'jefers@gmail.com','123456',1,'111111','Jeferson','Guevara',1,2,'Cra 48 - 52 69',
+                                        '2589632',2,'01-01-1992','La mesa',11,4,0,'Compensar','No','Ninguna',
+                                        'No',2,3,'No','Ninguno',7,1
+                                        go
+                        --usuarioadministrador
+EXEC    Insertar_Nuevo_Directorio    'admin@admini.com','123456', 1,'0000000','Administrador','CRU', 1, 1,
+                                    'CRU - SEDE','9999999', 1,'01-01-2000','Bogota', 11,4, 4,'Jeferson CORP EPS',
+                                    'No','Ninguna','No', 0,3,'No','Ninguna', 7, 0
+                                    go
+                            --EStudiante
+   EXEC Insertar_Nuevo_Directorio 'oscar@gmail.com','123456',1,'2222222','Oscar','Guevara', 1,3,'Cll 43 No 58',
+                                    '852147', 2,'02-08-1988','Oiba',21, 4,0,'Famisanar','No','Ninguna',
+                                    'No', 2,3,'No','Ninguno', 7,1
+                                    go
+                            --Psicologo
+      EXEC Insertar_Nuevo_Directorio  'psicologo@gmail.com','123456', 1,'333333','Aleja','Leal', 1, 1,'Calle 47 - 58 ',
+                                     '33333333', 5,'01-05-1994','Bogota',11, 4, 1,'Ninguno','No','Ninguna','Ninguna',
+                                     0,2,'No','Ninguno',7, 0
+
+                            --Director
+   EXEC    Insertar_Nuevo_Directorio 'director@corre.com','123456', 1,'4444444','Jose','Primo', 2, 2,'Cra 85  -  47',
+                                        '444444444', 2,'01-01-2000','Bogota',11,4, 4,'Colsubsidio','as',
+                                        'as','as',0, 5,'as','as',1,1
+                        --Mantenimiento
+
+    exece   Insertar_Nuevo_Directorio 'mantenimiento@correo.com','123456',1,'5555555','Juan','Gomez', 1, 2,'Cr 74 No 96',
+                                        '5555555', 4,'05-09-2000','Mesitas ',11, 4, 3,'asd','as','asd','as', 1,
+                                         1,'as','as', 1, 1
+
+
+    
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--************************************************************
 
     create proc Consultar_Todos_Empleados
         as 
@@ -1147,45 +1232,3 @@ ELSE
 END
 GO
 --de acuerdo al rol verifica permisos
-create procedure Consultar_Permisos_por_Usuario
-@correo varchar (100),
-
-as
-declare 
-@id_abuscar int,
-@rol int
-
-begin
-    set @rol =(select empleado.id_rol from empleado where empleado.correo_empleado = @correo);
-
-    if(@rol=2)
-    BEGIN
-
-        set @id_abuscar = (SELECT empleado.id_empleado from empleado where empleado.correo_empleado=@correo);
-        --empleado
-        Begin
-            SELECT        Permiso.descripcion, Permiso_Rol.Permiso_id_
-            FROM            Permiso INNER JOIN
-                                    Permiso_Rol ON PERMISO.Permiso_id = Permiso_Rol.Permiso_id_ INNER JOIN
-                                    rol ON Permiso_Rol.Rol_id = rol.id_rol INNER JOIN
-                                    empleado ON rol.id_rol = empleado.id_empleado
-            WHERE empleado.id_empleado =@id_abuscar;
-        END 
-
-    END
-ELSE
-    BEGIN
-            set @id_abuscar = (SELECT estudiante.id_estudiante from estudiante where estudiante.correo_estudiante=@correo);
-        --estudiante
-        Begin
-            SELECT        Permiso.descripcion, Permiso_Rol.Permiso_id_
-            FROM            Permiso INNER JOIN
-                                    Permiso_Rol ON PERMISO.Permiso_id = Permiso_Rol.Permiso_id_ INNER JOIN
-                                    rol ON Permiso_Rol.Rol_id = rol.id_rol INNER JOIN
-                                    estudiante ON rol.id_rol = estudiante.id_rol_Estudiante
-            WHERE estudiante.id_estudiante =@id_abuscar;
-        END 
-       
-    END
-end
-go
