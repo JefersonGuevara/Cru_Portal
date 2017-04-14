@@ -246,10 +246,10 @@ go
             primary key(id_tipo_sangre)
         );
         go
-        INSERT INTO tipodesangre (descripcion_tipo_sangre) VALUES   ('O negativo'),('O positivo'),
-                                                                    ('A negativo'),('A positivo'),
-                                                                    ('B negativo'),('B positivo'),
-                                                                    ('AB negativo'),('AB positivo')                                                        
+        INSERT INTO tipodesangre (descripcion_tipo_sangre) VALUES   ('O -'),('O +'),
+                                                                    ('A -'),('A +'),
+                                                                    ('B -'),('B +'),
+                                                                    ('AB -'),('AB +')                                                        
         go
 
         create table tipodevivienda (
@@ -301,7 +301,7 @@ go
 
 
         create table DirectorioActivo(
-            id_directorio_ int Identity(1,1)not null primary key,
+            id_directorio_ int Identity(1,1)not null,
             correo_directorio varchar(300) not null,
             contrasena varchar(50) not null,
             id_rol_Directorio int not null,                   -- Rol
@@ -322,7 +322,7 @@ go
             MunicipioNacimiento  varchar(100) not null,
             DepartamentoNacimiento int not null,                 --Tabla Departamento
             Paisnacimiento         int not null,                --Tabla Pais
-            
+            primary key( id_directorio_),
             CONSTRAINT  fk_directorio_Rol
                 FOREIGN KEY ( id_rol_Directorio )
                 REFERENCES    rol ( id_rol),
@@ -415,6 +415,26 @@ go
 
         );
         go
+
+
+           create table historicoestudiante(
+        id_historico_expediente int  IDENTITY(1,1) not null,
+        id_estudiante int not null,
+        fecha_historico_expediente datetime not null,
+        descripcion_historico_expediente varchar (500) not null,
+        id_empleado_historicoestudiante int,
+        primary key (id_historico_expediente),
+
+          CONSTRAINT  fk_estudiante_historico
+                FOREIGN KEY (id_estudiante )
+                REFERENCES    estudiante ( id_estudiante ),
+          CONSTRAINT  fk_empleado_historicoestudiante
+                FOREIGN KEY (id_empleado_historicoestudiante )
+                REFERENCES    empleado( id_empleado )
+
+        );
+        go
+    -- Estos
             
 
                 create PROCEDURE  Insertar_Nuevo_Directorio
@@ -454,11 +474,13 @@ go
                 @apoyouniversidad                        varchar (2) ,
                 @descripcion_apoyo_                        varchar(100),
                 @raza_estudiante                           int ,                      --Tabla Raza
-                @id_espacio_estudiante                       int              --Tabla Espacio
+                @id_espacio_estudiante                       int    ,
+                @empleadoquemodifica int           --Tabla Espacio
                 as 
             
-                declare @id_role int,  @id_enviar_directorio int   
+                declare @id_role int,  @id_enviar_directorio int  , @nuevoestudiante int, @fecha_modificacion datetime
                 BEGIN
+                set @fecha_modificacion = (select CURRENT_TIMESTAMP);
                 if @cargo_empleado =0
                     --Estudiante
                     BEGIN
@@ -500,6 +522,9 @@ go
                                                                 @Numerohermanos, @tipodevivienda_estudiante,
                                                                 @apoyouniversidad , @descripcion_apoyo_ ,
                                                                 @raza_estudiante  , @id_espacio_estudiante  ,@id_enviar_directorio);
+                                        set @nuevoestudiante = @@IDENTITY;
+                                        insert into historicoestudiante (id_estudiante, fecha_historico_expediente, descripcion_historico_expediente, id_empleado_historicoestudiante)
+                                                values (@nuevoestudiante,@fecha_modificacion, 'Se ha registrado el expediente',  @empleadoquemodifica);
                     END
                 else
                     --Empleado
@@ -657,24 +682,7 @@ go
 
 
 
-        create table historicoestudiante(
-        id_historico_expediente int  IDENTITY(1,1) not null,
-        id_estudiante int not null,
-        fecha_historico_expediente datetime not null,
-        descripcion_historico_expediente varchar (500) not null,
-        id_empleado_historicoestudiante int,
-        primary key (id_historico_expediente),
-
-          CONSTRAINT  fk_estudiante_historico
-                FOREIGN KEY (id_estudiante )
-                REFERENCES    estudiante ( id_estudiante ),
-          CONSTRAINT  fk_empleado_historicoestudiante
-                FOREIGN KEY (id_empleado_historicoestudiante )
-                REFERENCES    empleado( id_empleado )
-
-        );
-        go
-    -- Estos registros se crear por medio de proco por observaciones del empleado
+      registros se crear por medio de proco por observaciones del empleado
   --          insert into  historicoestudiante (id_estudiante,
   --                                           fecha_historico_expediente, 
   --                                           descripcion_historico_expediente,
@@ -796,16 +804,13 @@ go
         fecha_reparacion_espacio datetime  not null,
         descripcion_reparacion varchar (500) not null,
 
-        id_espacio_reparacion int not null,
+        
         
         costo bigint not null,
         id_solicitud_reparacion_espacio int not null,
 
         primary key (id_reparacion),
-           CONSTRAINT  fk_espacio_reparacion
-                FOREIGN KEY (  id_espacio_reparacion)
-                REFERENCES    espacio  ( id_espacio),
-
+         
         
             CONSTRAINT  fk_solicitud_reparacion
                 FOREIGN KEY (  id_solicitud_reparacion_espacio)
@@ -969,16 +974,19 @@ go
 
 --3. Cargar Direnctorio Activo
 
+                    --usuarioadministrador
+
+EXEC    Insertar_Nuevo_Directorio    'admin@admini.com','123456', 1,'0000000','Administrador','CRU', 1, 1,
+                                    'CRU - SEDE','9999999', 1,'01-01-2000','Bogota', 11,4, 4,'Jeferson CORP EPS',
+                                    'No','Ninguna','No', 0,3,'No','Ninguna', 7, 0
+                                    go
                         --Estudiante
 EXEC    Insertar_Nuevo_Directorio 'jefers@gmail.com','123456',1,'111111','Jeferson','Guevara',1,2,'Cra 48 - 52 69',
                                         '2589632',2,'01-01-1992','La mesa',11,4,0,'Compensar','No','Ninguna',
                                         'No',2,3,'No','Ninguno',7,1
                                         go
-                        --usuarioadministrador
-EXEC    Insertar_Nuevo_Directorio    'admin@admini.com','123456', 1,'0000000','Administrador','CRU', 1, 1,
-                                    'CRU - SEDE','9999999', 1,'01-01-2000','Bogota', 11,4, 4,'Jeferson CORP EPS',
-                                    'No','Ninguna','No', 0,3,'No','Ninguna', 7, 0
-                                    go
+                   
+
                             --EStudiante
    EXEC Insertar_Nuevo_Directorio 'oscar@gmail.com','123456',1,'2222222','Oscar','Guevara', 1,3,'Cll 43 No 58',
                                     '852147', 2,'02-08-1988','Oiba',21, 4,0,'Famisanar','No','Ninguna',
@@ -988,19 +996,184 @@ EXEC    Insertar_Nuevo_Directorio    'admin@admini.com','123456', 1,'0000000','A
       EXEC Insertar_Nuevo_Directorio  'psicologo@gmail.com','123456', 1,'333333','Aleja','Leal', 1, 1,'Calle 47 - 58 ',
                                      '33333333', 5,'01-05-1994','Bogota',11, 4, 1,'Ninguno','No','Ninguna','Ninguna',
                                      0,2,'No','Ninguno',7, 0
-
+ go
                             --Director
    EXEC    Insertar_Nuevo_Directorio 'director@corre.com','123456', 1,'4444444','Jose','Primo', 2, 2,'Cra 85  -  47',
                                         '444444444', 2,'01-01-2000','Bogota',11,4, 4,'Colsubsidio','as',
                                         'as','as',0, 5,'as','as',1,1
                         --Mantenimiento
-
+ go
     exece   Insertar_Nuevo_Directorio 'mantenimiento@correo.com','123456',1,'5555555','Juan','Gomez', 1, 2,'Cr 74 No 96',
                                         '5555555', 4,'05-09-2000','Mesitas ',11, 4, 3,'asd','as','asd','as', 1,
                                          1,'as','as', 1, 1
 
 
-    
+GO
+
+--4. Consultar todos los empleados -- Vista solo para admisnistradores
+
+    create proc Consultar_Todos_Empleados
+        as 
+     SELECT        DirectorioActivo.Nombres, DirectorioActivo.Apellidos, DirectorioActivo.NumeroIdentificacion,  cargo.valor_cargo, estado_usuario_cru.Descripcion_estado_usuario_cru, 
+                         DirectorioActivo.Direccion, DirectorioActivo.Telefono, DirectorioActivo.correo_directorio
+FROM            empleado INNER JOIN
+                         DirectorioActivo ON empleado.empleado_directorio = DirectorioActivo.id_directorio_ INNER JOIN
+                         cargo ON empleado.cargo_empleado = cargo.id_cargo INNER JOIN
+                         estado_usuario_cru ON DirectorioActivo.Estado_directorio_CRU = estado_usuario_cru.Id_estado_usuario_cru INNER JOIN
+                         estadocivil ON DirectorioActivo.Estadocivil = estadocivil.id_estadocivil INNER JOIN
+                         tipodesangre ON DirectorioActivo.Tipo_sangre = tipodesangre.id_tipo_sangre INNER JOIN
+                         departamento ON DirectorioActivo.DepartamentoNacimiento = departamento.id_departamento
+                         where DirectorioActivo.id_directorio_  <>1
+                         
+       GO
+
+
+
+
+
+
+-- consultar tipos de combobox
+ create proc Consultar_Tipos_de_Identificacion
+
+    as
+    SELECT        id_tipoidentificacion, valor_tipoidentificacion
+    FROM            tipoidentificacion
+    go
+
+    create proc Consultar_Cargos
+    as
+    SELECT        id_cargo, valor_cargo
+    FROM            cargo
+    go
+
+    create proc Consultar_Estados_Civiles
+    as
+    SELECT        id_estadocivil, valor_estadocivil
+    FROM            estadocivil
+    go
+
+    create proc Consultar_Estados_Usuario
+    as
+    SELECT        Id_estado_usuario_cru, Descripcion_estado_usuario_cru
+    FROM            estado_usuario_cru
+    go
+
+
+create proc Consultar_Tipo_Espacios 
+as
+Begin
+SELECT        id_tipo_espacio, valor_tipo_espacio
+FROM            tipo_espacio
+END
+GO
+
+create proc Consultar_Pisos
+as
+Begin
+SELECT        id_piso, valor_piso
+FROM            piso
+END
+GO
+
+
+create proc Consultar_Estados_Espacios
+as
+Begin
+SELECT        id_estado_espacio, valor_estado_espacio
+FROM            estado_espacio
+END
+
+GO
+
+Create proc Consultar_Pais
+as
+SELECT        id_pais, descripcionPais
+FROM            pais
+
+GO
+
+Create proc Consultar_Departamento
+as
+SELECT        id_departamento, descripcion_departamento
+FROM            departamento
+
+GO
+
+Create proc Consultar_RH
+as
+SELECT        id_tipo_sangre, descripcion_tipo_sangre
+FROM            tipodesangre
+
+GO
+
+
+
+--Procedimientos para gestion de espacios
+
+create proc Consultar_Espacios
+as
+BEGIN
+
+SELECT        espacio.id_espacio, espacio.descripcion_espacio, espacio.capacidad, tipo_espacio.valor_tipo_espacio, piso.valor_piso, estado_espacio.valor_estado_espacio, espacio.cupo
+FROM            espacio INNER JOIN
+                         estado_espacio ON espacio.estado_espacio_o = estado_espacio.id_estado_espacio INNER JOIN
+                         piso ON espacio.id_piso_espacio = piso.id_piso INNER JOIN
+                         tipo_espacio ON espacio.id_tipo_espacio_ = tipo_espacio.id_tipo_espacio
+END
+GO
+
+
+create proc Insertar_Nuevo_Espacio
+@descripcion varchar(100),
+@capacidad int,
+@tipoespacio int,
+@piso int
+as
+Begin
+insert into espacio (descripcion_espacio, capacidad, cupo,id_tipo_espacio_,id_piso_espacio, estado_espacio_o) values
+        (@descripcion, @capacidad, @capacidad, @tipoespacio,@piso,1 )
+
+End
+go
+
+
+
+
+
+create proc Actualizar_Espacio
+@id int,
+@capacidad int,
+@tipoespacio int
+
+as
+
+declare @cupo int, @capacidad_anterior int
+set @capacidad_anterior = (select espacio.capacidad from espacio where espacio.id_espacio = @id);
+Begin
+if (@capacidad=@capacidad_anterior)
+    update espacio set id_tipo_espacio_ = @tipoespacio where espacio.id_espacio = @id ;
+else
+    set @cupo = @capacidad - @capacidad_anterior;
+
+    update espacio set id_tipo_espacio_ = @tipoespacio, espacio.cupo = @cupo, espacio.capacidad=@capacidad where espacio.id_espacio = @id ;
+END
+
+go
+
+
+create proc Consultar_Un_Espacio
+@id int
+as
+
+    SELECT        espacio.id_espacio, espacio.descripcion_espacio, espacio.capacidad, tipo_espacio.valor_tipo_espacio, piso.valor_piso, estado_espacio.valor_estado_espacio, espacio.cupo
+                FROM            espacio INNER JOIN
+                         estado_espacio ON espacio.estado_espacio_o = estado_espacio.id_estado_espacio INNER JOIN
+                         piso ON espacio.id_piso_espacio = piso.id_piso INNER JOIN
+                         tipo_espacio ON espacio.id_tipo_espacio_ = tipo_espacio.id_tipo_espacio
+                         where espacio.id_espacio=@id;
+
+
+go
 
 
 
@@ -1018,17 +1191,7 @@ EXEC    Insertar_Nuevo_Directorio    'admin@admini.com','123456', 1,'0000000','A
 
 --************************************************************
 
-    create proc Consultar_Todos_Empleados
-        as 
-      SELECT    tipoidentificacion.valor_tipoidentificacion, empleado.Noidentificacion_empleado, empleado.nombres_empleado, empleado.apellidos_empleado, empleado.fechanacimiento_empleado, 
-                  empleado.correo_empleado, estadocivil.valor_estadocivil, cargo.valor_cargo, estado_usuario_cru.Descripcion_estado_usuario_cru, empleado.Telefonoempleado
-                            FROM            tipoidentificacion INNER JOIN
-                             empleado ON tipoidentificacion.id_tipoidentificacion = empleado.tipoidentificacion_empleado INNER JOIN
-                             cargo ON empleado.cargo_empleado = cargo.id_cargo INNER JOIN
-                             estadocivil ON empleado.estadocivil_empleado = estadocivil.id_estadocivil  INNER JOIN
-                             estado_usuario_cru ON empleado.estado_usuario_cru = estado_usuario_cru.Id_estado_usuario_cru;
-                         
-       GO
+  
 
 
     create proc Consultar_Un_Empleado
@@ -1090,122 +1253,8 @@ EXEC    Insertar_Nuevo_Directorio    'admin@admini.com','123456', 1,'0000000','A
        END
        GO
 
-    create proc Consultar_Tipos_de_Identificacion
+   
 
-    as
-    SELECT        id_tipoidentificacion, valor_tipoidentificacion
-    FROM            tipoidentificacion
-    go
-
-    create proc Consultar_Cargos
-    as
-    SELECT        id_cargo, valor_cargo
-    FROM            cargo
-    go
-
-    create proc Consultar_Estados_Civiles
-    as
-    SELECT        id_estadocivil, valor_estadocivil
-    FROM            estadocivil
-    go
-
-    create proc Consultar_Estados_Usuario
-    as
-    SELECT        Id_estado_usuario_cru, Descripcion_estado_usuario_cru
-    FROM            estado_usuario_cru
-    go
-
-
-
-
-create proc Consultar_Espacios
-as
-BEGIN
-
-SELECT        espacio.id_espacio, espacio.descripcion_espacio, espacio.capacidad, tipo_espacio.valor_tipo_espacio, piso.valor_piso, estado_espacio.valor_estado_espacio, espacio.cupo
-FROM            espacio INNER JOIN
-                         estado_espacio ON espacio.estado_espacio_o = estado_espacio.id_estado_espacio INNER JOIN
-                         piso ON espacio.id_piso_espacio = piso.id_piso INNER JOIN
-                         tipo_espacio ON espacio.id_tipo_espacio_ = tipo_espacio.id_tipo_espacio
-END
-GO
-
-
-create proc Insertar_Nuevo_Espacio
-@descripcion varchar(100),
-@capacidad int,
-@tipoespacio int,
-@piso int
-as
-Begin
-insert into espacio (descripcion_espacio, capacidad, cupo,id_tipo_espacio_,id_piso_espacio, estado_espacio_o) values
-        (@descripcion, @capacidad, @capacidad, @tipoespacio,@piso,1 )
-
-End
-go
-
-
-
-create proc Consultar_Tipo_Espacios 
-as
-Begin
-SELECT        id_tipo_espacio, valor_tipo_espacio
-FROM            tipo_espacio
-END
-GO
-
-create proc Consultar_Pisos
-as
-Begin
-SELECT        id_piso, valor_piso
-FROM            piso
-END
-GO
-
-
-create proc Consultar_Estados_Espacios
-as
-Begin
-SELECT        id_estado_espacio, valor_estado_espacio
-FROM            estado_espacio
-END
-
-GO
-
-create proc Actualizar_Espacio
-@id int,
-@capacidad int,
-@tipoespacio int
-
-as
-
-declare @cupo int, @capacidad_anterior int
-set @capacidad_anterior = (select espacio.capacidad from espacio where espacio.id_espacio = @id);
-Begin
-if (@capacidad=@capacidad_anterior)
-    update espacio set id_tipo_espacio_ = @tipoespacio where espacio.id_espacio = @id ;
-else
-    set @cupo = @capacidad - @capacidad_anterior;
-
-    update espacio set id_tipo_espacio_ = @tipoespacio, espacio.cupo = @cupo, espacio.capacidad=@capacidad where espacio.id_espacio = @id ;
-END
-
-go
-
-
-create proc Consultar_Un_Espacio
-@id int
-as
-
-    SELECT        espacio.id_espacio, espacio.descripcion_espacio, espacio.capacidad, tipo_espacio.valor_tipo_espacio, piso.valor_piso, estado_espacio.valor_estado_espacio, espacio.cupo
-                FROM            espacio INNER JOIN
-                         estado_espacio ON espacio.estado_espacio_o = estado_espacio.id_estado_espacio INNER JOIN
-                         piso ON espacio.id_piso_espacio = piso.id_piso INNER JOIN
-                         tipo_espacio ON espacio.id_tipo_espacio_ = tipo_espacio.id_tipo_espacio
-                         where espacio.id_espacio=@id;
-
-
-go
 
 
 CREATE PROCEDURE Consultar_Login
@@ -1232,3 +1281,45 @@ ELSE
 END
 GO
 --de acuerdo al rol verifica permisos
+
+
+
+
+
+
+
+
+
+
+        create proc Actualizar_Empleado
+                @valor_estadoci int,
+                @correo_empleado varchar(100),
+                @valor_carg int,
+                @valor_estado int,
+                @telefono_empl varchar (10),
+                @id_empleado varchar(15),
+                @pass varchar (50),
+                @direccion varchar (100),
+                @correo varchar (300)
+                @identificacion varchar ()
+                as
+                begin
+        UPDATE [dbo].[DirectorioActivo]   SET [correo_directorio] = @correo,
+                                              [contrasena] = (ENCRYPTBYPASSPHRASE('P4zZW0r4', @pass)) ,
+                                              [Estado_directorio_CRU] = @valor_estado,
+                                              [Estadocivil] = @valor_estadoci,
+                                              [Estrato] = @valor_estadoci,
+                                              [Direccion] = @direccion,
+                                              [Telefono] = @telefono_empl,
+
+  
+         WHERE <Search Conditions,,>
+
+         UPDATE [dbo].[empleado]
+         --  SET [cargo_empleado] =  @valor_carg
+      
+         WHERE <Search Conditions,,>
+
+        GO
+
+
