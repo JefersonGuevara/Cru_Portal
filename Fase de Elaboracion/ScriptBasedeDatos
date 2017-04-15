@@ -488,7 +488,7 @@ go
                                                                         Estado_directorio_CRU , TipoIdentificacion   , NumeroIdentificacion ,
                                                                 Nombres              ,
                                                                 Apellidos            ,
-                                                                Telefono             ,     
+                                                                   
                                                                 ---
                                                                 Estadocivil          ,                   --Tabla EstadoCivil
                                                                 Estrato              ,
@@ -502,7 +502,7 @@ go
                                                                 Paisnacimiento )values 
                                                                 (@correo, ENCRYPTBYPASSPHRASE('P4zZW0r4', @contrasena) ,2,
                                                                     1, @TipoIdentificacion,  @NumeroIdentificacion, @Nombres , 
-                                                                 @Apellidos , @Telefono, @Estadocivil , 
+                                                                 @Apellidos , @Estadocivil , 
                                                                  @Estrato ,   @Direccion , @Telefono  ,
                                                                  @Tipo_sangre , @Fechanacimiento ,
                                                                  @MunicipioNacimiento  ,@DepartamentoNacimiento, 
@@ -558,7 +558,7 @@ go
                                                           Estado_directorio_CRU , TipoIdentificacion   , NumeroIdentificacion ,
                                                   Nombres              ,
                                                   Apellidos            ,
-                                                  Telefono             ,     
+                                                 
                                                   ---
                                                   Estadocivil          ,                   --Tabla EstadoCivil
                                                   Estrato              ,
@@ -572,7 +572,7 @@ go
                                                   Paisnacimiento )values 
                                                   (@correo, ENCRYPTBYPASSPHRASE('P4zZW0r4', @contrasena) ,@id_role,
                                                     1, @TipoIdentificacion,  @NumeroIdentificacion, @Nombres , 
-                                                 @Apellidos , @Telefono, @Estadocivil , 
+                                                 @Apellidos , @Estadocivil , 
                                                  @Estrato ,   @Direccion , @Telefono  ,
                                                  @Tipo_sangre , @Fechanacimiento ,
                                                  @MunicipioNacimiento  ,@DepartamentoNacimiento, 
@@ -682,7 +682,7 @@ go
 
 
 
-      registros se crear por medio de proco por observaciones del empleado
+    --  registros se crear por medio de proco por observaciones del empleado
   --          insert into  historicoestudiante (id_estudiante,
   --                                           fecha_historico_expediente, 
   --                                           descripcion_historico_expediente,
@@ -724,17 +724,14 @@ go
         cantidad_inventario_elemento_espacio int not null,
         fecha_inventario_espacio datetime not null,
         id_espacio_inventario__ int not null,
-        id_empleado_inventario int,
         primary key (id_inventario_esp),
            CONSTRAINT  fk_elemento_inventario
                 FOREIGN KEY (  id_elemento_inventario_espacio )
                 REFERENCES    elemento  ( id_elemento),
            CONSTRAINT  fk_espacio_inventario
                 FOREIGN KEY (  id_espacio_inventario__)
-                REFERENCES    espacio  ( id_espacio),
-          CONSTRAINT  fk_empleado_inventario
-                FOREIGN KEY (  id_empleado_inventario)
-                REFERENCES    empleado ( id_empleado)
+                REFERENCES    espacio  ( id_espacio)
+          
         );
         go
 
@@ -752,6 +749,28 @@ go
    --                                     (2,1,'2017-2-1',2,3)
     --                                    go
 
+
+    create table historio_de_inventario(
+        id_inventario_historico int Identity(1,1) primary key,
+        id_empleado_historico_inventario  int not null,--
+        descripcion_historico_inventario varchar (200) not null,
+        fecha_historico_inventario datetime not null,
+        inventario_id_ int not null,--
+        
+
+             CONSTRAINT  fk_historico_empleado
+                FOREIGN KEY (   id_empleado_historico_inventario   )
+                REFERENCES    empleado (id_empleado),
+
+                 CONSTRAINT  fk_historico_inventario
+                FOREIGN KEY ( inventario_id_)
+                REFERENCES    inventario_espacio (id_inventario_esp)
+
+                
+
+        );
+
+go
 
 
         create table solicitud (
@@ -804,14 +823,17 @@ go
         fecha_reparacion_espacio datetime  not null,
         descripcion_reparacion varchar (500) not null,
 
-        
+        espacio_reparacion int not null, 
         
         costo bigint not null,
         id_solicitud_reparacion_espacio int not null,
 
         primary key (id_reparacion),
          
-        
+            CONSTRAINT  fk_espacio_reparacion
+                FOREIGN KEY (  espacio_reparacion)
+                REFERENCES    espacio ( id_espacio),
+
             CONSTRAINT  fk_solicitud_reparacion
                 FOREIGN KEY (  id_solicitud_reparacion_espacio)
                 REFERENCES    solicitud ( id_solicitud)
@@ -931,7 +953,7 @@ go
     --Procedimientos almacenados version 12-04-2017
 
     --1. Consulta el corre y contraseña y me devuelve el numero de identificacion
-    CREATE PROCEDURE Consultar_Login
+  CREATE PROCEDURE Consultar_Login
         @correo varchar (100), 
         @pass varchar (300)
 
@@ -943,7 +965,7 @@ go
 
                 SELECT @PassEncode = DirectorioActivo.contrasena From DirectorioActivo WHERE DirectorioActivo.correo_directorio = @correo
                 SET @PassDecode = DECRYPTBYPASSPHRASE('P4zZW0r4', @PassEncode)
-                SELECT DirectorioActivo.NumeroIdentificacion FROM DirectorioActivo WHERE (DirectorioActivo.correo_directorio = @correo AND @PassDecode=@pass)
+                SELECT DirectorioActivo.NumeroIdentificacion, DirectorioActivo.id_directorio_  FROM DirectorioActivo WHERE (DirectorioActivo.correo_directorio = @correo AND @PassDecode=@pass)
            
 
         END
@@ -959,7 +981,7 @@ go
 
                 begin
 
-                           SELECT        Permiso_id_, descripcion,
+                           SELECT        Permiso_id_, descripcion
                                         FROM            Permiso_Rol INNER JOIN
                                          Permiso ON Permiso_Rol.Permiso_id_ = Permiso.Permiso_id INNER JOIN
                                          rol ON Permiso_Rol.Rol_id = rol.id_rol INNER JOIN
@@ -978,43 +1000,43 @@ go
 
 EXEC    Insertar_Nuevo_Directorio    'admin@admini.com','123456', 1,'0000000','Administrador','CRU', 1, 1,
                                     'CRU - SEDE','9999999', 1,'01-01-2000','Bogota', 11,4, 4,'Jeferson CORP EPS',
-                                    'No','Ninguna','No', 0,3,'No','Ninguna', 7, 0
+                                    'No','Ninguna','No', 0,3,'No','Ninguna', 7, 0,1
                                     go
                         --Estudiante
 EXEC    Insertar_Nuevo_Directorio 'jefers@gmail.com','123456',1,'111111','Jeferson','Guevara',1,2,'Cra 48 - 52 69',
                                         '2589632',2,'01-01-1992','La mesa',11,4,0,'Compensar','No','Ninguna',
-                                        'No',2,3,'No','Ninguno',7,1
+                                        'No',2,3,'No','Ninguno',7,1,1
                                         go
                    
 
                             --EStudiante
    EXEC Insertar_Nuevo_Directorio 'oscar@gmail.com','123456',1,'2222222','Oscar','Guevara', 1,3,'Cll 43 No 58',
                                     '852147', 2,'02-08-1988','Oiba',21, 4,0,'Famisanar','No','Ninguna',
-                                    'No', 2,3,'No','Ninguno', 7,1
+                                    'No', 2,3,'No','Ninguno', 7,1,1
                                     go
                             --Psicologo
       EXEC Insertar_Nuevo_Directorio  'psicologo@gmail.com','123456', 1,'333333','Aleja','Leal', 1, 1,'Calle 47 - 58 ',
                                      '33333333', 5,'01-05-1994','Bogota',11, 4, 1,'Ninguno','No','Ninguna','Ninguna',
-                                     0,2,'No','Ninguno',7, 0
+                                     0,2,'No','Ninguno',7, 0,1
  go
                             --Director
    EXEC    Insertar_Nuevo_Directorio 'director@corre.com','123456', 1,'4444444','Jose','Primo', 2, 2,'Cra 85  -  47',
                                         '444444444', 2,'01-01-2000','Bogota',11,4, 4,'Colsubsidio','as',
-                                        'as','as',0, 5,'as','as',1,1
+                                        'as','as',0, 5,'as','as',1,1,1
                         --Mantenimiento
  go
-    exece   Insertar_Nuevo_Directorio 'mantenimiento@correo.com','123456',1,'5555555','Juan','Gomez', 1, 2,'Cr 74 No 96',
+    exec   Insertar_Nuevo_Directorio 'mantenimiento@correo.com','123456',1,'5555555','Juan','Gomez', 1, 2,'Cr 74 No 96',
                                         '5555555', 4,'05-09-2000','Mesitas ',11, 4, 3,'asd','as','asd','as', 1,
-                                         1,'as','as', 1, 1
+                                         1,'as','as', 1, 1,1
 
 
 GO
 
 --4. Consultar todos los empleados -- Vista solo para admisnistradores
 
-    create proc Consultar_Todos_Empleados
+   create proc Consultar_Todos_Empleados
         as 
-     SELECT        DirectorioActivo.Nombres, DirectorioActivo.Apellidos, DirectorioActivo.NumeroIdentificacion,  cargo.valor_cargo, estado_usuario_cru.Descripcion_estado_usuario_cru, 
+     SELECT       DirectorioActivo.id_directorio_, DirectorioActivo.Nombres, DirectorioActivo.Apellidos, DirectorioActivo.NumeroIdentificacion,  cargo.valor_cargo, estado_usuario_cru.Descripcion_estado_usuario_cru, 
                          DirectorioActivo.Direccion, DirectorioActivo.Telefono, DirectorioActivo.correo_directorio
 FROM            empleado INNER JOIN
                          DirectorioActivo ON empleado.empleado_directorio = DirectorioActivo.id_directorio_ INNER JOIN
@@ -1026,6 +1048,7 @@ FROM            empleado INNER JOIN
                          where DirectorioActivo.id_directorio_  <>1
                          
        GO
+
 
 
 
@@ -1108,6 +1131,16 @@ GO
 
 
 
+Create Proc Consultar_Tipos_Elemento
+as
+BEGIN
+SELECT  [id_tipo_elemento]
+      ,[valor_tipo_elemento]
+  FROM [PrototipoCRU].[dbo].[tipo_elemento]
+ END
+ GO
+
+
 --Procedimientos para gestion de espacios
 
 create proc Consultar_Espacios
@@ -1151,14 +1184,32 @@ declare @cupo int, @capacidad_anterior int
 set @capacidad_anterior = (select espacio.capacidad from espacio where espacio.id_espacio = @id);
 Begin
 if (@capacidad=@capacidad_anterior)
-    update espacio set id_tipo_espacio_ = @tipoespacio where espacio.id_espacio = @id ;
-else
-    set @cupo = @capacidad - @capacidad_anterior;
+    BEGIN
+        update espacio set id_tipo_espacio_ = @tipoespacio where espacio.id_espacio = @id ;
+    END
+if (@capacidad>@capacidad_anterior)
+    BEGIN
+        set @cupo = @capacidad - @capacidad_anterior;
+        if (@cupo= 0)
+            begin
+            update espacio set id_tipo_espacio_ = @tipoespacio, espacio.cupo = @cupo, espacio.capacidad=@capacidad, espacio.estado_espacio_o = 2 where espacio.id_espacio = @id ;
+            END
+        update espacio set id_tipo_espacio_ = @tipoespacio, espacio.cupo = @cupo, espacio.capacidad=@capacidad where espacio.id_espacio = @id ;
+    END
+if (@capacidad<@capacidad_anterior)
+    BEGIN
+        set @cupo =  @capacidad_anterior - @capacidad ;
+            if (@cupo= 0)
+            begin
+            update espacio set id_tipo_espacio_ = @tipoespacio, espacio.cupo = @cupo, espacio.capacidad=@capacidad, espacio.estado_espacio_o = 2 where espacio.id_espacio = @id ;
+            END
+            update espacio set id_tipo_espacio_ = @tipoespacio, espacio.cupo = @cupo, espacio.capacidad=@capacidad  where espacio.id_espacio = @id ;
 
-    update espacio set id_tipo_espacio_ = @tipoespacio, espacio.cupo = @cupo, espacio.capacidad=@capacidad where espacio.id_espacio = @id ;
+
+    END
 END
-
 go
+
 
 
 create proc Consultar_Un_Espacio
@@ -1176,14 +1227,81 @@ as
 go
 
 
+  create proc Consultar_Un_Empleado
+        @identificacion int
+      
+        as 
+        BEGIN
+        SELECT        DirectorioActivo.Nombres, DirectorioActivo.Apellidos, DirectorioActivo.NumeroIdentificacion, DirectorioActivo.Estrato, DirectorioActivo.Direccion, DirectorioActivo.Telefono, DirectorioActivo.Fechanacimiento, 
+                         DirectorioActivo.MunicipioNacimiento, departamento.descripcion_departamento, estadocivil.valor_estadocivil, tipoidentificacion.valor_tipoidentificacion, tipodesangre.descripcion_tipo_sangre, 
+                         estado_usuario_cru.Descripcion_estado_usuario_cru, cargo.valor_cargo, DirectorioActivo.correo_directorio, DirectorioActivo.id_directorio_
+FROM            DirectorioActivo INNER JOIN
+                         empleado ON DirectorioActivo.id_directorio_ = empleado.empleado_directorio INNER JOIN
+                         cargo ON empleado.cargo_empleado = cargo.id_cargo INNER JOIN
+                         departamento ON DirectorioActivo.DepartamentoNacimiento = departamento.id_departamento INNER JOIN
+                         estado_usuario_cru ON DirectorioActivo.Estado_directorio_CRU = estado_usuario_cru.Id_estado_usuario_cru INNER JOIN
+                         estadocivil ON DirectorioActivo.Estadocivil = estadocivil.id_estadocivil INNER JOIN
+                         tipodesangre ON DirectorioActivo.Tipo_sangre = tipodesangre.id_tipo_sangre INNER JOIN
+                         tipoidentificacion ON DirectorioActivo.TipoIdentificacion = tipoidentificacion.id_tipoidentificacion
+                         where DirectorioActivo.id_directorio_ = @identificacion
+       END
+       GO
+
+
+
+
+    create proc Actualizar_Empleado
+                @correo varchar (300),
+                
+                @valor_estado_cru int,
+                @valor_estadoci int,
+                @estrato int,   
+                @direccion varchar (100),
+                @telefono_empl varchar (10),
+                @valor_carg int,
+                @id_directorio int
+                as
+                begin
+        UPDATE [dbo].[DirectorioActivo]   SET [correo_directorio] = @correo,
+                                              
+                                              [Estado_directorio_CRU] = @valor_estado_cru,
+                                              [Estadocivil] = @valor_estadoci,
+                                              [Estrato] = @estrato,
+                                              [Direccion] = @direccion,
+                                              [Telefono] = @telefono_empl
+                                              wHERE DirectorioActivo.id_directorio_ = @id_directorio;
+
+         UPDATE [dbo].[empleado]  SET [cargo_empleado] =  @valor_carg where empleado.empleado_directorio = @id_directorio
+      
+         
+         end
+        GO
+
+
+create proc Actualizar_Contrasena_Usuario
+@id_directorio int,
+@pass varchar (50)
+as
+update DirectorioActivo set   [contrasena] = (ENCRYPTBYPASSPHRASE('P4zZW0r4', @pass)) 
+        where DirectorioActivo.id_directorio_ = @id_directorio;
+
+
+go
 
 
 
 
 
+ create proc Insertar_Nuevo_Elemento
+  @tipoelemento int, 
+  @descripcion varchar(50),
+  @marca varchar (50),
+  @Modelo varchar (50)
 
-
-
+  as
+  insert into elemento (id_tipo_elemento_, descripcion, marca, modelo) 
+    values (@tipoelemento, @descripcion, @marca, @modelo)
+  GO
 
 
 
@@ -1191,135 +1309,17 @@ go
 
 --************************************************************
 
-  
+    
 
-
-    create proc Consultar_Un_Empleado
-        @identificacion varchar (20),
-        @nombre varchar(100)
-        as 
-        BEGIN
-            
-        if @identificacion = null
-        SELECT    tipoidentificacion.valor_tipoidentificacion, empleado.Noidentificacion_empleado, empleado.nombres_empleado, empleado.apellidos_empleado, empleado.fechanacimiento_empleado, 
-                  empleado.correo_empleado, estadocivil.valor_estadocivil, cargo.valor_cargo, estado_usuario_cru.Descripcion_estado_usuario_cru, empleado.Telefonoempleado
-                            FROM            tipoidentificacion INNER JOIN
-                             empleado ON tipoidentificacion.id_tipoidentificacion = empleado.tipoidentificacion_empleado INNER JOIN
-                             cargo ON empleado.cargo_empleado = cargo.id_cargo INNER JOIN
-                             estadocivil ON empleado.estadocivil_empleado = estadocivil.id_estadocivil  INNER JOIN
-                             estado_usuario_cru ON empleado.estado_usuario_cru = estado_usuario_cru.Id_estado_usuario_cru
-                             where @nombre = empleado.nombres_empleado;
-
-        else 
-            SELECT    tipoidentificacion.valor_tipoidentificacion, empleado.Noidentificacion_empleado, empleado.nombres_empleado, empleado.apellidos_empleado, empleado.fechanacimiento_empleado, 
-                  empleado.correo_empleado, estadocivil.valor_estadocivil, cargo.valor_cargo, estado_usuario_cru.Descripcion_estado_usuario_cru, empleado.Telefonoempleado
-                            FROM            tipoidentificacion INNER JOIN
-                             empleado ON tipoidentificacion.id_tipoidentificacion = empleado.tipoidentificacion_empleado INNER JOIN
-                             cargo ON empleado.cargo_empleado = cargo.id_cargo INNER JOIN
-                             estadocivil ON empleado.estadocivil_empleado = estadocivil.id_estadocivil  INNER JOIN
-                             estado_usuario_cru ON empleado.estado_usuario_cru = estado_usuario_cru.Id_estado_usuario_cru
-                             where @identificacion = empleado.Noidentificacion_empleado;
-
-
-
-       END
-       GO
-
-
-
-    create proc Actualizar_Empleado
-
-        @valor_estadoci int,
-        @correo_empleado varchar(100),
-        @valor_carg int,
-        @valor_estado int,
-        @telefono_empl varchar (10),
-        @id_empleado varchar(15)
-        as 
-        BEGIN
-            --declare @estad_civ int, @cargo_empl int, @estado int
-           
-            --se-t @estad_civ = (select id_estadocivil from estadocivil where valor_estadocivil=@valor_estadoci);
-            --set @cargo_empl = (select id_cargo from cargo where valor_cargo = @valor_carg);
-            --set @estado = (select Id_estado_usuario_cru from  estado_usuario_cru where Descripcion_estado_usuario_cru = @valor_estado);
-        update empleado set estadocivil_empleado=@valor_estadoci ,
-                            cargo_empleado=      @valor_carg,
-                            estado_usuario_cru=  @valor_estado,
-                            correo_empleado=     @correo_empleado,
-                            Telefonoempleado =   @telefono_empl
-                             where empleado.Noidentificacion_empleado=@id_empleado ;
-
-         
-       END
-       GO
 
    
 
 
 
-CREATE PROCEDURE Consultar_Login
-@correo varchar (100), 
-@pass varchar (300),
-@rol int
-AS
-DECLARE @PassEncode As varchar(300)
-DECLARE @PassDecode As varchar(50)
-
-BEGIN
-if(@rol=2)
-    BEGIN
-        SELECT @PassEncode = contrasena_Usuario_Ingreso From empleado WHERE correo_empleado = @correo
-        SET @PassDecode = DECRYPTBYPASSPHRASE('P4zZW0r4', @PassEncode)
-        SELECT empleado.Noidentificacion_empleado FROM empleado WHERE (correo_empleado =@correo AND @PassDecode=@pass)
-    END
-ELSE
-    BEGIN
-        SELECT @PassEncode = contrasena_Usuario_Ingreso From estudiante WHERE correo_estudiante = @correo
-        SET @PassDecode = DECRYPTBYPASSPHRASE('P4zZW0r4', @PassEncode)
-        SELECT estudiante.Noidentificacion FROM estudiante WHERE (correo_estudiante =@correo AND @PassDecode=@pass)
-    END
-END
-GO
---de acuerdo al rol verifica permisos
 
 
 
 
-
-
-
-
-
-
-        create proc Actualizar_Empleado
-                @valor_estadoci int,
-                @correo_empleado varchar(100),
-                @valor_carg int,
-                @valor_estado int,
-                @telefono_empl varchar (10),
-                @id_empleado varchar(15),
-                @pass varchar (50),
-                @direccion varchar (100),
-                @correo varchar (300)
-                @identificacion varchar ()
-                as
-                begin
-        UPDATE [dbo].[DirectorioActivo]   SET [correo_directorio] = @correo,
-                                              [contrasena] = (ENCRYPTBYPASSPHRASE('P4zZW0r4', @pass)) ,
-                                              [Estado_directorio_CRU] = @valor_estado,
-                                              [Estadocivil] = @valor_estadoci,
-                                              [Estrato] = @valor_estadoci,
-                                              [Direccion] = @direccion,
-                                              [Telefono] = @telefono_empl,
-
-  
-         WHERE <Search Conditions,,>
-
-         UPDATE [dbo].[empleado]
-         --  SET [cargo_empleado] =  @valor_carg
-      
-         WHERE <Search Conditions,,>
-
-        GO
+    
 
 
