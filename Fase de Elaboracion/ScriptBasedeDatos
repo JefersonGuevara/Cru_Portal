@@ -291,12 +291,15 @@ go
                 );
         go
         insert into espacio (descripcion_espacio,id_tipo_espacio_,id_piso_espacio,capacidad,estado_espacio_o,cupo) values 
+                                    ('Admision', 1,1,300,1,300),
+                                    ('Bodega',3,1,100,1,100 ),
                                     ('301',  1,3,2,2,0),
                                     ('401',  1,4,1,1,1),
                                     ('402',  1,4,2,1,2),
                                     ('403',  1,4,1,1,1),
-                                    ('404',  1,4,2,1,2 ),
-                                   ('Bodega',3,1,100,1,0 )
+                                    ('404',  1,4,2,1,2 )
+                                   
+                                   
         go
 
 
@@ -603,7 +606,7 @@ go
         Programa_estudiante varchar (200) not null,
         Puntaje_Basico_Matricula varchar (20) not null,-- 0  a 50
         Promedio_Academico_estudiante varchar (20),
-       Año_ingreso_Universidad_ varchar  (4) not null,
+       Año_ingreso_Universidad_ datetime not null,
        semestre_ingreso_universidad int not null,
         Porcentaje_Avance varchar (2),
         id_estudiante_datosuniversidad int not null ,
@@ -713,9 +716,9 @@ go
 
         go
         INSERT INTO elemento (id_tipo_elemento_,descripcion, marca, Modelo)values 
-                            (1,'Cama',null,null),
-                            (1,'Estufa','HACEB', null),
-                            (3,'Computador','HP', 'MXJasg3s5')
+                            (1,'Cama','No aplica','No aplica'),
+                            (1,'Estufa','HACEB', 'No aplica'),
+                            (3,'Computador','HP', 'SFF6300')
 
         go
         create table inventario_espacio(
@@ -1005,14 +1008,14 @@ EXEC    Insertar_Nuevo_Directorio    'admin@admini.com','123456', 1,'0000000','A
                         --Estudiante
 EXEC    Insertar_Nuevo_Directorio 'jefers@gmail.com','123456',1,'111111','Jeferson','Guevara',1,2,'Cra 48 - 52 69',
                                         '2589632',2,'01-01-1992','La mesa',11,4,0,'Compensar','No','Ninguna',
-                                        'No',2,3,'No','Ninguno',7,1,1
+                                        'No',2,3,'No','Ninguno',7,3,1
                                         go
                    
 
                             --EStudiante
    EXEC Insertar_Nuevo_Directorio 'oscar@gmail.com','123456',1,'2222222','Oscar','Guevara', 1,3,'Cll 43 No 58',
                                     '852147', 2,'02-08-1988','Oiba',21, 4,0,'Famisanar','No','Ninguna',
-                                    'No', 2,3,'No','Ninguno', 7,1,1
+                                    'No', 2,3,'No','Ninguno', 7,3,1
                                     go
                             --Psicologo
       EXEC Insertar_Nuevo_Directorio  'psicologo@gmail.com','123456', 1,'333333','Aleja','Leal', 1, 1,'Calle 47 - 58 ',
@@ -1305,14 +1308,241 @@ go
 
 
 
+Create proc Consultar_Un_Elemento
+@id int
+as
+SELECT        elemento.id_tipo_elemento_, elemento.descripcion, elemento.marca, elemento.Modelo, tipo_elemento.valor_tipo_elemento
+FROM            elemento INNER JOIN
+                         tipo_elemento ON elemento.id_tipo_elemento_ = tipo_elemento.id_tipo_elemento
+go
 
 
 --************************************************************
 
-    
+    create PROCEDURE  Insertar_Admision
+                 
+                   
+                --Fijo para todos
+                @correo varchar(300),
+                @contrasena varchar (50),     
+                --
+                @TipoIdentificacion   int ,                -- Tabla TipoID
+                @NumeroIdentificacion varchar(15) ,
+                @Nombres              varchar (100) ,
+                @Apellidos            varchar (100) ,
+               
+                ---
+                @Estadocivil          int,                   --Tabla EstadoCivil
+                @Estrato              int ,
+                @Direccion           varchar (100),
+                @Telefono            varchar (20),
+                @Tipo_sangre         int,                    --tabla TipoSangre
+                --
+                @Fechanacimiento      datetime ,
+                @MunicipioNacimiento  varchar(100) ,
+                @DepartamentoNacimiento int ,                 --Tabla Departamento
+                @Paisnacimiento         int ,                --Tabla Pais
+                
+               
+                ---- Para Estudiante    5
+                @Servicio_Salud                            varchar (200) ,
+                @Dispacidad_estudiante                     varchar (2) ,
+                @descripcion_dispacacidad_estudainte       varchar (200),
+                @Situaciondesplazamientoestudiante          varchar (2),
+                @Numerohermanos                             int ,
+                -- Para estudiante parte 2   4
+                @tipodevivienda_estudiante int ,             --Tabla  Tipovivienda
+                @apoyouniversidad                        varchar (2) ,
+                @descripcion_apoyo_                        varchar(100),
+                @raza_estudiante                           int ,                      --Tabla Raza
+                  
+               ---DatosUniversidad 8
+               @Universidad                         varchar (200),
+               @Facultad                            varchar(200),
+               @Programa                            varchar (200),
+               @PuntajeBasicoMatricula              varchar (20),
+               @Promedio                            varchar (20),
+               @FechadeIngreso                      datetime,
+               @Semestre_ingreso                    int,
+               @porcentajedeavance                  varchar(2),
+               ----Acudiente 9
+                @dependencia_economica              varchar(2),
+                @Nombre_acudiente                   varchar(100),
+                @apellidosa_acudiente               varchar(100),
+                @ocupacion_acueidnete               varchar(100),
+                @Direccion_Acudiente                varchar (200),
+                @departamento_acudiente             int,                        --DEPARTAMENTO
+                @telefono_acuediente                varchar(20),
+                @parentezco_acudiente               varchar(100),
+                @correo_acudiente                   varchar(100)
+
+                as 
+            
+                declare    @nuevoestudiante int, @fecha_modificacion datetime, @iddirectorio int
+                BEGIN
+                set @fecha_modificacion = (select CURRENT_TIMESTAMP);
+               
+                    --Estudiante
+                   
+                        insert into DirectorioActivo (correo_directorio ,contrasena ,id_rol_Directorio ,
+                                                                        Estado_directorio_CRU , TipoIdentificacion   , NumeroIdentificacion ,
+                                                                Nombres              ,
+                                                                Apellidos            ,
+                                                                   
+                                                                ---
+                                                                Estadocivil          ,                   --Tabla EstadoCivil
+                                                                Estrato              ,
+                                                                Direccion           ,
+                                                                Telefono            ,
+                                                                Tipo_sangre         ,                    --tabla TipoSangre
+                                                                --
+                                                                Fechanacimiento      ,
+                                                                MunicipioNacimiento  ,
+                                                                DepartamentoNacimiento,                 --Tabla Departamento
+                                                                Paisnacimiento )values 
+                                                                (@correo, ENCRYPTBYPASSPHRASE('P4zZW0r4', @contrasena) ,2,
+                                                                    4, @TipoIdentificacion,  @NumeroIdentificacion, @Nombres , 
+                                                                 @Apellidos , @Estadocivil , 
+                                                                 @Estrato ,   @Direccion , @Telefono  ,
+                                                                 @Tipo_sangre , @Fechanacimiento ,
+                                                                 @MunicipioNacimiento  ,@DepartamentoNacimiento, 
+                                                                 @Paisnacimiento 
+                                                                 );
+                                        set @iddirectorio = @@IDENTITY;
+                                        --Registra el estudiante
+                                        insert into estudiante (Servicio_Salud , Dispacidad_estudiante      ,
+                                                              descripcion_dispacacidad_estudainte , Situaciondesplazamientoestudiante ,
+                                                              Numerohermanos  ,tipodevivienda_estudiante , 
+                                                              apoyouniversidad, descripcion_apoyo_ ,
+                                                                raza_estudiante,
+                                                              id_espacio_estudiante , id_directorio_estudiante)    
+                                
+                                                                values    (@Servicio_Salud, @Dispacidad_estudiante, 
+                                                                @descripcion_dispacacidad_estudainte, @Situaciondesplazamientoestudiante,
+                                                                @Numerohermanos, @tipodevivienda_estudiante,
+                                                                @apoyouniversidad , @descripcion_apoyo_ ,
+                                                                @raza_estudiante  , 7  ,@iddirectorio);
+                                        set @nuevoestudiante = @@IDENTITY;
+                                        --registra historico del expediente
+                                        insert into historicoestudiante (id_estudiante, fecha_historico_expediente, descripcion_historico_expediente, id_empleado_historicoestudiante)
+                                                values (@nuevoestudiante,@fecha_modificacion, 'Se ha registrado la admision', @iddirectorio);
+                                        --registra la universidad de estudiante
+                                        insert into datosuniversidad(Universidad_estudiante, Facultad_estudiante,
+                                                                    Programa_estudiante, Puntaje_Basico_Matricula, Promedio_Academico_estudiante,
+                                                                    Año_ingreso_Universidad_, semestre_ingreso_universidad, Porcentaje_Avance, id_estudiante_datosuniversidad)
+                                                                    values(
+                                                                    @Universidad, @Facultad, @Programa,@PuntajeBasicoMatricula, @Promedio
+                                                                    , @FechadeIngreso, @Semestre_ingreso, @porcentajedeavance, @nuevoestudiante);
+                                        --registra acudiente del estudiante
+                                        insert into acudiente_estudiante (dependencia_econo_, nombre_acudiente, apellidos_acudiente,
+                                                                        ocupacion_acudiente, direccion_acudiente, departamento_acudiente, 
+                                                                        telefono_acudiente, parentezo_acudiente, correo_acudiente, id_estudiante_acu)values
+                                                                    (@dependencia_economica, @Nombre_acudiente, @apellidosa_acudiente,
+                                                                    @ocupacion_acueidnete, @Direccion_Acudiente, @departamento_acudiente, 
+                                                                    @telefono_acuediente, @parentezco_acudiente, @correo_acudiente, @nuevoestudiante);
+                                        
+                                                                    
+                    END
+go   
 
 
-   
+Create proc Consultar_Tipos_Vivienda
+as
+SELECT        id_tipodevivienda, descripcion_tipovivienda
+FROM            tipodevivienda
+go
+
+Create proc Consultar_Raza
+as
+SELECT        id_raza, descripcion_raza
+FROM            raza
+go
+
+
+--Actualiza Admision de un estudiante de acuerdo a un empleado que modifica
+create proc Actualizar_Estado_Admision
+@id_Estudiante int,
+@estodo_nuevo int,
+@empleado_modifica int
+as
+declare @fecha datetime, @estado_anterior varchar(30), @id_directorio_estudiante int, @estado_nuevo varchar (30)
+BEGIN
+set @id_directorio_estudiante = (select estudiante.id_directorio_estudiante from estudiante where id_estudiante =@id_Estudiante);
+set @fecha = (select CURRENT_TIMESTAMP);
+--Valor_estado_Anterior
+set @estado_nuevo = (SELECT        estado_usuario_cru.Descripcion_estado_usuario_cru FROM  estado_usuario_cru where estado_usuario_cru.Id_estado_usuario_cru =@estodo_nuevo) ;
+set @estado_anterior = (SELECT        estado_usuario_cru.Descripcion_estado_usuario_cru FROM DirectorioActivo INNER JOIN estado_usuario_cru ON DirectorioActivo.Estado_directorio_CRU = estado_usuario_cru.Id_estado_usuario_cru where id_directorio_ =@id_directorio_estudiante) ;
+update DirectorioActivo set Estado_directorio_CRU=@estodo_nuevo where DirectorioActivo.id_directorio_ = @id_Estudiante;
+insert into historicoestudiante (descripcion_historico_expediente,
+                                fecha_historico_expediente,
+                                id_estudiante, id_empleado_historicoestudiante)values
+
+                                ('El estado a cambiado de '+@estado_anterior +' a '+ @estado_nuevo, @fecha,
+                                @id_Estudiante, @empleado_modifica);
+
+end
+
+go
+
+
+create proc Actualizar_Espacio_A_Estudiante
+@id_Estudiante int,
+@id_empleado_modifica int ,
+@espacionuevo int
+
+as
+declare @fecha datetime, @espacio_anterior varchar(100), @espacio_nuevo varchar (100), @cupo_ int,
+    @id_anterior int
+
+
+BEGIN
+set @fecha = (select CURRENT_TIMESTAMP);
+set @id_anterior = (SELECT        espacio.id_espacio FROM            espacio INNER JOIN
+                         estudiante ON espacio.id_espacio = estudiante.id_espacio_estudiante where estudiante.id_estudiante=@id_Estudiante);
+set @espacio_anterior = (SELECT        espacio.descripcion_espacio FROM            espacio INNER JOIN
+                         estudiante ON espacio.id_espacio = estudiante.id_espacio_estudiante where estudiante.id_estudiante=@id_Estudiante);
+set @espacio_nuevo = ( SELECT        descripcion_espacio FROM            espacio where espacio.id_espacio =@espacionuevo); 
+--Actualizo el espacio al estudiante
+update estudiante set id_espacio_estudiante =@espacionuevo where id_estudiante= @id_Estudiante;
+--Inserto Historico del cambio
+insert into historicoestudiante (descripcion_historico_expediente,
+                                fecha_historico_expediente,
+                                id_estudiante, id_empleado_historicoestudiante) values
+                                ('El espacio ha cambiado de ' + @espacio_anterior +' a '+ @espacio_nuevo, 
+                                @fecha, @id_Estudiante, @id_empleado_modifica);
+---Actualizacion del cupo del espacio anterior 
+set @cupo_ = (select espacio.cupo from espacio where espacio.id_espacio = @id_anterior);
+set @cupo_ = @cupo_ + 1;
+
+
+update espacio set cupo =@cupo_, estado_espacio_o= 1 where id_espacio = @id_anterior;
+set @cupo_=0;
+
+-----Actualizacion del cupo del espacio nuevo
+set @cupo_ = (select espacio.cupo from espacio where espacio.id_espacio = @espacio_nuevo);
+set @cupo_=@cupo_ -1;
+begin
+if (@cupo_=0)
+    begin
+    update espacio set cupo =@cupo_, estado_espacio_o= 2 where id_espacio = @espacio_nuevo;
+    end
+if (@cupo_>0)
+    begin
+    update espacio set cupo =@cupo_, estado_espacio_o= 1 where id_espacio = @espacio_nuevo;
+    end
+ENd
+
+END 
+gO
+
+
+create proc Consultar_Espacios_Disponibles
+as
+SELECT        espacio.id_espacio, espacio.descripcion_espacio
+FROM            espacio INNER JOIN
+                         estado_espacio ON espacio.estado_espacio_o = estado_espacio.id_estado_espacio
+                         where espacio.estado_espacio_o =1
+go
 
 
 
@@ -1320,6 +1550,6 @@ go
 
 
 
-    
+
 
 
