@@ -1545,7 +1545,18 @@ FROM            espacio INNER JOIN
 go
 
 
+Create proc Consultar_Estudiantes_Admision
 
+as
+BEGIN
+SELECT        DirectorioActivo.Nombres, DirectorioActivo.Apellidos, DirectorioActivo.id_directorio_, estado_usuario_cru.Descripcion_estado_usuario_cru, espacio.descripcion_espacio
+FROM            DirectorioActivo INNER JOIN
+                         estudiante ON DirectorioActivo.id_directorio_ = estudiante.id_directorio_estudiante INNER JOIN
+                         espacio ON estudiante.id_espacio_estudiante = espacio.id_espacio INNER JOIN
+                         estado_usuario_cru ON DirectorioActivo.Estado_directorio_CRU = estado_usuario_cru.Id_estado_usuario_cru
+                         where espacio.id_espacio = 1 
+END
+go
 
 
 
