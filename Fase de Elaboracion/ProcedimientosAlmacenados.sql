@@ -6,6 +6,64 @@
 
 --1. Consulta el corre y contraseña y me devuelve el numero de identificacion
 
+CREATE PROCEDURE Iniciar_Sesion
+    @correo varchar (100),
+    @pass varchar (300)
+    AS
+    DECLARE @PassEncode As varchar(300)
+    DECLARE @PassDecode As varchar(50)
+    DECLARE @fecha as date
+    DECLARE @id_directorio as int
+     
+    BEGIN
+        set @fecha = (select CURRENT_TIMESTAMP);
+        SELECT @PassEncode = DirectorioActivo.contrasena
+        From DirectorioActivo
+        WHERE DirectorioActivo.correo_directorio = @correo;
+        SET @PassDecode = DECRYPTBYPASSPHRASE('P4zZW0r4', @PassEncode);
+        SET @id_directorio = (SELECT id_directorio_ from DirectorioActivo wHERE @correo =DirectorioActivo.correo_directorio );
+            
+                If (DirectorioActivo.correo_directorio = @correo AND @PassDecode=@pass)
+                   BEGIN
+                        Select top (1) historico_directorio.Estado_directorio_CRU from historico_directorio where @id_directorio = id_directorio_ order by fecha desc
+
+
+                                INSERT INTO historico_directorio (id_directorio_, Estado_directorio_CRU,descripcion_histoico , fecha  )
+                                values (@id_directorio, 7, 'El usuario Inicia Sesion', @fecha);
+                                SELECT DirectorioActivo.NumeroIdentificacion, DirectorioActivo.id_directorio_
+                                FROM DirectorioActivo
+                                WHERE (DirectorioActivo.correo_directorio = @correo)
+                    end
+                ELSE
+                    BEGIN
+                         INSERT INTO historico_directorio (id_directorio_, Estado_directorio_CRU,descripcion_histoico , fecha  )
+                            values (@id_directorio, 7, 'El usuario Inicia Sesion', @fecha);
+                    END
+                
+
+            
+    END
+GO
+
+Create PROCEDURE RegistrarIniciodeSesion
+    @NumeroIdentificacion varchar(15)
+    as
+    DECLARE @id_directorio as int
+        BEGIN
+        SET @id_directorio = (SELECT id_directorio_ from DirectorioActivo wHERE NumeroIdentificacion = @NumeroIdentificacion);
+        INSERT INTO historico_directorio (id_directorio_, ) values (@id_directorio, 7, 'El usuario Inicia Sesion');
+        END
+go
+
+
+
+
+
+
+
+
+
+
 
 create PROCEDURE  Insertar_Nuevo_Directorio
 
@@ -176,27 +234,7 @@ END
 
 
 
-CREATE PROCEDURE Consultar_Login
-    @correo varchar (100),
-    @pass varchar (300)
 
-AS
-DECLARE @PassEncode As varchar(300)
-DECLARE @PassDecode As varchar(50)
-
-BEGIN
-
-    SELECT @PassEncode = DirectorioActivo.contrasena
-    From DirectorioActivo
-    WHERE DirectorioActivo.correo_directorio = @correo
-    SET @PassDecode = DECRYPTBYPASSPHRASE('P4zZW0r4', @PassEncode)
-    SELECT DirectorioActivo.NumeroIdentificacion, DirectorioActivo.id_directorio_
-    FROM DirectorioActivo
-    WHERE (DirectorioActivo.correo_directorio = @correo AND @PassDecode=@pass)
-
-
-END
-        GO
 
 --2. consultar los permisos por rol del usuarios con el correo
 

@@ -98,7 +98,9 @@ VALUES
     ('Admitido'),
     ('En proceso Admision'),
     ('Expulsado'),
-    ('Inactivo')
+    ('Inactivo'),
+    ('Inicio Sesion'),
+    ('Cerro Sesion')
          go
 --cargar todos los numero del 101 hasta el 111 y hasta el 13
 create table piso
