@@ -455,9 +455,9 @@ create table espacio
 
 
 
-create table DirectorioActivo
+create table Persona
 (
-    id_directorio_ int Identity(1,1)not null,
+    id_persona int Identity(1,1)not null,
     correo_directorio varchar(300) not null,
     contrasena varchar(50) not null,
     id_rol_Directorio int not null,
@@ -484,7 +484,7 @@ create table DirectorioActivo
     --Tabla Departamento
     Paisnacimiento int not null,
     --Tabla Pais
-    primary key( id_directorio_),
+    primary key( id_persona),
     CONSTRAINT  fk_directorio_Rol
                 FOREIGN KEY ( id_rol_Directorio )
                 REFERENCES    rol ( id_rol),
@@ -527,7 +527,7 @@ create table empleado
     primary key (id_empleado),
     CONSTRAINT  fk_Empleado_directorio
                         FOREIGN KEY (empleado_directorio )
-                        REFERENCES    DirectorioActivo (  id_directorio_ )
+                        REFERENCES    Persona (  id_persona )
 );
         go
 
@@ -565,7 +565,7 @@ create table historico_directorio(
     primary KEY (id_historico_directorio),
       CONSTRAINT  fk_directorio_historico
                 FOREIGN KEY ( id_directorio_ )
-                REFERENCES   DirectorioActivo  ( id_directorio_),
+                REFERENCES   Persona  ( id_persona),
     CONSTRAINT  fk_directorio_estado
                 FOREIGN KEY ( Estado_directorio_CRU )
                 REFERENCES    estado_usuario_cru ( Id_estado_usuario_cru),
@@ -605,7 +605,7 @@ create table estudiante
 
     CONSTRAINT  fk_estudiante_directorio
                         FOREIGN KEY (id_directorio_estudiante )
-                        REFERENCES    DirectorioActivo (  id_directorio_ ),
+                        REFERENCES    Persona (  id_persona ),
 
     CONSTRAINT  fk_tipovivienda_estudiante
                     FOREIGN KEY (  tipodevivienda_estudiante )
@@ -952,31 +952,50 @@ create table cita
     id_cita int IDENTITY(1,1)not null,
 
 
-    id_solicitud_cita int not null,
     estado_cita_ int not null,
     id_expediente_cita int null,
     fecha_cita datetime not null,
+    id_empleado_cita int,
     primary key (id_cita),
 
-
-
-
-
-    CONSTRAINT  fk_cita__solicitud
-                FOREIGN KEY (  id_solicitud_cita)
-                REFERENCES    solicitud ( id_solicitud),
 
     CONSTRAINT  fk_cita_expediente
                 FOREIGN KEY (  id_expediente_cita)
                 REFERENCES    expediente ( id_expediente),
 
-
-    CONSTRAINT  fk_cita_estado
-                FOREIGN KEY ( estado_cita_ )
-                REFERENCES    estado_cita ( id_estado_cita)
+ CONSTRAINT  fk_empleado_cita
+                FOREIGN KEY (  id_empleado_cita)
+                REFERENCES    empleado ( id_empleado)
 
 );
 
     go
 
 
+CREATE TABLE HistoricoCita(
+    id_HistoricoCita  int IDENTITY(1,1)not null,
+
+
+
+    id_cita_ int not null,
+    descripcion_anotacion varchar (200) not null,
+    fecha_modificacion datetime not null,
+    id_empleado_historico int,
+    id_estadocita int,
+
+    primary key (id_HistoricoCita),
+    CONSTRAINT  fk_cita_historio
+                FOREIGN KEY (  id_cita_)
+                REFERENCES    cita ( id_cita),
+
+    CONSTRAINT  fk_estado_cita
+                FOREIGN KEY ( id_estadocita )
+                REFERENCES    estado_cita ( id_estado_cita),
+
+    CONSTRAINT  fk_cita_historio_empleado
+                FOREIGN KEY (  id_empleado_historico)
+                REFERENCES    empleado ( id_empleado)
+
+
+); 
+go
