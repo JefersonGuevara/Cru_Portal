@@ -204,20 +204,7 @@ values
 
 
 
-create table tipo_solicitud
-(
-    id_tipo_solicitud int IDENTITY(1,1) not null,
-    valor_tipo_solicitud varchar (50) not null,
-    primary key (id_tipo_solicitud)
-);
-        go
-INSERT INTO tipo_solicitud
-    (valor_tipo_solicitud)
-VALUES
-    ('Cita'),
-    ('Reparacion'),
-    ('Administrativa')
-            go
+
 
 create table estado_solicitud
 (
@@ -822,16 +809,14 @@ create table solicitud
 (
 
     id_solicitud int IDENTITY(1,1) not null,
-    id_tipo_solicitud__ int not null,
+    
     id_prioridad_solciitud__ int not null,
+    fecha_solicitud date not null,
     descripcion_solicitud varchar (200) not null,
     id_estudiante_solicitud int not null,
     id_empleado_solicitud int not null,
     primary key (id_solicitud),
 
-    CONSTRAINT  fk_tipo_solicitud
-                        FOREIGN KEY ( id_tipo_solicitud__ )
-                        REFERENCES    tipo_solicitud (id_tipo_solicitud),
     CONSTRAINT  fk_prioridad_solicitud
                         FOREIGN KEY ( id_prioridad_solciitud__ )    
                         REFERENCES    prioridad_solicitud (id_prioridad_solciitud ),
@@ -849,22 +834,23 @@ create table reparacion_espacio
     id_reparacion int IDENTITY(1,1) not null,
     fecha_reparacion_espacio datetime not null,
     descripcion_reparacion varchar (500) not null,
+    id_solicitud_reparacion int not null,
 
     espacio_reparacion int not null,
 
     costo bigint not null,
-    id_solicitud_reparacion_espacio int not null,
+    
 
     primary key (id_reparacion),
 
     CONSTRAINT  fk_espacio_reparacion
                 FOREIGN KEY (  espacio_reparacion)
                 REFERENCES    espacio ( id_espacio),
+CONSTRAINT  fk_solicitud_reparacion
+                FOREIGN KEY ( id_solicitud_reparacion)
+                REFERENCES    solicitud( id_solicitud)
 
-    CONSTRAINT  fk_solicitud_reparacion
-                FOREIGN KEY (  id_solicitud_reparacion_espacio)
-                REFERENCES    solicitud ( id_solicitud)
-
+    
 
 );
         go
@@ -902,13 +888,16 @@ create table solucion
     id_empleado_solucion int,
     fecha_solucion datetime,
     primary  key (id_solucion),
-    id_solicitud_solucion int not null,
+    id_solicitud_solucion int ,
+    
     CONSTRAINT  fk_solucion_solicitud
                 FOREIGN KEY (  id_solicitud_solucion)
                 REFERENCES    solicitud ( id_solicitud),
     CONSTRAINT  fk_empleado_solucion
                 FOREIGN KEY (  id_empleado_solucion)
-                REFERENCES    empleado ( id_empleado)
+                REFERENCES    empleado ( id_empleado),
+  
+    
 );
 go
 
@@ -956,7 +945,11 @@ create table cita
     id_expediente_cita int null,
     fecha_cita datetime not null,
     id_empleado_cita int,
+    id_paciente int ,
     primary key (id_cita),
+  CONSTRAINT  fk_cita_estudiante
+                FOREIGN KEY (  id_paciente)
+                REFERENCES    estudiante ( id_estudiante),
 
 
     CONSTRAINT  fk_cita_expediente
