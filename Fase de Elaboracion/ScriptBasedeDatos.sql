@@ -941,7 +941,7 @@ create table cita
     id_cita int IDENTITY(1,1)not null,
 
 
-    estado_cita_ int not null,
+    
     id_expediente_cita int null,
     fecha_cita datetime not null,
     id_empleado_cita int,
