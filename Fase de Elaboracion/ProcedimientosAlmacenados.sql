@@ -2,7 +2,266 @@
 
 --*************************************************
 
---Procedimientos almacenados version 12-04-2017
+--Procedimientos almacenados version 8-8-2017
+
+--1. Procedimiento para registrar empleado con contrato
+create PROCEDURE  Registrar_Empleado
+    --Fijo para todos
+    @correo varchar(300),
+    @contrasena varchar (50),
+    --
+    @TipoIdentificacion   int ,
+    -- Tabla TipoID
+    @NumeroIdentificacion varchar(15) ,
+    @Nombres              varchar (100) ,
+    @Apellidos            varchar (100) ,
+
+    ---
+    @Estadocivil          int,
+    --Tabla EstadoCivil
+    @Estrato              int ,
+    @Direccion           varchar (100),
+    @Telefono            varchar (20),
+    @Tipo_sangre         int,
+    --tabla TipoSangre
+    --
+    @Fechanacimiento      datetime ,
+    @MunicipioNacimiento  varchar(100) ,
+    @DepartamentoNacimiento int ,
+    --Tabla Departamento
+    @Paisnacimiento         int ,
+    --Tabla Pais
+    -- Para Empleado
+    @cargo_empleado int ,
+    -- Tabla Cargo
+
+    ---- Para contrato
+    @fecha_fin datetime,
+   @tipocontrato varchar(50) ,
+   @salario     bigint,
+
+   @empleadoqueregistra int
+   --Tabla Espacio
+    as
+
+        declare @id_role int,  @id_enviar_directorio int  ,  @fecha_modificacion datetime, @id_nuevo_empleado int
+        BEGIN
+            set @fecha_modificacion = (select CURRENT_TIMESTAMP);
+				--Cargo psicolog y gestor -> rol 1
+				--Cargo 
+                BEGIN
+                    if @cargo_empleado=1 or @cargo_empleado=2
+                       set @id_role=1
+                END
+                BEGIN
+                    if @cargo_empleado=3
+                        set @id_role=3
+                End
+                BEGIN
+                    if @cargo_empleado=4
+                        set @id_role=4
+                END
+
+                insert into Persona
+                    (correo_directorio ,contrasena ,id_rol_Directorio ,
+                      TipoIdentificacion , NumeroIdentificacion ,
+                    Nombres , Apellidos ,
+
+                    Estadocivil , --Tabla EstadoCivil
+                    Estrato ,
+                    Direccion ,
+                    Telefono ,
+                    Tipo_sangre , --tabla TipoSangre
+                    --
+                    Fechanacimiento ,
+                    MunicipioNacimiento ,
+                    DepartamentoNacimiento, --Tabla Departamento
+                    Paisnacimiento , 
+                    sesion)
+                values
+                    (@correo, ENCRYPTBYPASSPHRASE('P4zZW0r4', @contrasena) , @id_role,
+                         @TipoIdentificacion, @NumeroIdentificacion, @Nombres ,
+                        @Apellidos , @Estadocivil ,
+                        @Estrato , @Direccion , @Telefono  ,
+                        @Tipo_sangre , @Fechanacimiento ,
+                        @MunicipioNacimiento  , @DepartamentoNacimiento,
+                        @Paisnacimiento ,0
+                                                        );
+
+                set @id_enviar_directorio = @@IDENTITY;
+                insert into empleado ( empleado_directorio)
+                values               ( @id_enviar_directorio);
+
+				set @id_nuevo_empleado = @@IDENTITY;
+				--insert tabla contrato
+				insert into contrato (id_empleado, cargo_contrato, fecha_inicio, fecha_fin, tipo_de_contrato, salario) 
+				values(@id_enviar_directorio, @cargo_empleado, @fecha_modificacion, @fecha_fin, @tipocontrato, @salario);
+				--insert tabla historico 
+				insert into historico_directorio(id_directorio_, Estado_directorio_CRU, descripcion_histoico, fecha, id_empleado) 
+				values ( @id_enviar_directorio, 1, 'Se ha registrado el Empleado', @fecha_modificacion,@empleadoqueregistra );
+
+            
+        END
+GO
+
+--1.1 Cargar Directorio Activo
+
+--usuarioadministrador
+
+
+EXEC	@return_value = [dbo].[Registrar_Empleado]
+		@correo = N'admin_cru@gmail.com',
+		@contrasena = N'123456',
+		@TipoIdentificacion = 1,
+		@NumeroIdentificacion = N'0000000',
+		@Nombres = N'Administrador',
+		@Apellidos = N'CRU',
+		@Estadocivil = 1,
+		@Estrato = 1,
+		@Direccion = N'CRU - SEDE',
+		@Telefono = N'99999999',
+		@Tipo_sangre = 1,
+		@Fechanacimiento = N'01-01-2000',
+		@MunicipioNacimiento = N'Bogota',
+		@DepartamentoNacimiento = 11,
+		@Paisnacimiento = 4,
+		@cargo_empleado = 4,
+		@fecha_fin = N'01-01-2100',
+		@tipocontrato = N'Indefinido',
+		@salario = 5000000,
+		@empleadoqueregistra = NULL
+		
+GO
+
+
+create procedure Verificar_Persona
+@id_persona varchar(15)
+as
+SELECT        Nombres, Apellidos
+FROM            Persona where Persona.NumeroIdentificacion = @id_persona;
+--si es null el resultado no existe puede, ejecutar registro
+--si no es null, no se puede registrar
+go
+
+--2. Procedimeinto para registrar estudiante en la admision
+create PROCEDURE  Registrar_Admision
+    --Fijo para todos
+    @correo varchar(300),
+    @contrasena varchar (50),
+    --
+    @TipoIdentificacion   int ,
+    -- Tabla TipoID
+    @NumeroIdentificacion varchar(15) ,
+    @Nombres              varchar (100) ,
+    @Apellidos            varchar (100) ,
+    ---
+    @Estadocivil          int,
+    --Tabla EstadoCivil
+    @Estrato              int ,
+    @Direccion           varchar (100),
+    @Telefono            varchar (20),
+    @Tipo_sangre         int,
+    --tabla TipoSangre
+    @Fechanacimiento      datetime ,
+    @MunicipioNacimiento  varchar(100) ,
+    @DepartamentoNacimiento int ,
+    --Tabla Departamento
+    @Paisnacimiento         int ,
+    --Tabla Pais
+    ---- Para Estudiante
+    @Servicio_Salud                            varchar (200) ,
+    @Dispacidad_estudiante                     varchar (2) ,
+    @descripcion_dispacacidad_estudainte       varchar (200),
+    @Situaciondesplazamientoestudiante          varchar (2),
+    @Numerohermanos                             int ,
+    -- Para estudiante parte 2
+    @tipodevivienda_estudiante int ,
+    --Tabla  Tipovivienda
+    @apoyouniversidad                        varchar (2) ,
+    @descripcion_apoyo_                        varchar(100),
+    @raza_estudiante                           int ,
+    --Tabla Raza
+    @id_espacio_estudiante                       int    
+  as
+
+    declare @id_role int,  
+		@id_enviar_directorio int,
+		@nuevoestudiante int,
+		@fecha_modificacion datetime
+    BEGIN
+    set @fecha_modificacion = (select CURRENT_TIMESTAMP);
+                    --Estudiante
+						insert into Persona
+						(correo_directorio,contrasena ,id_rol_Directorio ,
+						 TipoIdentificacion , NumeroIdentificacion ,
+						Nombres ,
+						Apellidos ,
+
+						Estadocivil , --Tabla EstadoCivil
+						Estrato ,
+						Direccion ,
+						Telefono ,
+						Tipo_sangre , --tabla TipoSangre
+						--
+						Fechanacimiento ,
+						MunicipioNacimiento ,
+						DepartamentoNacimiento, --Tabla Departamento
+						Paisnacimiento )
+					values
+						(@correo, ENCRYPTBYPASSPHRASE('P4zZW0r4', @contrasena) , 2,
+							 @TipoIdentificacion, @NumeroIdentificacion, @Nombres ,
+							@Apellidos , @Estadocivil ,
+							@Estrato , @Direccion , @Telefono  ,
+							@Tipo_sangre , @Fechanacimiento ,
+							@MunicipioNacimiento  , @DepartamentoNacimiento,
+							@Paisnacimiento );
+					set @id_enviar_directorio = @@IDENTITY;
+
+					insert into estudiante
+						(Servicio_Salud , Dispacidad_estudiante ,
+						descripcion_dispacacidad_estudainte , Situaciondesplazamientoestudiante ,
+						Numerohermanos ,tipodevivienda_estudiante ,
+						apoyouniversidad, descripcion_apoyo_ ,
+						raza_estudiante,
+						id_espacio_estudiante , id_directorio_estudiante)
+
+					values
+						(@Servicio_Salud, @Dispacidad_estudiante,
+							@descripcion_dispacacidad_estudainte, @Situaciondesplazamientoestudiante,
+							@Numerohermanos, @tipodevivienda_estudiante,
+							@apoyouniversidad , @descripcion_apoyo_ ,
+							@raza_estudiante  , @id_espacio_estudiante  , @id_enviar_directorio);
+					set @nuevoestudiante = @@IDENTITY;
+					--Insert historico estudiante
+					insert into historicoestudiante
+						(id_estudiante, fecha_historico_expediente, descripcion_historico_expediente, id_empleado_historicoestudiante)
+					values
+						(@nuevoestudiante, @fecha_modificacion, 'Se registro un Estudiante', 1);
+					--Insert historico persona
+					insert into historico_directorio(id_directorio_, Estado_directorio_CRU, descripcion_histoico, fecha, id_empleado) 
+					values ( @id_enviar_directorio, 4, 'Se ha registrado la admision', @fecha_modificacion, 1);
+
+         
+    END
+GO
+
+--3. Procedimeinto para agregar Acudiente
+
+Create PROCEDURE Registrar_Acudiente
+
+
+as
+go
+
+
+
+
+
+
+
+
+
+
 
 --1. Consulta el corre y contraseña y me devuelve el numero de identificacion
 
@@ -20,6 +279,7 @@ CREATE PROCEDURE Iniciar_Sesion
         SELECT @PassEncode = DirectorioActivo.contrasena
         From DirectorioActivo
         WHERE DirectorioActivo.correo_directorio = @correo;
+
         SET @PassDecode = DECRYPTBYPASSPHRASE('P4zZW0r4', @PassEncode);
         SET @id_directorio = (SELECT id_directorio_ from DirectorioActivo wHERE @correo =DirectorioActivo.correo_directorio );
             
@@ -65,172 +325,11 @@ go
 
 
 
-create PROCEDURE  Insertar_Nuevo_Directorio
 
 
-    --Fijo para todos
-    @correo varchar(300),
-    @contrasena varchar (50),
-    --
-    @TipoIdentificacion   int ,
-    -- Tabla TipoID
-    @NumeroIdentificacion varchar(15) ,
-    @Nombres              varchar (100) ,
-    @Apellidos            varchar (100) ,
 
-    ---
-    @Estadocivil          int,
-    --Tabla EstadoCivil
-    @Estrato              int ,
-    @Direccion           varchar (100),
-    @Telefono            varchar (20),
-    @Tipo_sangre         int,
-    --tabla TipoSangre
-    --
-    @Fechanacimiento      datetime ,
-    @MunicipioNacimiento  varchar(100) ,
-    @DepartamentoNacimiento int ,
-    --Tabla Departamento
-    @Paisnacimiento         int ,
-    --Tabla Pais
-    -- Para Empleado
-    @cargo_empleado int ,
-    -- Tabla Cargo
 
-    ---- Para Estudiante
-    @Servicio_Salud                            varchar (200) ,
-    @Dispacidad_estudiante                     varchar (2) ,
-    @descripcion_dispacacidad_estudainte       varchar (200),
-    @Situaciondesplazamientoestudiante          varchar (2),
-    @Numerohermanos                             int ,
-    -- Para estudiante parte 2
-    @tipodevivienda_estudiante int ,
-    --Tabla  Tipovivienda
-    @apoyouniversidad                        varchar (2) ,
-    @descripcion_apoyo_                        varchar(100),
-    @raza_estudiante                           int ,
-    --Tabla Raza
-    @id_espacio_estudiante                       int    ,
-    @empleadoquemodifica int
---Tabla Espacio
-as
 
-declare @id_role int,  @id_enviar_directorio int  , @nuevoestudiante int, @fecha_modificacion datetime
-BEGIN
-    set @fecha_modificacion = (select CURRENT_TIMESTAMP);
-    if @cargo_empleado =0
-                    --Estudiante
-                    BEGIN
-        insert into DirectorioActivo
-            (correo_directorio ,contrasena ,id_rol_Directorio ,
-            Estado_directorio_CRU , TipoIdentificacion , NumeroIdentificacion ,
-            Nombres ,
-            Apellidos ,
-
-            ---
-            Estadocivil , --Tabla EstadoCivil
-            Estrato ,
-            Direccion ,
-            Telefono ,
-            Tipo_sangre , --tabla TipoSangre
-            --
-            Fechanacimiento ,
-            MunicipioNacimiento ,
-            DepartamentoNacimiento, --Tabla Departamento
-            Paisnacimiento )
-        values
-            (@correo, ENCRYPTBYPASSPHRASE('P4zZW0r4', @contrasena) , 2,
-                1, @TipoIdentificacion, @NumeroIdentificacion, @Nombres ,
-                @Apellidos , @Estadocivil ,
-                @Estrato , @Direccion , @Telefono  ,
-                @Tipo_sangre , @Fechanacimiento ,
-                @MunicipioNacimiento  , @DepartamentoNacimiento,
-                @Paisnacimiento 
-                                                                 );
-        set @id_enviar_directorio = @@IDENTITY;
-
-        insert into estudiante
-            (Servicio_Salud , Dispacidad_estudiante ,
-            descripcion_dispacacidad_estudainte , Situaciondesplazamientoestudiante ,
-            Numerohermanos ,tipodevivienda_estudiante ,
-            apoyouniversidad, descripcion_apoyo_ ,
-            raza_estudiante,
-            id_espacio_estudiante , id_directorio_estudiante)
-
-        values
-            (@Servicio_Salud, @Dispacidad_estudiante,
-                @descripcion_dispacacidad_estudainte, @Situaciondesplazamientoestudiante,
-                @Numerohermanos, @tipodevivienda_estudiante,
-                @apoyouniversidad , @descripcion_apoyo_ ,
-                @raza_estudiante  , @id_espacio_estudiante  , @id_enviar_directorio);
-        set @nuevoestudiante = @@IDENTITY;
-        insert into historicoestudiante
-            (id_estudiante, fecha_historico_expediente, descripcion_historico_expediente, id_empleado_historicoestudiante)
-        values
-            (@nuevoestudiante, @fecha_modificacion, 'Se ha registrado el expediente', @empleadoquemodifica);
-    END
-                else
-                    --Empleado
-                    BEGIN
-        BEGIN
-            if @cargo_empleado=1
-                            BEGIN
-                set @id_role=1
-            END
-        END
-        BEGIN
-            if @cargo_empleado=2  
-                            BEGIN
-                set @id_role=1
-            END
-        END
-        BEGIN
-            if @cargo_empleado=3
-                            BEGIN
-                set @id_role=3
-            END
-        End
-        BEGIN
-            if @cargo_empleado=4
-                            BEGIN
-                set @id_role=4
-            END
-        END
-
-        insert into DirectorioActivo
-            (correo_directorio ,contrasena ,id_rol_Directorio ,
-            Estado_directorio_CRU , TipoIdentificacion , NumeroIdentificacion ,
-            Nombres ,
-            Apellidos ,
-
-            ---
-            Estadocivil , --Tabla EstadoCivil
-            Estrato ,
-            Direccion ,
-            Telefono ,
-            Tipo_sangre , --tabla TipoSangre
-            --
-            Fechanacimiento ,
-            MunicipioNacimiento ,
-            DepartamentoNacimiento, --Tabla Departamento
-            Paisnacimiento )
-        values
-            (@correo, ENCRYPTBYPASSPHRASE('P4zZW0r4', @contrasena) , @id_role,
-                1, @TipoIdentificacion, @NumeroIdentificacion, @Nombres ,
-                @Apellidos , @Estadocivil ,
-                @Estrato , @Direccion , @Telefono  ,
-                @Tipo_sangre , @Fechanacimiento ,
-                @MunicipioNacimiento  , @DepartamentoNacimiento,
-                @Paisnacimiento 
-                                                 );
-        set @id_enviar_directorio = @@IDENTITY;
-        insert into empleado
-            (cargo_empleado, empleado_directorio)
-        values
-            (@cargo_empleado, @id_enviar_directorio);
-    END
-END
-            GO
 
 
 
@@ -259,26 +358,16 @@ go
 
 
 
---3. Cargar Direnctorio Activo
-
---usuarioadministrador
-
-EXEC    Insertar_Nuevo_Directorio    'admin@admini.com','123456', 1,'0000000','Administrador','CRU', 1, 1,
-                                    'CRU - SEDE','9999999', 1,'01-01-2000','Bogota', 11,4, 4,'Jeferson CORP EPS',
-                                    'No','Ninguna','No', 0,3,'No','Ninguna', 7, 0,1
-                                    go
---Estudiante
-EXEC    Insertar_Nuevo_Directorio 'estudiante1@cru.com','123456',1,'111111','Jeferson','Guevara',1,2,'Cra 48 - 52 69',
-                                        '2589632',2,'01-01-1992','La mesa',11,4,0,'Compensar','No','Ninguna',
-                                        'No',2,3,'No','Ninguno',7,3,1
-                                        go
 
 
---EStudiante
-EXEC Insertar_Nuevo_Directorio 'estudiante2@cru.com','123456',1,'2222222','Oscar','Guevara', 1,3,'Cll 43 No 58',
-                                    '852147', 2,'02-08-1988','Oiba',21, 4,0,'Famisanar','No','Ninguna',
-                                    'No', 2,3,'No','Ninguno', 7,3,1
-                                    go
+
+
+
+
+
+
+
+
 --Psicologo
 EXEC Insertar_Nuevo_Directorio  'psicologo@cru.com','123456', 1,'333333','Aleja','Leal', 1, 1,'Calle 47 - 58 ',
                                      '33333333', 5,'01-05-1994','Bogota',11, 4, 1,'Ninguno','No','Ninguna','Ninguna',
@@ -297,6 +386,19 @@ exec   Insertar_Nuevo_Directorio 'mantenimiento@correo.com','123456',1,'5555555'
 
 GO
 
+
+--Estudiante
+EXEC    Insertar_Nuevo_Directorio 'estudiante1@cru.com','123456',1,'111111','Jeferson','Guevara',1,2,'Cra 48 - 52 69',
+                                        '2589632',2,'01-01-1992','La mesa',11,4,0,'Compensar','No','Ninguna',
+                                        'No',2,3,'No','Ninguno',7,3,1
+                                        go
+
+
+--EStudiante
+EXEC Insertar_Nuevo_Directorio 'estudiante2@cru.com','123456',1,'2222222','Oscar','Guevara', 1,3,'Cll 43 No 58',
+                                    '852147', 2,'02-08-1988','Oiba',21, 4,0,'Famisanar','No','Ninguna',
+                                    'No', 2,3,'No','Ninguno', 7,3,1
+                                    go
 --4. Consultar todos los empleados -- Vista solo para admisnistradores
 
 create proc Consultar_Todos_Empleados

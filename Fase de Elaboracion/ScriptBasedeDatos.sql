@@ -470,6 +470,7 @@ create table Persona
     DepartamentoNacimiento int not null,
     --Tabla Departamento
     Paisnacimiento int not null,
+    sesion int not null,
     --Tabla Pais
     primary key( id_persona),
     CONSTRAINT  fk_directorio_Rol
