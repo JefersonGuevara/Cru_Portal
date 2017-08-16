@@ -108,7 +108,6 @@ GO
 
 --usuarioadministrador
 
-
 EXEC	@return_value = [dbo].[Registrar_Empleado]
 		@correo = N'admin_cru@gmail.com',
 		@contrasena = N'123456',
@@ -132,15 +131,15 @@ EXEC	@return_value = [dbo].[Registrar_Empleado]
 		@empleadoqueregistra = NULL
 		
 GO
-
+-- 1.3 Verificar si la persona existe?
 
 create procedure Verificar_Persona
-@id_persona varchar(15)
-as
-SELECT        Nombres, Apellidos
-FROM            Persona where Persona.NumeroIdentificacion = @id_persona;
---si es null el resultado no existe puede, ejecutar registro
---si no es null, no se puede registrar
+    @id_persona varchar(15)
+    as
+    SELECT        Nombres, Apellidos
+    FROM            Persona where Persona.NumeroIdentificacion = @id_persona;
+    --si es null el resultado no existe puede, ejecutar registro
+    --si no es null, no se puede registrar
 go
 
 --2. Procedimeinto para registrar estudiante en la admision
@@ -248,11 +247,50 @@ GO
 --3. Procedimeinto para agregar Acudiente
 
 Create PROCEDURE Registrar_Acudiente
+	@id_estudiante int,
+
+	@dependecia_econ varchar (2),
+	@nombre_acudient varchar (100), 
+    @apellidos_acudi varchar (100) ,
+    @ocupacion_acudi varchar (100) ,
+    @direccion_acudi varchar(200) ,
+    @departamento_ac int ,
+    @telefono_acudie varchar (20) ,
+    @parentezo_acudi varchar (100) ,
+    @correo_acudient varchar (100) 
+    
 
 
-as
+ as
+    declare @id_nuevoacudiente int 
+	    insert into acudiente(
+						dependencia_econo_ ,
+						nombre_acudiente ,
+						apellidos_acudiente ,
+						ocupacion_acudiente ,
+						direccion_acudiente ,
+						departamento_acudiente ,
+						telefono_acudiente ,
+						parentezo_acudiente ,
+						correo_acudiente )
+						
+						 values(
+							@dependecia_econ,
+							@nombre_acudient, 
+							@apellidos_acudi ,
+							@ocupacion_acudi ,
+							@direccion_acudi,
+							@departamento_ac ,
+							@telefono_acudie ,
+							@parentezo_acudi ,
+							@correo_acudient 
+						 );
+		set @id_nuevoacudiente = @@IDENTITY;
+		insert into acudiente_estudainte (id_estudiante, id_acudiente) 
+						values   		(@id_estudiante, @id_nuevoacudiente);
 go
 
+--4. 
 
 
 
