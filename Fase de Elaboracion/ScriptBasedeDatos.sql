@@ -17,7 +17,7 @@ create table Permiso
 
 
 );
-            go
+go
 insert into Permiso
     (Modulo, descripcion)
 values
@@ -451,7 +451,7 @@ create table Persona
     -- Rol
     
     --
-    TipoIdentificacion int not null,
+
     -- Tabla TipoID
     NumeroIdentificacion varchar(15) not null,
     Nombres varchar (100) not null,
@@ -479,9 +479,6 @@ create table Persona
 
 
 
-    CONSTRAINT  fk_tipodocumentoDirectorio
-                    FOREIGN KEY (  TipoIdentificacion )
-                    REFERENCES    tipoidentificacion  (  id_tipoidentificacion ),
     CONSTRAINT  fk_estadocivil_Directorio
                     FOREIGN KEY (  Estadocivil )
                     REFERENCES    estadocivil  ( id_estadocivil),
@@ -501,6 +498,30 @@ create table Persona
 
 );
 go
+
+
+
+create table HistoricoTipoIdentificacion(
+    id int not null,
+    id_personatipo int not null,
+    id_tipoidentifica int not null,
+
+    primary key (id)
+    CONSTRAINT  fk_tipodocumentoDirectorio
+                    FOREIGN KEY (  id_tipoidentifica )
+                    REFERENCES    tipoidentificacion  (  id_tipoidentificacion ),
+    CONSTRAINT  fk_hisotiropersonatipoiden
+                    FOREIGN KEY (  id_personatipo )
+                    REFERENCES    Persona  (  id_persona )
+    
+
+
+
+);
+go
+
+
+
 --('Activo'),('Retirado'),('Admitido'), ('En proceso Admision'), ('Expulsado'), ('Inactivo')
 -- INSERT INTO cargo (valor_cargo) VALUES ('Psicologo'),('Gestor Social'), ('Mantenimiento'),('Director')
 
@@ -585,7 +606,7 @@ create table estudiante
     descripcion_apoyo_ varchar(100),
     raza_estudiante int not null,
     --Tabla Raza
-    id_espacio_estudiante int,
+    
     --Tabla Espacio
     id_directorio_estudiante int not null,
     --Tabla    
@@ -602,12 +623,9 @@ create table estudiante
 
     CONSTRAINT  fk_raza_estudiante
                     FOREIGN KEY (  raza_estudiante )
-                    REFERENCES    raza  ( id_raza),
+                    REFERENCES    raza  ( id_raza)
 
-    CONSTRAINT  fk_espacio_estudiante
-                    FOREIGN KEY (id_espacio_estudiante   )
-                    REFERENCES    espacio ( id_espacio)
-
+    
 );
         go
 
@@ -649,6 +667,7 @@ CREATE TABLE historico_espacio
     estado_espacio_o int not null,
     id_espacio_historico int not null,
     id_empleado_historico int,
+    id_estudiante_espacio int, 
     PRIMARY KEY (id_historico_espacio),
     CONSTRAINT  fk_estado_espacio
                         FOREIGN KEY (  estado_espacio_o )
@@ -661,6 +680,9 @@ CREATE TABLE historico_espacio
                         FOREIGN KEY (  id_espacio_historico )
                         REFERENCES   espacio ( id_espacio)
 
+    CONSTRAINT  fk_estudiante_espacio
+                        FOREIGN KEY ( id_estudiante_espacio )
+                        REFERENCES   estudiante ( id_estudiante)
 
 
 );
