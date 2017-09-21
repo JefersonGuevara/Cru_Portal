@@ -547,6 +547,9 @@ GO
 
 
 
+
+
+
 --3. Procedimeinto para agregar Acudiente
 
 Create PROCEDURE Registrar_Acudiente
@@ -599,18 +602,70 @@ go
 
 
 
+EXEC  [dbo].[Registrar_Acudiente]
+		@id_estudiante = 1,
+		@dependecia_econ = N'No',
+		@nombre_acudient = N'Carlos',
+		@apellidos_acudi = N'Gutierrez',
+		@ocupacion_acudi = N'Guarda',
+		@direccion_acudi = N'Cra 48 Barrio Sucre',
+		@departamento_ac = 4,
+		@telefono_acudie = N'8523698',
+		@parentezo_acudi = N'Tio',
+		@correo_acudient = N'carlos@corre.com'
+
+
+EXEC  [dbo].[Registrar_Acudiente]
+		@id_estudiante = 2,
+		@dependecia_econ = N'No',
+		@nombre_acudient = N'Carlos',
+		@apellidos_acudi = N'Gutierrez',
+		@ocupacion_acudi = N'Guarda',
+		@direccion_acudi = N'Cra 48 Barrio Sucre',
+		@departamento_ac = 4,
+		@telefono_acudie = N'8523698',
+		@parentezo_acudi = N'Tio',
+		@correo_acudient = N'carlos@corre.com'
+
+EXEC  [dbo].[Registrar_Acudiente]
+		@id_estudiante = 3,
+		@dependecia_econ = N'No',
+		@nombre_acudient = N'Carlos',
+		@apellidos_acudi = N'Gutierrez',
+		@ocupacion_acudi = N'Guarda',
+		@direccion_acudi = N'Cra 48 Barrio Sucre',
+		@departamento_ac = 4,
+		@telefono_acudie = N'8523698',
+		@parentezo_acudi = N'Tio',
+		@correo_acudient = N'carlos@corre.com'
+
+EXEC  [dbo].[Registrar_Acudiente]
+		@id_estudiante = 4,
+		@dependecia_econ = N'No',
+		@nombre_acudient = N'Carlos',
+		@apellidos_acudi = N'Gutierrez',
+		@ocupacion_acudi = N'Guarda',
+		@direccion_acudi = N'Cra 48 Barrio Sucre',
+		@departamento_ac = 4,
+		@telefono_acudie = N'8523698',
+		@parentezo_acudi = N'Tio',
+		@correo_acudient = N'carlos@corre.com'
+
+EXEC  [dbo].[Registrar_Acudiente]
+		@id_estudiante = 5,
+		@dependecia_econ = N'No',
+		@nombre_acudient = N'Carlos',
+		@apellidos_acudi = N'Gutierrez',
+		@ocupacion_acudi = N'Guarda',
+		@direccion_acudi = N'Cra 48 Barrio Sucre',
+		@departamento_ac = 4,
+		@telefono_acudie = N'8523698',
+		@parentezo_acudi = N'Tio',
+		@correo_acudient = N'carlos@corre.com'
 
 
 
 
-
---Registros para estudiante y acudiente
-
-
-estudiante1@cru.com
-1012852741
-Oscar
-Guevara
 
 
 
