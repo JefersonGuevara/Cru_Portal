@@ -4,6 +4,127 @@
 
 --Procedimientos almacenados version 8-8-2017
 
+CREATE PROCEDURE Consultar_Login
+    @correo varchar (100),
+    @pass varchar (300)
+
+  AS
+  DECLARE @PassEncode As varchar(300)
+  DECLARE @PassDecode As varchar(50)
+  
+  BEGIN
+  
+      SELECT @PassEncode = Persona.contrasena
+      From Persona
+      WHERE Persona.correo_directorio = @correo
+      SET @PassDecode = DECRYPTBYPASSPHRASE('P4zZW0r4', @PassEncode)
+      SELECT Persona.NumeroIdentificacion, Persona.id_persona
+      FROM Persona
+      WHERE (Persona.correo_directorio = @correo AND @PassDecode=@pass)
+  
+  
+  END
+          GO
+
+create proc Consultar_Tipos_de_Identificacion
+
+as
+SELECT id_tipoidentificacion, valor_tipoidentificacion
+FROM tipoidentificacion
+    go
+
+create proc Consultar_Cargos
+as
+SELECT id_cargo, valor_cargo
+FROM cargo
+    go
+
+create proc Consultar_Estados_Civiles
+as
+SELECT id_estadocivil, valor_estadocivil
+FROM estadocivil
+    go
+
+create proc Consultar_Estados_Usuario
+as
+SELECT Id_estado_usuario_cru, Descripcion_estado_usuario_cru
+FROM estado_usuario_cru
+    go
+
+
+create proc Consultar_Tipo_Espacios
+as
+Begin
+    SELECT id_tipo_espacio, valor_tipo_espacio
+    FROM tipo_espacio
+END
+GO
+
+create proc Consultar_Pisos
+as
+Begin
+    SELECT id_piso, valor_piso
+    FROM piso
+END
+GO
+
+
+create proc Consultar_Estados_Espacios
+as
+Begin
+    SELECT id_estado_espacio, valor_estado_espacio
+    FROM estado_espacio
+END
+
+GO
+
+Create proc Consultar_Pais
+as
+SELECT id_pais, descripcionPais
+FROM pais
+
+GO
+
+Create proc Consultar_Departamento
+as
+SELECT id_departamento, descripcion_departamento
+FROM departamento
+
+GO
+
+Create proc Consultar_RH
+as
+SELECT id_tipo_sangre, descripcion_tipo_sangre
+FROM tipodesangre
+
+GO
+
+Create proc Consultar_Tipos_Vivienda
+as
+SELECT id_tipodevivienda, descripcion_tipovivienda
+FROM tipodevivienda
+go
+
+Create proc Consultar_Raza
+as
+SELECT id_raza, descripcion_raza
+FROM raza
+go
+
+
+Create Proc Consultar_Tipos_Elemento
+as
+BEGIN
+    SELECT [id_tipo_elemento]
+      , [valor_tipo_elemento]
+    FROM [PrototipoCRU].[dbo].[tipo_elemento]
+END
+ GO
+
+
+
+
+
 --1. Procedimiento para registrar empleado con contrato
 create PROCEDURE  Registrar_Empleado
     --Fijo para todos
@@ -108,7 +229,7 @@ GO
 
 --usuarioadministrador
 
-EXEC	@return_value = [dbo].[Registrar_Empleado]
+EXEC	 [dbo].[Registrar_Empleado]
 		@correo = N'admin_cru@gmail.com',
 		@contrasena = N'123456',
 		@TipoIdentificacion = 1,
@@ -244,6 +365,9 @@ create PROCEDURE  Registrar_Admision
     END
 GO
 
+
+
+
 --3. Procedimeinto para agregar Acudiente
 
 Create PROCEDURE Registrar_Acudiente
@@ -290,7 +414,358 @@ Create PROCEDURE Registrar_Acudiente
 						values   		(@id_estudiante, @id_nuevoacudiente);
 go
 
+
+
+
+--Registros para estudiante y acudiente
+
+
+
 --4. 
+
+Create proc [dbo].[Insertar_Nuevo_Espacio]
+            @descripcion varchar(100),
+            @capacidad int,
+            @tipoespacio int,
+            @piso int,
+            @id_empleadoquecrea int
+        as
+
+        declare @id_espacionuevo int, @fecha_modificacion DATE, @espacionuevo int
+        Begin
+            insert into espacio
+                (descripcion_espacio, capacidad, cupo,id_tipo_espacio_,id_piso_espacio)
+            values
+                (@descripcion, @capacidad, @capacidad, @tipoespacio, @piso )
+            set @espacionuevo = @@IDENTITY;
+            set @fecha_modificacion = (select CURRENT_TIMESTAMP);
+            insert into historico_espacio (fecha_historico_espacio, estado_espacio_o, id_espacio_historico, id_empleado_historico) values
+                                           (@fecha_modificacion,1, @espacionuevo, @id_empleadoquecrea );
+        End
+
+		Go
+
+Create proc [dbo].[Consultar_Espacios]
+as
+BEGIN
+
+    SELECT        espacio.id_espacio, espacio.descripcion_espacio, espacio.cupo,tipo_espacio.valor_tipo_espacio, piso.valor_piso, estado_espacio.valor_estado_espacio, historico_espacio.fecha_historico_espacio
+FROM            historico_espacio  INNER JOIN
+
+						(select historico_espacio.id_espacio_historico , max(historico_espacio.fecha_historico_espacio ) as fecha from  historico_espacio group by historico_espacio.id_espacio_historico ) as T1 on
+						T1.id_espacio_historico=historico_espacio.id_espacio_historico and 
+						T1.fecha = historico_espacio.fecha_historico_espacio
+						 INNER JOIN
+                         estado_espacio ON historico_espacio.estado_espacio_o = estado_espacio.id_estado_espacio INNER JOIN
+                         espacio ON historico_espacio.id_espacio_historico = espacio.id_espacio INNER JOIN
+                         tipo_espacio ON espacio.id_tipo_espacio_ = tipo_espacio.id_tipo_espacio inner join
+						 piso on espacio.id_piso_espacio = piso.id_piso
+						where espacio.id_espacio <>1
+END
+
+Go
+
+
+create proc [dbo].[Consultar_Si_ExisteEspacio]
+@descripcion varchar (100)
+as
+BEGIN
+
+    SELECT         espacio.descripcion_espacio
+FROM           espacio where espacio.descripcion_espacio= @descripcion
+END
+Go
+
+CREATE proc [dbo].[Consultar_Espacio_Id]
+@id_espacio int
+as
+BEGIN
+
+     SELECT        espacio.id_espacio, espacio.descripcion_espacio,espacio.capacidad , espacio.cupo,tipo_espacio.valor_tipo_espacio, piso.valor_piso, estado_espacio.valor_estado_espacio, historico_espacio.fecha_historico_espacio
+FROM            historico_espacio  INNER JOIN
+
+						(select historico_espacio.id_espacio_historico , max(historico_espacio.fecha_historico_espacio ) as fecha from  historico_espacio group by historico_espacio.id_espacio_historico ) as T1 on
+						T1.id_espacio_historico=historico_espacio.id_espacio_historico and 
+						T1.fecha = historico_espacio.fecha_historico_espacio
+						 INNER JOIN
+                         estado_espacio ON historico_espacio.estado_espacio_o = estado_espacio.id_estado_espacio INNER JOIN
+                         espacio ON historico_espacio.id_espacio_historico = espacio.id_espacio INNER JOIN
+                         tipo_espacio ON espacio.id_tipo_espacio_ = tipo_espacio.id_tipo_espacio inner join
+						 piso on espacio.id_piso_espacio = piso.id_piso
+						where espacio.id_espacio =@id_espacio
+END
+Go
+
+CREATE proc [dbo].[Actualizar_Espacio]
+    @id int,
+    @capacidad int,
+    @tipoespacio int,
+    @empleado_modifica int
+    
+
+as
+
+declare @cupo int, @capacidad_anterior int, @fecha_modificacion date ,@estado_espacio int
+set @capacidad_anterior = (select espacio.capacidad
+from espacio
+where espacio.id_espacio = @id);
+set @estado_espacio = (SELECT         estado_espacio.id_estado_espacio 
+                        FROM            historico_espacio  INNER JOIN
+						(select historico_espacio.id_espacio_historico , max(historico_espacio.fecha_historico_espacio ) as fecha from  historico_espacio group by historico_espacio.id_espacio_historico ) as T1 on
+						T1.id_espacio_historico=historico_espacio.id_espacio_historico and 
+						T1.fecha = historico_espacio.fecha_historico_espacio
+						 INNER JOIN
+                         estado_espacio ON historico_espacio.estado_espacio_o = estado_espacio.id_estado_espacio INNER JOIN
+                         espacio ON historico_espacio.id_espacio_historico = espacio.id_espacio 
+                         
+						where espacio.id_espacio =@id);
+
+Begin
+    if (@capacidad=@capacidad_anterior)
+    BEGIN
+        update espacio set id_tipo_espacio_ = @tipoespacio where espacio.id_espacio = @id  ;
+        set @fecha_modificacion = (select CURRENT_TIMESTAMP);
+        insert into historico_espacio (fecha_historico_espacio, estado_espacio_o, id_espacio_historico, id_empleado_historico) values
+                                           (@fecha_modificacion,@estado_espacio, @id, @empleado_modifica );
+
+    END
+    if (@capacidad>@capacidad_anterior)
+    BEGIN
+        set @cupo = @capacidad - @capacidad_anterior;
+        if (@cupo= 0)
+            begin
+            update espacio set id_tipo_espacio_ = @tipoespacio, espacio.cupo = @cupo, espacio.capacidad=@capacidad
+            where espacio.id_espacio = @id;
+
+
+              set @fecha_modificacion = (select CURRENT_TIMESTAMP);
+              insert into historico_espacio (fecha_historico_espacio, estado_espacio_o, id_espacio_historico, id_empleado_historico) values
+                                           (@fecha_modificacion,2, @id, @empleado_modifica );
+
+        END
+        update espacio set id_tipo_espacio_ = @tipoespacio, espacio.cupo = @cupo, espacio.capacidad=@capacidad 
+        where espacio.id_espacio = @id    ;
+    END
+    if (@capacidad<@capacidad_anterior)
+    BEGIN
+        set @cupo =  @capacidad_anterior - @capacidad        ;
+        if (@cupo= 0)
+            begin
+            update espacio set id_tipo_espacio_ = @tipoespacio, espacio.cupo = @cupo, espacio.capacidad=@capacidad
+              where espacio.id_espacio = @id        ;
+            
+              set @fecha_modificacion = (select CURRENT_TIMESTAMP);
+              insert into historico_espacio (fecha_historico_espacio, estado_espacio_o, id_espacio_historico, id_empleado_historico) values
+                                           (@fecha_modificacion,2, @id, @empleado_modifica );
+
+        END
+        update espacio set id_tipo_espacio_ = @tipoespacio, espacio.cupo = @cupo,
+         espacio.capacidad=@capacidad  where espacio.id_espacio = @id
+    ;
+
+    END
+END
+
+Go
+
+insert into solicitud (id_prioridad_solciitud__, fecha_solicitud, descripcion_solicitud,id_estudiante_solicitud, id_empleado_solicitud ) values 
+(1,'2017-09-18 12:27:58.610', 'Certificacion de cupo asignado',1,1	),
+(2,'2017-09-18 12:27:58.610', 'Certificacion Actualizacion de Datos',2,1	),
+(3,'2017-09-18 12:27:58.610', 'Cancelacion de Cupo',3,1	),
+(4,'2017-09-18 12:27:58.610', 'Actualizacion de Acudiente',3,1	),
+(3,'2017-09-18 12:27:58.610', 'Cambio de Apartamento',4,1	),
+(2,'2017-09-18 12:27:58.610', 'Asignacion de cama nueva',2,1	)
+Go
+
+
+insert into historico_solicitud (id_caso_anotacion, descripcion_anotacion, fecha_modificacion, id_empleado_historico, id_estado_solicitud_)
+values(1, 'Se ha registrado la peticion', '2017-09-18 12:27:58.610',1,1 ),
+(2, 'Se ha registrado la peticion', '2017-09-18 12:27:58.610',1,1 ),
+(3, 'Se ha registrado la peticion', '2017-09-18 12:27:58.610',1,1 ),
+(4, 'Se ha registrado la peticion', '2017-09-18 12:27:58.610',1,1 ),
+(5, 'Se ha registrado la peticion', '2017-09-18 12:27:58.610',1,1 ),
+(6, 'Se ha registrado la peticion', '2017-09-18 12:27:58.610',1,1 )
+GO
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -461,90 +936,6 @@ where DirectorioActivo.id_directorio_  <>1
 
 
 -- consultar tipos de combobox
-create proc Consultar_Tipos_de_Identificacion
-
-as
-SELECT id_tipoidentificacion, valor_tipoidentificacion
-FROM tipoidentificacion
-    go
-
-create proc Consultar_Cargos
-as
-SELECT id_cargo, valor_cargo
-FROM cargo
-    go
-
-create proc Consultar_Estados_Civiles
-as
-SELECT id_estadocivil, valor_estadocivil
-FROM estadocivil
-    go
-
-create proc Consultar_Estados_Usuario
-as
-SELECT Id_estado_usuario_cru, Descripcion_estado_usuario_cru
-FROM estado_usuario_cru
-    go
-
-
-create proc Consultar_Tipo_Espacios
-as
-Begin
-    SELECT id_tipo_espacio, valor_tipo_espacio
-    FROM tipo_espacio
-END
-GO
-
-create proc Consultar_Pisos
-as
-Begin
-    SELECT id_piso, valor_piso
-    FROM piso
-END
-GO
-
-
-create proc Consultar_Estados_Espacios
-as
-Begin
-    SELECT id_estado_espacio, valor_estado_espacio
-    FROM estado_espacio
-END
-
-GO
-
-Create proc Consultar_Pais
-as
-SELECT id_pais, descripcionPais
-FROM pais
-
-GO
-
-Create proc Consultar_Departamento
-as
-SELECT id_departamento, descripcion_departamento
-FROM departamento
-
-GO
-
-Create proc Consultar_RH
-as
-SELECT id_tipo_sangre, descripcion_tipo_sangre
-FROM tipodesangre
-
-GO
-
-
-
-Create Proc Consultar_Tipos_Elemento
-as
-BEGIN
-    SELECT [id_tipo_elemento]
-      , [valor_tipo_elemento]
-    FROM [PrototipoCRU].[dbo].[tipo_elemento]
-END
- GO
-
 
 --Procedimientos para gestion de espacios
 
@@ -855,17 +1246,6 @@ END
 go
 
 
-Create proc Consultar_Tipos_Vivienda
-as
-SELECT id_tipodevivienda, descripcion_tipovivienda
-FROM tipodevivienda
-go
-
-Create proc Consultar_Raza
-as
-SELECT id_raza, descripcion_raza
-FROM raza
-go
 
 
 --Actualiza Admision de un estudiante de acuerdo a un empleado que modifica
