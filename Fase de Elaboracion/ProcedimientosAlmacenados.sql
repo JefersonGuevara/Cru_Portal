@@ -254,6 +254,11 @@ EXEC	 [dbo].[Registrar_Empleado]
 GO
 -- 1.3 Verificar si la persona existe?
 
+
+
+
+
+
 create procedure Verificar_Persona
     @id_persona varchar(15)
     as
@@ -365,6 +370,180 @@ create PROCEDURE  Registrar_Admision
     END
 GO
 
+EXEC	[dbo].[Registrar_Admision]
+		@correo = N'estudiante1@cru.com',
+		@contrasena = N'123456',
+		@TipoIdentificacion = 2,
+		@NumeroIdentificacion = N'101257896',
+		@Nombres = N'Myrian',
+		@Apellidos = N'Sanchez',
+		@Estadocivil = 1,
+		@Estrato = 1,
+		@Direccion = N'Cra 49',
+		@Telefono = N'7412589',
+		@Tipo_sangre = 1,
+		@Fechanacimiento = N'01-01-2000',
+		@MunicipioNacimiento = N'Bogota',
+		@DepartamentoNacimiento = 11,
+		@Paisnacimiento = 4,
+		@Servicio_Salud = N'Famisanar',
+		@Dispacidad_estudiante = N'No',
+		@descripcion_dispacacidad_estudainte = N'No Aplica',
+		@Situaciondesplazamientoestudiante = N'No',
+		@Numerohermanos = 2,
+		@tipodevivienda_estudiante = 1,
+		@apoyouniversidad = N'No',
+		@descripcion_apoyo_ = N'No Aplica',
+		@raza_estudiante = 7,
+		@Universidad = N'U Nacional',
+		@Facultad = N'Sistemas',
+		@Programa = N'Ingenieria de Sistema',
+		@PuntajeBasicoMatricula = N'450',
+		@Promedio = N'4.03',
+		@FechadeIngreso = N'2015-09-02 00:00:00.000',
+		@Semestre_ingreso = 2,
+		@porcentajedeavance = N'25'
+
+
+
+EXEC	[dbo].[Registrar_Admision]
+		@correo = N'estudiante2@cru.com',
+		@contrasena = N'123456',
+		@TipoIdentificacion = 2,
+		@NumeroIdentificacion = N'101257895',
+		@Nombres = N'Oscar',
+		@Apellidos = N'Sanchez',
+		@Estadocivil = 1,
+		@Estrato = 1,
+		@Direccion = N'Cra 49',
+		@Telefono = N'7412589',
+		@Tipo_sangre = 1,
+		@Fechanacimiento = N'01-01-2000',
+		@MunicipioNacimiento = N'Bogota',
+		@DepartamentoNacimiento = 11,
+		@Paisnacimiento = 4,
+		@Servicio_Salud = N'Famisanar',
+		@Dispacidad_estudiante = N'No',
+		@descripcion_dispacacidad_estudainte = N'No Aplica',
+		@Situaciondesplazamientoestudiante = N'No',
+		@Numerohermanos = 2,
+		@tipodevivienda_estudiante = 1,
+		@apoyouniversidad = N'No',
+		@descripcion_apoyo_ = N'No Aplica',
+		@raza_estudiante = 7,
+		@Universidad = N'U Nacional',
+		@Facultad = N'Sistemas',
+		@Programa = N'Ingenieria de Sistema',
+		@PuntajeBasicoMatricula = N'450',
+		@Promedio = N'4.03',
+		@FechadeIngreso = N'2015-09-02 00:00:00.000',
+		@Semestre_ingreso = 2,
+		@porcentajedeavance = N'25'
+
+EXEC	 [dbo].[Registrar_Admision]
+		@correo = N'estudiante3@cru.com',
+		@contrasena = N'123456',
+		@TipoIdentificacion = 2,
+		@NumeroIdentificacion = N'101257856',
+		@Nombres = N'Angie',
+		@Apellidos = N'Sanchez',
+		@Estadocivil = 1,
+		@Estrato = 1,
+		@Direccion = N'Cra 49',
+		@Telefono = N'7412589',
+		@Tipo_sangre = 1,
+		@Fechanacimiento = N'01-01-2000',
+		@MunicipioNacimiento = N'Bogota',
+		@DepartamentoNacimiento = 11,
+		@Paisnacimiento = 4,
+		@Servicio_Salud = N'Famisanar',
+		@Dispacidad_estudiante = N'No',
+		@descripcion_dispacacidad_estudainte = N'No Aplica',
+		@Situaciondesplazamientoestudiante = N'No',
+		@Numerohermanos = 2,
+		@tipodevivienda_estudiante = 1,
+		@apoyouniversidad = N'No',
+		@descripcion_apoyo_ = N'No Aplica',
+		@raza_estudiante = 7,
+		@Universidad = N'U Nacional',
+		@Facultad = N'Sistemas',
+		@Programa = N'Ingenieria de Sistema',
+		@PuntajeBasicoMatricula = N'450',
+		@Promedio = N'4.03',
+		@FechadeIngreso = N'2015-09-02 00:00:00.000',
+		@Semestre_ingreso = 2,
+		@porcentajedeavance = N'25'
+
+EXEC	 [dbo].[Registrar_Admision]
+		@correo = N'estudiante4@cru.com',
+		@contrasena = N'123456',
+		@TipoIdentificacion = 2,
+		@NumeroIdentificacion = N'101257896',
+		@Nombres = N'Jeferson',
+		@Apellidos = N'Sanchez',
+		@Estadocivil = 1,
+		@Estrato = 1,
+		@Direccion = N'Cra 49',
+		@Telefono = N'7412589',
+		@Tipo_sangre = 1,
+		@Fechanacimiento = N'01-01-2000',
+		@MunicipioNacimiento = N'Bogota',
+		@DepartamentoNacimiento = 11,
+		@Paisnacimiento = 4,
+		@Servicio_Salud = N'Famisanar',
+		@Dispacidad_estudiante = N'No',
+		@descripcion_dispacacidad_estudainte = N'No Aplica',
+		@Situaciondesplazamientoestudiante = N'No',
+		@Numerohermanos = 2,
+		@tipodevivienda_estudiante = 1,
+		@apoyouniversidad = N'No',
+		@descripcion_apoyo_ = N'No Aplica',
+		@raza_estudiante = 7,
+		@Universidad = N'U Nacional',
+		@Facultad = N'Sistemas',
+		@Programa = N'Ingenieria de Sistema',
+		@PuntajeBasicoMatricula = N'450',
+		@Promedio = N'4.03',
+		@FechadeIngreso = N'2015-09-02 00:00:00.000',
+		@Semestre_ingreso = 2,
+		@porcentajedeavance = N'25'
+
+EXEC	 [dbo].[Registrar_Admision]
+		@correo = N'estudiante5@cru.com',
+		@contrasena = N'123456',
+		@TipoIdentificacion = 2,
+		@NumeroIdentificacion = N'101257874',
+		@Nombres = N'Jose',
+		@Apellidos = N'Sanchez',
+		@Estadocivil = 1,
+		@Estrato = 1,
+		@Direccion = N'Cra 49',
+		@Telefono = N'7412589',
+		@Tipo_sangre = 1,
+		@Fechanacimiento = N'01-01-2000',
+		@MunicipioNacimiento = N'Bogota',
+		@DepartamentoNacimiento = 11,
+		@Paisnacimiento = 4,
+		@Servicio_Salud = N'Famisanar',
+		@Dispacidad_estudiante = N'No',
+		@descripcion_dispacacidad_estudainte = N'No Aplica',
+		@Situaciondesplazamientoestudiante = N'No',
+		@Numerohermanos = 2,
+		@tipodevivienda_estudiante = 1,
+		@apoyouniversidad = N'No',
+		@descripcion_apoyo_ = N'No Aplica',
+		@raza_estudiante = 7,
+		@Universidad = N'U Nacional',
+		@Facultad = N'Sistemas',
+		@Programa = N'Ingenieria de Sistema',
+		@PuntajeBasicoMatricula = N'450',
+		@Promedio = N'4.03',
+		@FechadeIngreso = N'2015-09-02 00:00:00.000',
+		@Semestre_ingreso = 2,
+		@porcentajedeavance = N'25'
+
+GO
+
 
 
 
@@ -417,7 +596,21 @@ go
 
 
 
+
+
+
+
+
+
+
+
 --Registros para estudiante y acudiente
+
+
+estudiante1@cru.com
+1012852741
+Oscar
+Guevara
 
 
 
