@@ -60,6 +60,23 @@ Begin
 END
 GO
 
+
+create proc consultar_estadosSolicitud
+as
+Begin
+SELECT        id_estado_solciitud, valor_estado_solciitud
+FROM            estado_solicitud
+End
+GO
+
+create proc consultar_PrioridadSolicitud
+as
+Begin
+SELECT        id_prioridad_solciitud, tiempodesolucion_horas, valor_prioridad_solciitud
+FROM            prioridad_solicitud
+End
+Go
+
 create proc Consultar_Pisos
 as
 Begin
@@ -185,7 +202,7 @@ create PROCEDURE  Registrar_Empleado
 
                 insert into Persona
                     (correo_directorio ,contrasena ,id_rol_Directorio ,
-                      TipoIdentificacion , NumeroIdentificacion ,
+                       NumeroIdentificacion ,
                     Nombres , Apellidos ,
 
                     Estadocivil , --Tabla EstadoCivil
@@ -201,7 +218,7 @@ create PROCEDURE  Registrar_Empleado
                     sesion)
                 values
                     (@correo, ENCRYPTBYPASSPHRASE('P4zZW0r4', @contrasena) , @id_role,
-                         @TipoIdentificacion, @NumeroIdentificacion, @Nombres ,
+                         @NumeroIdentificacion, @Nombres ,
                         @Apellidos , @Estadocivil ,
                         @Estrato , @Direccion , @Telefono  ,
                         @Tipo_sangre , @Fechanacimiento ,
@@ -216,7 +233,7 @@ create PROCEDURE  Registrar_Empleado
 				set @id_nuevo_empleado = @@IDENTITY;
 				--insert tabla contrato
 				insert into contrato (id_empleado, cargo_contrato, fecha_inicio, fecha_fin, tipo_de_contrato, salario) 
-				values(@id_enviar_directorio, @cargo_empleado, @fecha_modificacion, @fecha_fin, @tipocontrato, @salario);
+				values(@id_nuevo_empleado, @cargo_empleado, @fecha_modificacion, @fecha_fin, @tipocontrato, @salario);
 				--insert tabla historico 
 				insert into historico_directorio(id_directorio_, Estado_directorio_CRU, descripcion_histoico, fecha, id_empleado) 
 				values ( @id_enviar_directorio, 1, 'Se ha registrado el Empleado', @fecha_modificacion,@empleadoqueregistra );
@@ -224,7 +241,6 @@ create PROCEDURE  Registrar_Empleado
             
         END
 GO
-
 --1.1 Cargar Directorio Activo
 
 --usuarioadministrador
@@ -252,12 +268,131 @@ EXEC	 [dbo].[Registrar_Empleado]
 		@empleadoqueregistra = NULL
 		
 GO
+
+
+
+EXEC	 [dbo].[Registrar_Empleado]
+		@correo = N'director@gmail.com',
+		@contrasena = N'123456',
+		@TipoIdentificacion = 1,
+		@NumeroIdentificacion = N'0000000',
+		@Nombres = N'Director',
+		@Apellidos = N'CRU',
+		@Estadocivil = 1,
+		@Estrato = 1,
+		@Direccion = N'CRU - SEDE',
+		@Telefono = N'99999999',
+		@Tipo_sangre = 1,
+		@Fechanacimiento = N'01-01-2000',
+		@MunicipioNacimiento = N'Bogota',
+		@DepartamentoNacimiento = 11,
+		@Paisnacimiento = 4,
+		@cargo_empleado = 4,
+		@fecha_fin = N'01-01-2100',
+		@tipocontrato = N'Indefinido',
+		@salario = 5000000,
+		@empleadoqueregistra = NULL
+		
+GO
+EXEC	 [dbo].[Registrar_Empleado]
+		@correo = N'mantenimiento@gmail.com',
+		@contrasena = N'123456',
+		@TipoIdentificacion = 1,
+		@NumeroIdentificacion = N'0000000',
+		@Nombres = N'Mantenimiento',
+		@Apellidos = N'CRU',
+		@Estadocivil = 1,
+		@Estrato = 1,
+		@Direccion = N'CRU - SEDE',
+		@Telefono = N'99999999',
+		@Tipo_sangre = 1,
+		@Fechanacimiento = N'01-01-2000',
+		@MunicipioNacimiento = N'Bogota',
+		@DepartamentoNacimiento = 11,
+		@Paisnacimiento = 4,
+		@cargo_empleado = 3,
+		@fecha_fin = N'01-01-2100',
+		@tipocontrato = N'Indefinido',
+		@salario = 5000000,
+		@empleadoqueregistra = NULL
+		
+GO
+EXEC	 [dbo].[Registrar_Empleado]
+		@correo = N'psicologo@gmail.com',
+		@contrasena = N'123456',
+		@TipoIdentificacion = 1,
+		@NumeroIdentificacion = N'0000000',
+		@Nombres = N'Psicologo',
+		@Apellidos = N'CRU',
+		@Estadocivil = 1,
+		@Estrato = 1,
+		@Direccion = N'CRU - SEDE',
+		@Telefono = N'99999999',
+		@Tipo_sangre = 1,
+		@Fechanacimiento = N'01-01-2000',
+		@MunicipioNacimiento = N'Bogota',
+		@DepartamentoNacimiento = 11,
+		@Paisnacimiento = 4,
+		@cargo_empleado = 1,
+		@fecha_fin = N'01-01-2100',
+		@tipocontrato = N'Indefinido',
+		@salario = 5000000,
+		@empleadoqueregistra = NULL
+		
+GO
 -- 1.3 Verificar si la persona existe?
 
+Create proc [dbo].[Insertar_Nuevo_Espacio]
+            @descripcion varchar(100),
+            @capacidad int,
+            @tipoespacio int,
+            @piso int,
+            @id_empleadoquecrea int
+        as
 
+        declare @id_espacionuevo int, @fecha_modificacion DATE, @espacionuevo int
+        Begin
+            insert into espacio
+                (descripcion_espacio, capacidad, cupo,id_tipo_espacio_,id_piso_espacio)
+            values
+                (@descripcion, @capacidad, @capacidad, @tipoespacio, @piso )
+            set @espacionuevo = @@IDENTITY;
+            set @fecha_modificacion = (select CURRENT_TIMESTAMP);
+            insert into historico_espacio (fecha_historico_espacio, estado_espacio_o, id_espacio_historico, id_empleado_historico) values
+                                           (@fecha_modificacion,1, @espacionuevo, @id_empleadoquecrea );
+        End
 
+		Go
 
+EXEC	 [dbo].[Insertar_Nuevo_Espacio]
+		@descripcion = N'Admision',
+		@capacidad = 500,
+		@tipoespacio = 1,
+		@piso = 1,
+		@id_empleadoquecrea = 1
+        GO
 
+EXEC	 [dbo].[Insertar_Nuevo_Espacio]
+		@descripcion = N'201',
+		@capacidad = 3,
+		@tipoespacio = 1,
+		@piso = 2,
+		@id_empleadoquecrea = 1
+        GO
+ EXEC	 [dbo].[Insertar_Nuevo_Espacio]
+		@descripcion = N'301',
+		@capacidad = 3,
+		@tipoespacio = 1,
+		@piso = 3,
+		@id_empleadoquecrea = 1
+        GO
+EXEC	 [dbo].[Insertar_Nuevo_Espacio]
+		@descripcion = N'401',
+		@capacidad = 2,
+		@tipoespacio = 1,
+		@piso = 4,
+		@id_empleadoquecrea = 1
+        GO        
 
 create procedure Verificar_Persona
     @id_persona varchar(15)
@@ -318,7 +453,7 @@ create PROCEDURE  Registrar_Admision
                     --Estudiante
 						insert into Persona
 						(correo_directorio,contrasena ,id_rol_Directorio ,
-						 TipoIdentificacion , NumeroIdentificacion ,
+						  NumeroIdentificacion ,
 						Nombres ,
 						Apellidos ,
 
@@ -334,14 +469,15 @@ create PROCEDURE  Registrar_Admision
 						Paisnacimiento )
 					values
 						(@correo, ENCRYPTBYPASSPHRASE('P4zZW0r4', @contrasena) , 2,
-							 @TipoIdentificacion, @NumeroIdentificacion, @Nombres ,
+							 @NumeroIdentificacion, @Nombres ,
 							@Apellidos , @Estadocivil ,
 							@Estrato , @Direccion , @Telefono  ,
 							@Tipo_sangre , @Fechanacimiento ,
 							@MunicipioNacimiento  , @DepartamentoNacimiento,
 							@Paisnacimiento );
-					set @id_enviar_directorio = @@IDENTITY;
 
+					set @id_enviar_directorio = @@IDENTITY;
+                    
 					insert into estudiante
 						(Servicio_Salud , Dispacidad_estudiante ,
 						descripcion_dispacacidad_estudainte , Situaciondesplazamientoestudiante ,
@@ -549,7 +685,6 @@ GO
 
 
 
-
 --3. Procedimeinto para agregar Acudiente
 
 Create PROCEDURE Registrar_Acudiente
@@ -664,34 +799,14 @@ EXEC  [dbo].[Registrar_Acudiente]
 		@correo_acudient = N'carlos@corre.com'
 
 
-
+Go
 
 
 
 
 --4. 
 
-Create proc [dbo].[Insertar_Nuevo_Espacio]
-            @descripcion varchar(100),
-            @capacidad int,
-            @tipoespacio int,
-            @piso int,
-            @id_empleadoquecrea int
-        as
 
-        declare @id_espacionuevo int, @fecha_modificacion DATE, @espacionuevo int
-        Begin
-            insert into espacio
-                (descripcion_espacio, capacidad, cupo,id_tipo_espacio_,id_piso_espacio)
-            values
-                (@descripcion, @capacidad, @capacidad, @tipoespacio, @piso )
-            set @espacionuevo = @@IDENTITY;
-            set @fecha_modificacion = (select CURRENT_TIMESTAMP);
-            insert into historico_espacio (fecha_historico_espacio, estado_espacio_o, id_espacio_historico, id_empleado_historico) values
-                                           (@fecha_modificacion,1, @espacionuevo, @id_empleadoquecrea );
-        End
-
-		Go
 
 Create proc [dbo].[Consultar_Espacios]
 as
@@ -817,12 +932,12 @@ END
 Go
 
 insert into solicitud (id_prioridad_solciitud__, fecha_solicitud, descripcion_solicitud,id_estudiante_solicitud, id_empleado_solicitud ) values 
-(1,'2017-09-18 12:27:58.610', 'Certificacion de cupo asignado',1,1	),
-(2,'2017-09-18 12:27:58.610', 'Certificacion Actualizacion de Datos',2,1	),
-(3,'2017-09-18 12:27:58.610', 'Cancelacion de Cupo',3,1	),
-(4,'2017-09-18 12:27:58.610', 'Actualizacion de Acudiente',3,1	),
-(3,'2017-09-18 12:27:58.610', 'Cambio de Apartamento',4,1	),
-(2,'2017-09-18 12:27:58.610', 'Asignacion de cama nueva',2,1	)
+(1,'2017-09-18 12:27:58.610', 'Certificacion de cupo asignado',1,2	),
+(2,'2017-09-18 12:27:58.610', 'Certificacion Actualizacion de Datos',2,2	),
+(3,'2017-09-18 12:27:58.610', 'Cancelacion de Cupo',3,2),
+(4,'2017-09-18 12:27:58.610', 'Actualizacion de Acudiente',3,2	),
+(3,'2017-09-18 12:27:58.610', 'Cambio de Apartamento',4,2	),
+(2,'2017-09-18 12:27:58.610', 'Asignacion de cama nueva',2,2	)
 Go
 
 
@@ -835,33 +950,246 @@ values(1, 'Se ha registrado la peticion', '2017-09-18 12:27:58.610',1,1 ),
 (6, 'Se ha registrado la peticion', '2017-09-18 12:27:58.610',1,1 )
 GO
 
+Create procedure Consultar_Solcitudes_Estudiante
+
+@correoestudiante varchar(300)
+as
+declare @id_estudiante int
+Begin
+	set @id_estudiante =  (SELECT        estudiante.id_estudiante
+							FROM            estudiante INNER JOIN
+                         Persona ON estudiante.id_directorio_estudiante = Persona.id_persona where Persona.correo_directorio =@correoestudiante);
+		
+	SELECT        solicitud.id_solicitud, solicitud.descripcion_solicitud,solicitud.fecha_solicitud as fechacreacion,
+				 historico_solicitud.fecha_modificacion , prioridad_solicitud.valor_prioridad_solciitud, estado_solicitud.valor_estado_solciitud,
+				 Persona.Nombres as Encargado, Persona.Apellidos
+FROM            historico_solicitud  INNER JOIN
+
+						(select historico_solicitud.id_caso_anotacion , max(historico_solicitud.fecha_modificacion ) as fecha from  historico_solicitud group by historico_solicitud.id_caso_anotacion ) as T1 on
+						T1.id_caso_anotacion=historico_solicitud.id_caso_anotacion and 
+						T1.fecha = historico_solicitud.fecha_modificacion
+						 INNER JOIN
+                         estado_solicitud ON historico_solicitud.id_estado_solicitud_ = estado_solicitud.id_estado_solciitud INNER JOIN
+						 solicitud on historico_solicitud.id_caso_anotacion = solicitud.id_solicitud inner join
+                         prioridad_solicitud ON solicitud.id_prioridad_solciitud__ = prioridad_solicitud.id_prioridad_solciitud INNER JOIN
+                         empleado ON empleado.id_empleado = solicitud.id_empleado_solicitud  inner join
+						 Persona on empleado.empleado_directorio= Persona.id_persona where solicitud.id_estudiante_solicitud =@id_estudiante
+
+						 
+
+end
+
+Go
+create proc Registrar_Solicitud
+@prioridad int, 
+@descripcion varchar(200),
+@correoestudiante varchar(100)
+
+
+as
+declare @fecharegistro date, @id_estudiante  int, @nuevasolicitud int
+BEgin
+set @fecharegistro = (select CURRENT_TIMESTAMP);
+set @id_estudiante =  (SELECT        estudiante.id_estudiante
+							FROM            estudiante INNER JOIN
+                         Persona ON estudiante.id_directorio_estudiante = Persona.id_persona where Persona.correo_directorio =@correoestudiante);
+
+insert into solicitud (id_prioridad_solciitud__, fecha_solicitud, descripcion_solicitud,id_estudiante_solicitud, id_empleado_solicitud ) values
+(@prioridad, @fecharegistro, @descripcion,@id_estudiante, 1 );
+set @nuevasolicitud =@@IDENTITY;
+insert into historico_solicitud (id_caso_anotacion, descripcion_anotacion, fecha_modificacion, id_empleado_historico, id_estado_solicitud_) values
+(@nuevasolicitud, 'Se ha registrado la solicitud', @fecharegistro, 1, 1);
+End
+Go
+
+
+
+create proc consultar_solicutud_detalle
+@idsolicitud int
+as
+BEGIN
+
+	SELECT        solicitud.id_solicitud,
+                    solicitud.descripcion_solicitud,
+                    solicitud.fecha_solicitud as fechacreacion,
+				 historico_solicitud.fecha_modificacion ,
+                 prioridad_solicitud.valor_prioridad_solciitud,
+                  estado_solicitud.valor_estado_solciitud,
+
+				 Persona.Nombres as Encargado, Persona.Apellidos
+FROM            historico_solicitud  INNER JOIN
+
+						(select historico_solicitud.id_caso_anotacion , max(historico_solicitud.fecha_modificacion ) as fecha from  historico_solicitud group by historico_solicitud.id_caso_anotacion ) as T1 on
+						T1.id_caso_anotacion=historico_solicitud.id_caso_anotacion and 
+						T1.fecha = historico_solicitud.fecha_modificacion
+						 INNER JOIN
+                         estado_solicitud ON historico_solicitud.id_estado_solicitud_ = estado_solicitud.id_estado_solciitud INNER JOIN
+						 solicitud on historico_solicitud.id_caso_anotacion = solicitud.id_solicitud inner join
+                         prioridad_solicitud ON solicitud.id_prioridad_solciitud__ = prioridad_solicitud.id_prioridad_solciitud INNER JOIN
+                         empleado ON empleado.id_empleado = solicitud.id_empleado_solicitud  inner join
+						 Persona on empleado.empleado_directorio= Persona.id_persona where solicitud.id_solicitud=@idsolicitud
+
+					
+END
+Go
+
+
+
+create proc Escalar_solicitud
+@correoempleado varchar(100),
+@id_solicitud int,
+@id_empleadonuevo int
+
+
+as
+declare @fecharegistro date, @idempleadoquecambia int, @estadosolicitud int 
+
+BEGIN
+set @fecharegistro = (select CURRENT_TIMESTAMP);
+	set @idempleadoquecambia =  (SELECT        empleado.id_empleado
+							FROM            empleado INNER JOIN
+                         Persona ON empleado.empleado_directorio = Persona.id_persona where Persona.correo_directorio =@correoempleado);
+	set @estadosolicitud = (SELECT         estado_solicitud.id_estado_solciitud
+				 
+FROM            historico_solicitud  INNER JOIN
+
+						(select historico_solicitud.id_caso_anotacion , max(historico_solicitud.fecha_modificacion ) as fecha from  historico_solicitud group by historico_solicitud.id_caso_anotacion ) as T1 on
+						T1.id_caso_anotacion=historico_solicitud.id_caso_anotacion and 
+						T1.fecha = historico_solicitud.fecha_modificacion
+						 INNER JOIN
+                         estado_solicitud ON historico_solicitud.id_estado_solicitud_ = estado_solicitud.id_estado_solciitud INNER JOIN
+						 solicitud on historico_solicitud.id_caso_anotacion = solicitud.id_solicitud 
+                         where solicitud.id_solicitud=@id_solicitud
+								
+								);
+	update solicitud set id_empleado_solicitud = @id_empleadonuevo where @id_solicitud=solicitud.id_solicitud
+	insert into historico_solicitud (id_caso_anotacion, descripcion_anotacion, fecha_modificacion, id_empleado_historico, id_estado_solicitud_) values
+(@id_solicitud, 'Se ha cambiado el responsable de la solicitud', @fecharegistro, @idempleadoquecambia, @estadosolicitud);
+
+END
+GO
+
+
+create proc CambiarEstadoSolicitud
+@correoempleoadocambia varchar(100),
+@id_solicitud int,
+@estadonuevo int
+
+
+as
+declare @fecharegistro date, @idempleadoquecambia int
+BEGIN
+	set @fecharegistro = (select CURRENT_TIMESTAMP);
+	set @idempleadoquecambia =  (SELECT        empleado.id_empleado
+							FROM            empleado INNER JOIN
+                         Persona ON empleado.empleado_directorio = Persona.id_persona where Persona.correo_directorio =@correoempleoadocambia);
+	insert into historico_solicitud (id_caso_anotacion, descripcion_anotacion, fecha_modificacion, id_empleado_historico, id_estado_solicitud_) values
+(@id_solicitud, 'Se ha cambiado el estado de la solicitud', @fecharegistro, @idempleadoquecambia, @estadonuevo);
+
+END
+GO
+
+
+create proc Solucionar_Solicitud
+@correoempleoadocambia varchar(100),
+@id_solicitud int,
+@solucion varchar (100)
+
+
+as
+declare @fecharegistro date, @idempleadoquecambia int
+BEGIN
+	set @fecharegistro = (select CURRENT_TIMESTAMP);
+	set @idempleadoquecambia =  (SELECT        empleado.id_empleado
+							FROM            empleado INNER JOIN
+                         Persona ON empleado.empleado_directorio = Persona.id_persona where Persona.correo_directorio =@correoempleoadocambia);
+	insert into solucion (descripcion_solucion, id_empleado_solucion, fecha_solucion, id_solicitud_solucion)values
+	(@solucion, @idempleadoquecambia, @fecharegistro, @id_solicitud);
+	insert into historico_solicitud (id_caso_anotacion, descripcion_anotacion, fecha_modificacion, id_empleado_historico, id_estado_solicitud_) values
+(@id_solicitud, 'Se ha agregado una solucion  a la solicitud', @fecharegistro, @idempleadoquecambia, 4);
+
+END
+GO
+
+
+
+create proc VerHistorico_Solicitud
+@idsolicitud int
+as
+BEGIN
+	SELECT        historico_solicitud.id_caso_anotacion, 
+                  historico_solicitud.descripcion_anotacion,
+                  historico_solicitud.fecha_modificacion, 
+                  estado_solicitud.valor_estado_solciitud, 
+                  Persona.Nombres, 
+                  Persona.Apellidos
+FROM            solicitud INNER JOIN
+                         historico_solicitud ON solicitud.id_solicitud = historico_solicitud.id_caso_anotacion INNER JOIN
+                         estado_solicitud ON historico_solicitud.id_estado_solicitud_ = estado_solicitud.id_estado_solciitud INNER JOIN
+                         empleado ON solicitud.id_empleado_solicitud = empleado.id_empleado AND historico_solicitud.id_empleado_historico = empleado.id_empleado INNER JOIN
+                         Persona ON empleado.empleado_directorio = Persona.id_persona where historico_solicitud.id_caso_anotacion = @idsolicitud
+
+END
+GO
 
 
 
 
+Create procedure Consultar_Solcitudes_Empleado
+
+@correoempleado varchar(300)
+as
+declare @id_empleado int
+Begin
+	set @id_empleado =  (SELECT        empleado.id_empleado
+							FROM            empleado INNER JOIN
+                         Persona ON empleado.empleado_directorio = Persona.id_persona where Persona.correo_directorio =@correoempleado);	
+	SELECT        solicitud.id_solicitud, solicitud.descripcion_solicitud,solicitud.fecha_solicitud as fechacreacion,
+				 historico_solicitud.fecha_modificacion , prioridad_solicitud.valor_prioridad_solciitud, estado_solicitud.valor_estado_solciitud,
+				 Persona.Nombres as Estudiante, Persona.Apellidos
+FROM            historico_solicitud  INNER JOIN
+
+						(select historico_solicitud.id_caso_anotacion , max(historico_solicitud.fecha_modificacion ) as fecha from  historico_solicitud group by historico_solicitud.id_caso_anotacion ) as T1 on
+						T1.id_caso_anotacion=historico_solicitud.id_caso_anotacion and 
+						T1.fecha = historico_solicitud.fecha_modificacion
+						 INNER JOIN
+                         estado_solicitud ON historico_solicitud.id_estado_solicitud_ = estado_solicitud.id_estado_solciitud INNER JOIN
+						 solicitud on historico_solicitud.id_caso_anotacion = solicitud.id_solicitud inner join
+                         prioridad_solicitud ON solicitud.id_prioridad_solciitud__ = prioridad_solicitud.id_prioridad_solciitud INNER JOIN
+                         estudiante ON estudiante.id_estudiante = solicitud.id_estudiante_solicitud  inner join
+						 Persona on estudiante.id_directorio_estudiante		= Persona.id_persona where solicitud.id_empleado_solicitud =@id_empleado
+
+						 
+
+end
+
+Go
+
+create proc empleadosdisponiblesparaescalar
+as
+BEGIN
+SELECT        empleado.id_empleado, Persona.Nombres, Persona.Apellidos
+FROM            Persona INNER JOIN
+                         empleado ON Persona.id_persona = empleado.empleado_directorio where Persona.id_rol_Directorio=1
+END
 
 
+GO
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+create proc Consultar_Todos_Empleados
+as
+BEGIN
+SELECT        cargo.valor_cargo, Persona.id_persona, Persona.Nombres, Persona.Apellidos, Persona.NumeroIdentificacion, Persona.Direccion, Persona.Telefono, Persona.Estadocivil
+FROM            empleado INNER JOIN
+						contrato on empleado.id_empleado = contrato.id_empleado inner join
+                         cargo ON contrato.cargo_contrato = cargo.id_cargo INNER JOIN
+                       
+                         Persona ON empleado.empleado_directorio = Persona.id_persona 
+                        
+where Persona.id_persona  <>1
+           END              
+       GO
 
 
 
