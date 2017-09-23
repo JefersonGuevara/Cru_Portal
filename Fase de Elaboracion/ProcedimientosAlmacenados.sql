@@ -25,7 +25,29 @@ CREATE PROCEDURE Consultar_Login
   
   END
           GO
+CREATE PROCEDURE Consultar_Login_app
+    @correo varchar (100),
+    @pass varchar (300)
 
+  AS
+  DECLARE @PassEncode As varchar(300)
+  DECLARE @PassDecode As varchar(50)
+  
+  BEGIN
+  
+      SELECT @PassEncode = Persona.contrasena
+      From Persona
+      WHERE Persona.correo_directorio = @correo
+      SET @PassDecode = DECRYPTBYPASSPHRASE('P4zZW0r4', @PassEncode)
+      SELECT estudiante.id_estudiante from estudiante
+      inner join Persona on Persona.id_persona=estudiante.id_directorio_estudiante
+
+
+      WHERE (Persona.correo_directorio = @correo AND @PassDecode=@pass)
+  
+  
+  END
+          GO
 create proc Consultar_Tipos_de_Identificacion
 
 as
@@ -358,20 +380,26 @@ Create proc [dbo].[Insertar_Nuevo_Espacio]
                 (@descripcion, @capacidad, @capacidad, @tipoespacio, @piso )
             set @espacionuevo = @@IDENTITY;
             set @fecha_modificacion = (select CURRENT_TIMESTAMP);
-            insert into historico_espacio (fecha_historico_espacio, estado_espacio_o, id_espacio_historico, id_empleado_historico) values
-                                           (@fecha_modificacion,1, @espacionuevo, @id_empleadoquecrea );
+            insert into historico_espacio (fecha_historico_espacio,descripcion, estado_espacio_o, id_espacio_historico, id_empleado_historico) values
+                                           (@fecha_modificacion,'Se ha creado el espacio', 1, @espacionuevo, @id_empleadoquecrea );
         End
 
 		Go
 
 EXEC	 [dbo].[Insertar_Nuevo_Espacio]
 		@descripcion = N'Admision',
-		@capacidad = 500,
+		@capacidad = 300,
 		@tipoespacio = 1,
 		@piso = 1,
 		@id_empleadoquecrea = 1
         GO
-
+EXEC	 [dbo].[Insertar_Nuevo_Espacio]
+		@descripcion = N'Bodega',
+		@capacidad = 1000,
+		@tipoespacio = 3,
+		@piso = 1,
+		@id_empleadoquecrea = 1
+        GO
 EXEC	 [dbo].[Insertar_Nuevo_Espacio]
 		@descripcion = N'201',
 		@capacidad = 3,
@@ -402,6 +430,8 @@ create procedure Verificar_Persona
     --si es null el resultado no existe puede, ejecutar registro
     --si no es null, no se puede registrar
 go
+
+--2. Procedimeinto para registrar estudiante en la admision
 
 --2. Procedimeinto para registrar estudiante en la admision
 create PROCEDURE  Registrar_Admision
@@ -441,7 +471,14 @@ create PROCEDURE  Registrar_Admision
     @descripcion_apoyo_                        varchar(100),
     @raza_estudiante                           int ,
     --Tabla Raza
-    @id_espacio_estudiante                       int    
+        	@Universidad varchar(100),
+		@Facultad varchar(100),
+		@Programa  varchar(100),
+		@PuntajeBasicoMatricula varchar(20),
+		@Promedio varchar(4),
+		@FechadeIngreso datetime,
+		@Semestre_ingreso int,
+		@porcentajedeavance varchar(2)
   as
 
     declare @id_role int,  
@@ -466,7 +503,7 @@ create PROCEDURE  Registrar_Admision
 						Fechanacimiento ,
 						MunicipioNacimiento ,
 						DepartamentoNacimiento, --Tabla Departamento
-						Paisnacimiento )
+						Paisnacimiento, sesion )
 					values
 						(@correo, ENCRYPTBYPASSPHRASE('P4zZW0r4', @contrasena) , 2,
 							 @NumeroIdentificacion, @Nombres ,
@@ -474,38 +511,47 @@ create PROCEDURE  Registrar_Admision
 							@Estrato , @Direccion , @Telefono  ,
 							@Tipo_sangre , @Fechanacimiento ,
 							@MunicipioNacimiento  , @DepartamentoNacimiento,
-							@Paisnacimiento );
+							@Paisnacimiento , 2);
 
 					set @id_enviar_directorio = @@IDENTITY;
-                    
+                    insert into HistoricoTipoIdentificacion (id_personatipo, id_tipoidentifica)values(@id_enviar_directorio,@TipoIdentificacion );
 					insert into estudiante
 						(Servicio_Salud , Dispacidad_estudiante ,
 						descripcion_dispacacidad_estudainte , Situaciondesplazamientoestudiante ,
 						Numerohermanos ,tipodevivienda_estudiante ,
 						apoyouniversidad, descripcion_apoyo_ ,
 						raza_estudiante,
-						id_espacio_estudiante , id_directorio_estudiante)
+						 id_directorio_estudiante)
 
 					values
 						(@Servicio_Salud, @Dispacidad_estudiante,
 							@descripcion_dispacacidad_estudainte, @Situaciondesplazamientoestudiante,
 							@Numerohermanos, @tipodevivienda_estudiante,
 							@apoyouniversidad , @descripcion_apoyo_ ,
-							@raza_estudiante  , @id_espacio_estudiante  , @id_enviar_directorio);
+							@raza_estudiante    , @id_enviar_directorio);
+
+
 					set @nuevoestudiante = @@IDENTITY;
+					insert into historico_directorio(id_directorio_, Estado_directorio_CRU, descripcion_histoico, fecha, id_empleado) 
+					values ( @id_enviar_directorio, 4, 'Se ha registrado la admision', @fecha_modificacion, 1);
 					--Insert historico estudiante
 					insert into historicoestudiante
 						(id_estudiante, fecha_historico_expediente, descripcion_historico_expediente, id_empleado_historicoestudiante)
 					values
 						(@nuevoestudiante, @fecha_modificacion, 'Se registro un Estudiante', 1);
-					--Insert historico persona
-					insert into historico_directorio(id_directorio_, Estado_directorio_CRU, descripcion_histoico, fecha, id_empleado) 
-					values ( @id_enviar_directorio, 4, 'Se ha registrado la admision', @fecha_modificacion, 1);
+					update espacio set cupo = (select espacio.cupo)-1 where espacio.id_espacio=1;
+					insert into historico_espacio (estado_espacio_o,descripcion, fecha_historico_espacio,id_empleado_historico,id_espacio_historico,id_estudiante_espacio)
+					values(1,'Se ha agregado un cupo en Admisiones', @fecha_modificacion, 1,1,@nuevoestudiante );
+					
+					insert into datosuniversidad (Año_ingreso_Universidad_,Facultad_estudiante,id_estudiante_datosuniversidad,Porcentaje_Avance,Programa_estudiante,Promedio_Academico_estudiante,Puntaje_Basico_Matricula,semestre_ingreso_universidad,Universidad_estudiante)
+					values(@FechadeIngreso, @Facultad, @nuevoestudiante, @porcentajedeavance, @Programa, @Promedio, @PuntajeBasicoMatricula, @Semestre_ingreso, @Universidad);
+					
 
+					
+					
          
     END
 GO
-
 EXEC	[dbo].[Registrar_Admision]
 		@correo = N'estudiante1@cru.com',
 		@contrasena = N'123456',
@@ -980,6 +1026,38 @@ FROM            historico_solicitud  INNER JOIN
 end
 
 Go
+
+
+Create procedure Consultar_Solcitudes_Estudiante_ID
+
+@id int
+as
+
+Begin
+	
+		
+	SELECT        solicitud.id_solicitud, solicitud.descripcion_solicitud,solicitud.fecha_solicitud as fechacreacion,
+				 historico_solicitud.fecha_modificacion , prioridad_solicitud.valor_prioridad_solciitud, estado_solicitud.valor_estado_solciitud,
+				 Persona.Nombres as Encargado, Persona.Apellidos
+FROM            historico_solicitud  INNER JOIN
+
+						(select historico_solicitud.id_caso_anotacion , max(historico_solicitud.fecha_modificacion ) as fecha from  historico_solicitud group by historico_solicitud.id_caso_anotacion ) as T1 on
+						T1.id_caso_anotacion=historico_solicitud.id_caso_anotacion and 
+						T1.fecha = historico_solicitud.fecha_modificacion
+						 INNER JOIN
+                         estado_solicitud ON historico_solicitud.id_estado_solicitud_ = estado_solicitud.id_estado_solciitud INNER JOIN
+						 solicitud on historico_solicitud.id_caso_anotacion = solicitud.id_solicitud inner join
+                         prioridad_solicitud ON solicitud.id_prioridad_solciitud__ = prioridad_solicitud.id_prioridad_solciitud INNER JOIN
+                         empleado ON empleado.id_empleado = solicitud.id_empleado_solicitud  inner join
+						 Persona on empleado.empleado_directorio= Persona.id_persona where solicitud.id_estudiante_solicitud =@id;
+
+						 
+
+end
+
+Go
+
+
 create proc Registrar_Solicitud
 @prioridad int, 
 @descripcion varchar(200),
@@ -1528,20 +1606,6 @@ END
 GO
 
 
-create proc Insertar_Nuevo_Espacio
-    @descripcion varchar(100),
-    @capacidad int,
-    @tipoespacio int,
-    @piso int
-as
-Begin
-    insert into espacio
-        (descripcion_espacio, capacidad, cupo,id_tipo_espacio_,id_piso_espacio, estado_espacio_o)
-    values
-        (@descripcion, @capacidad, @capacidad, @tipoespacio, @piso, 1 )
-
-End
-go
 
 
 
@@ -1609,25 +1673,6 @@ where espacio.id_espacio=@id;
 go
 
 
-create proc Consultar_Un_Empleado
-    @identificacion int
-
-as
-BEGIN
-    SELECT DirectorioActivo.Nombres, DirectorioActivo.Apellidos, DirectorioActivo.NumeroIdentificacion, DirectorioActivo.Estrato, DirectorioActivo.Direccion, DirectorioActivo.Telefono, DirectorioActivo.Fechanacimiento,
-        DirectorioActivo.MunicipioNacimiento, departamento.descripcion_departamento, estadocivil.valor_estadocivil, tipoidentificacion.valor_tipoidentificacion, tipodesangre.descripcion_tipo_sangre,
-        estado_usuario_cru.Descripcion_estado_usuario_cru, cargo.valor_cargo, DirectorioActivo.correo_directorio, DirectorioActivo.id_directorio_
-    FROM DirectorioActivo INNER JOIN
-        empleado ON DirectorioActivo.id_directorio_ = empleado.empleado_directorio INNER JOIN
-        cargo ON empleado.cargo_empleado = cargo.id_cargo INNER JOIN
-        departamento ON DirectorioActivo.DepartamentoNacimiento = departamento.id_departamento INNER JOIN
-        estado_usuario_cru ON DirectorioActivo.Estado_directorio_CRU = estado_usuario_cru.Id_estado_usuario_cru INNER JOIN
-        estadocivil ON DirectorioActivo.Estadocivil = estadocivil.id_estadocivil INNER JOIN
-        tipodesangre ON DirectorioActivo.Tipo_sangre = tipodesangre.id_tipo_sangre INNER JOIN
-        tipoidentificacion ON DirectorioActivo.TipoIdentificacion = tipoidentificacion.id_tipoidentificacion
-    where DirectorioActivo.id_directorio_ = @identificacion
-END
-       GO
 
 
 

@@ -1,9 +1,8 @@
 ﻿use master
-go
+Go
 
 drop database PrototipoCRU
-go
-
+GO
 create database PrototipoCRU
         go
 use PrototipoCRU
@@ -502,11 +501,11 @@ go
 
 
 create table HistoricoTipoIdentificacion(
-    id int not null,
+    id int IDENTITY(1,1) not null,
     id_personatipo int not null,
     id_tipoidentifica int not null,
 
-    primary key (id)
+    primary key (id),
     CONSTRAINT  fk_tipodocumentoDirectorio
                     FOREIGN KEY (  id_tipoidentifica )
                     REFERENCES    tipoidentificacion  (  id_tipoidentificacion ),
@@ -665,6 +664,7 @@ CREATE TABLE historico_espacio
     id_historico_espacio int IDENTITY(1,1) not null,
     fecha_historico_espacio date not null,
     estado_espacio_o int not null,
+    descripcion varchar (100) not null,
     id_espacio_historico int not null,
     id_empleado_historico int,
     id_estudiante_espacio int, 
@@ -678,7 +678,7 @@ CREATE TABLE historico_espacio
 
     CONSTRAINT  fk_historico_espacio
                         FOREIGN KEY (  id_espacio_historico )
-                        REFERENCES   espacio ( id_espacio)
+                        REFERENCES   espacio ( id_espacio),
 
     CONSTRAINT  fk_estudiante_espacio
                         FOREIGN KEY ( id_estudiante_espacio )
