@@ -345,7 +345,30 @@ EXEC	 [dbo].[Registrar_Empleado]
 		@TipoIdentificacion = 1,
 		@NumeroIdentificacion = N'0000000',
 		@Nombres = N'Psicologo',
-		@Apellidos = N'CRU',
+		@Apellidos = N'UNO',
+		@Estadocivil = 1,
+		@Estrato = 1,
+		@Direccion = N'CRU - SEDE',
+		@Telefono = N'99999999',
+		@Tipo_sangre = 1,
+		@Fechanacimiento = N'01-01-2000',
+		@MunicipioNacimiento = N'Bogota',
+		@DepartamentoNacimiento = 11,
+		@Paisnacimiento = 4,
+		@cargo_empleado = 1,
+		@fecha_fin = N'01-01-2100',
+		@tipocontrato = N'Indefinido',
+		@salario = 5000000,
+		@empleadoqueregistra = NULL
+		
+GO
+EXEC	 [dbo].[Registrar_Empleado]
+		@correo = N'psicologo2@gmail.com',
+		@contrasena = N'123456',
+		@TipoIdentificacion = 1,
+		@NumeroIdentificacion = N'0000000',
+		@Nombres = N'Psicologo ',
+		@Apellidos = N'DOS',
 		@Estadocivil = 1,
 		@Estrato = 1,
 		@Direccion = N'CRU - SEDE',
@@ -869,7 +892,7 @@ FROM            historico_espacio  INNER JOIN
                          espacio ON historico_espacio.id_espacio_historico = espacio.id_espacio INNER JOIN
                          tipo_espacio ON espacio.id_tipo_espacio_ = tipo_espacio.id_tipo_espacio inner join
 						 piso on espacio.id_piso_espacio = piso.id_piso
-						where espacio.id_espacio <>1
+						where espacio.id_espacio <>1 and espacio.id_espacio<>2
 END
 
 Go
@@ -1270,27 +1293,326 @@ where Persona.id_persona  <>1
        GO
 
 
+insert into cita (fecha_cita,id_empleado_cita,id_paciente)values 
+				('2017-09-26 15:00:00.000', 5, 1),
+				('2017-09-25 18:00:00.000', 4, 2),
+				('2017-09-24 18:00:00.000', 5, 2),
+				('2017-09-25 14:00:00.000', 4, 1),
+				('2017-09-25 16:00:00.000', 5, 1)
+				GO
+insert into HistoricoCita (id_cita_, descripcion_anotacion, fecha_modificacion, id_empleado_historico, id_estadocita)
+							values(1, 'Se ha agendado la cita', '2017-09-22 15:00:00.000', 1, 1 ),
+								(2, 'Se ha agendado la cita', '2017-09-22 15:00:00.000', 1, 1 ),
+								(3, 'Se ha agendado la cita', '2017-09-22 15:00:00.000', 1, 1 ),
+								(4, 'Se ha agendado la cita', '2017-09-22 15:00:00.000', 1, 1 ),
+								(5, 'Se ha agendado la cita', '2017-09-22 15:00:00.000', 1, 1 ),
+                                (4, 'Se ha cancelado la cita', '2017-09-23 15:00:00.000', 1, 4 )
+
+							go
+
+
+create proc consultarCitasAgendadasAPP
+@id_estudiante int
+as
+BEGIN
+select cita.id_cita,cita.fecha_cita, Persona.Nombres , Persona.Apellidos , estado_cita.valor_estado_cita from HistoricoCita
+		inner join (select HistoricoCita.id_cita_ as id, max (HistoricoCita.fecha_modificacion)as fecha from HistoricoCita group by HistoricoCita.id_cita_ )as
+		 t1 on t1.id= HistoricoCita.id_cita_ and t1.fecha= HistoricoCita.fecha_modificacion 
+		inner join estado_cita on estado_cita.id_estado_cita = HistoricoCita.id_estadocita
+		inner join cita on cita.id_cita= HistoricoCita.id_cita_
+		inner join empleado on empleado.id_empleado = cita.id_empleado_cita
+		inner join Persona on Persona.id_persona = empleado.empleado_directorio
+		where cita.id_paciente=@id_estudiante order by fecha_cita desc
+END
+GO
+
+create proc consultarCitasAgendadasEstudianteWeb
+@correo varchar(100)
+as
+declare @id_estudiante int
+BEGIN
+set @id_estudiante =(select estudiante.id_estudiante from estudiante
+						inner join Persona on Persona.id_persona = estudiante.id_directorio_estudiante
+						where  Persona.correo_directorio =@correo);
+
+select cita.id_cita,cita.fecha_cita, Persona.Nombres , Persona.Apellidos , estado_cita.valor_estado_cita from HistoricoCita
+		inner join (select HistoricoCita.id_cita_ as id, max (HistoricoCita.fecha_modificacion)as fecha from HistoricoCita group by HistoricoCita.id_cita_ )as
+		 t1 on t1.id= HistoricoCita.id_cita_ and t1.fecha= HistoricoCita.fecha_modificacion 
+		inner join estado_cita on estado_cita.id_estado_cita = HistoricoCita.id_estadocita
+		inner join cita on cita.id_cita= HistoricoCita.id_cita_
+		inner join empleado on empleado.id_empleado = cita.id_empleado_cita
+		inner join Persona on Persona.id_persona = empleado.empleado_directorio
+		where cita.id_paciente=@id_estudiante order by fecha_cita desc
+END
+GO
+
+create proc VerDetalleCitasEstudianteWeb
+@correo varchar(100),
+@id_cita int
+as
+declare @id_estudiante int
+BEGIN
+set @id_estudiante =(select estudiante.id_estudiante from estudiante
+						inner join Persona on Persona.id_persona = estudiante.id_directorio_estudiante
+						where  Persona.correo_directorio =@correo);
+
+select cita.id_cita,cita.fecha_cita, Persona.Nombres , Persona.Apellidos , estado_cita.valor_estado_cita from HistoricoCita
+		inner join (select HistoricoCita.id_cita_ as id, max (HistoricoCita.fecha_modificacion)as fecha from HistoricoCita group by HistoricoCita.id_cita_ )as
+		 t1 on t1.id= HistoricoCita.id_cita_ and t1.fecha= HistoricoCita.fecha_modificacion 
+		inner join estado_cita on estado_cita.id_estado_cita = HistoricoCita.id_estadocita
+		inner join cita on cita.id_cita= HistoricoCita.id_cita_
+		inner join empleado on empleado.id_empleado = cita.id_empleado_cita
+		inner join Persona on Persona.id_persona = empleado.empleado_directorio
+		where cita.id_paciente=@id_estudiante and cita.id_cita=@id_cita
+END
+GO
+
+
+create proc CancelarCitaEstudiante
+@id_cita int
+as
+declare @fecha datetime
+BEGIN
+set @fecha = (Select CURRENT_TIMESTAMP);
+	insert into HistoricoCita 
+	( descripcion_anotacion, id_estadocita, fecha_modificacion, id_cita_) values
+	('El estudiante ha cancelado la cita ',4, @fecha, @id_cita );  
+END
+GO
+
+
+create proc AgendarCitaestudiante
+@fechaCita datetime,
+@empleado int,
+@correoestudiante varchar(100)
+as
+declare @idestudiante int, @idnuevacita int, @fechamodi datetime
+BEGIN
+set @fechamodi = (select CURRENT_TIMESTAMP);
+set @idestudiante = (select estudiante.id_estudiante from estudiante
+					inner join Persona on Persona.id_persona = estudiante.id_directorio_estudiante
+					where Persona.correo_directorio =@correoestudiante);
+insert into cita (fecha_cita, id_empleado_cita, id_paciente)
+			values (@fechaCita, @empleado, @idestudiante);
+set @idnuevacita = @@IDENTITY;
+insert into HistoricoCita (descripcion_anotacion, fecha_modificacion, id_cita_, id_estadocita)
+values('Se ha agendado la cita', @fechamodi, @idnuevacita, 1);
+
+END
+GO
+
+
+create proc consultarCitasEmpleado
+@correoempleado varchar(300)
+as
+declare @id_empleado int
+Begin
+	set @id_empleado =  (SELECT        empleado.id_empleado
+							FROM            empleado INNER JOIN
+                         Persona ON empleado.empleado_directorio = Persona.id_persona where Persona.correo_directorio =@correoempleado);	
+
+select cita.id_cita,cita.fecha_cita, Persona.Nombres , Persona.Apellidos , estado_cita.valor_estado_cita from HistoricoCita
+		inner join (select HistoricoCita.id_cita_ as id, max (HistoricoCita.fecha_modificacion)as fecha from HistoricoCita group by HistoricoCita.id_cita_ )as
+		 t1 on t1.id= HistoricoCita.id_cita_ and t1.fecha= HistoricoCita.fecha_modificacion 
+		inner join estado_cita on estado_cita.id_estado_cita = HistoricoCita.id_estadocita
+		inner join cita on cita.id_cita= HistoricoCita.id_cita_
+		inner join estudiante on estudiante.id_estudiante = cita.id_paciente
+		inner join Persona on Persona.id_persona = estudiante.id_directorio_estudiante
+		where cita.id_empleado_cita=@id_empleado order by fecha_cita desc
+END
+GO
+
+
+
+create proc VerDetalleCitaEmpleado
+@correoempleado varchar(300), 
+@id_cita int
+as
+declare @id_empleado int
+Begin
+	set @id_empleado =  (SELECT        empleado.id_empleado
+							FROM            empleado INNER JOIN
+                         Persona ON empleado.empleado_directorio = Persona.id_persona where Persona.correo_directorio =@correoempleado);	
+
+select cita.id_cita,cita.fecha_cita, Persona.Nombres , Persona.Apellidos , estado_cita.valor_estado_cita from HistoricoCita
+		inner join (select HistoricoCita.id_cita_ as id, max (HistoricoCita.fecha_modificacion)as fecha from HistoricoCita group by HistoricoCita.id_cita_ )as
+		 t1 on t1.id= HistoricoCita.id_cita_ and t1.fecha= HistoricoCita.fecha_modificacion 
+		inner join estado_cita on estado_cita.id_estado_cita = HistoricoCita.id_estadocita
+		inner join cita on cita.id_cita= HistoricoCita.id_cita_
+		inner join estudiante on estudiante.id_estudiante = cita.id_paciente
+		inner join Persona on Persona.id_persona = estudiante.id_directorio_estudiante
+		where cita.id_empleado_cita=@id_empleado and cita.id_cita = @id_cita
+END
+GO
+
+
+create proc RegistrarExpedienteCita
+@descripcion_expediente varchar(500),
+@cita int,
+@correoempleoado varchar(100)
+as
+declare @fecha datetime, @id_expnuevo int, @id_empleado int
+BEGIN
+set @fecha = (select CURRENT_TIMESTAMP);
+set @id_empleado =(select empleado.id_empleado from empleado INNER JOin
+					Persona on Persona.id_persona = empleado.empleado_directorio
+					where Persona.correo_directorio = @correoempleoado);
+insert into expediente 
+			(descripcion_Expediente,fecha_expediente, id_tipo_exp )values
+			(@descripcion_expediente, @fecha, 1);
+set @id_expnuevo = @@IDENTITY;
+update cita set id_expediente_cita  = @id_expnuevo  where cita.id_cita = @cita;
+insert into HistoricoCita (descripcion_anotacion, fecha_modificacion,id_cita_, id_empleado_historico, id_estadocita)values
+			('Se ha atendido la cita ', @fecha,@cita, @id_empleado, 2 );
+END
+GO
+
+
+create proc VerDetalleExpedienteCita
+@id_cita int
+as
+BEGIN
+
+select expediente.descripcion_Expediente, expediente.fecha_expediente  from expediente
+		INNER JOIN cita on cita.id_expediente_cita = expediente.id_expediente
+		where cita.id_cita = @id_cita
+END
+GO
+
+create proc CancelarCitaEmpleado
+@id_cita int,
+@correoempleado varchar(100)
+as
+declare @fecha datetime, @id_empleoad int
+BEGIN
+set @fecha = (Select CURRENT_TIMESTAMP);
+set @id_empleoad = (Select empleado.id_empleado from empleado 
+					Inner join Persona on Persona.id_persona = empleado.empleado_directorio
+					where Persona.correo_directorio = @correoempleado);
+					
+	insert into HistoricoCita 
+	( descripcion_anotacion, id_estadocita, fecha_modificacion, id_cita_, id_empleado_historico) values
+	('El empleado ha cancelado la cita ',4, @fecha, @id_cita, @id_empleoad );  
+END
+GO
 
 
 
 
+create proc EstudiantesAdmision
+as
+BEGIN
+
+SELECT        estudiante.id_estudiante , Persona.Nombres, Persona.Apellidos, estado_usuario_cru.Descripcion_estado_usuario_cru 
+FROM            historico_directorio  INNER JOIN
+
+						(select historico_directorio.id_directorio_ as id, max(historico_directorio.fecha ) as fecha from  historico_directorio group by historico_directorio.id_directorio_ ) as T1 on
+						T1.id=historico_directorio.id_directorio_ and 
+						T1.fecha = historico_directorio.fecha
+						 INNER JOIN Persona on Persona.id_persona = historico_directorio.id_directorio_
+						 INNER JOIN estudiante on Persona.id_persona = estudiante.id_directorio_estudiante
+						 INNER join  estado_usuario_cru on estado_usuario_cru.Id_estado_usuario_cru = historico_directorio.Estado_directorio_CRU
+						 where historico_directorio.Estado_directorio_CRU =4
+                        
+						
+END
+GO
+create proc AgregarAnotacionEstudiante
+@id_estudiante int,
+@anotacion varchar (200),
+@correoquemodifica varchar (100)
+as
+declare @id_directorio int, @estado int , @fechamod datetime, @id_empleoad int
+
+BEGIN
+
+set @id_empleoad =  (SELECT        empleado.id_empleado
+							FROM            empleado INNER JOIN
+                         Persona ON empleado.empleado_directorio = Persona.id_persona where Persona.correo_directorio =@correoquemodifica);
+
+set @id_directorio = (select Persona.id_persona from Persona
+  INNER JOIN estudiante on estudiante.id_directorio_estudiante = Persona.id_persona 
+  where estudiante.id_estudiante = @id_estudiante );
+ 
+	set @fechamod = (select CURRENT_TIMESTAMP);
+	insert into historicoestudiante (descripcion_historico_expediente, fecha_historico_expediente, id_empleado_historicoestudiante, id_estudiante) values
+		(@anotacion, @fechamod, @id_empleoad, @id_estudiante);
+
+
+END
+GO
+EXEC	[AgregarAnotacionEstudiante]
+		@id_estudiante = 1,
+		@anotacion = N'Se realiza validacion de la informacion, la direccion no concuerda',
+		@correoquemodifica = N'psicologo@gmail.com'
+GO
+EXEC	[AgregarAnotacionEstudiante]
+		@id_estudiante = 4,
+		@anotacion = N'Se realiza validacion de la informacion, malas referencias del convivencia',
+		@correoquemodifica = N'director@gmail.com'
+GO
+EXEC	[AgregarAnotacionEstudiante]
+		@id_estudiante = 3,
+		@anotacion = N'Se realiza validacion de la informacion, todo correcto',
+		@correoquemodifica = N'psicologo2@gmail.com'
+GO
+
+EXEC	[AgregarAnotacionEstudiante]
+		@id_estudiante = 3,
+		@anotacion = N'Se realiza validacion de la informacion, todo correcto',
+		@correoquemodifica = N'director@gmail.com'
+GO
+
+EXEC	[AgregarAnotacionEstudiante]
+		@id_estudiante = 3,
+		@anotacion = N'Se realiza entrevista, resultado positivo',
+		@correoquemodifica = N'psicologo2@gmail.com'
+GO
+
+
+EXEC	[AgregarAnotacionEstudiante]
+		@id_estudiante = 2,
+		@anotacion = N'Se realiza validacion de la informacion, todo correcto',
+		@correoquemodifica = N'director@gmail.com'
+GO
+
+
+
+EXEC	[AgregarAnotacionEstudiante]
+		@id_estudiante = 3,
+		@anotacion = N'Pendiente por asignar espacio',
+		@correoquemodifica = N'psicologo2@gmail.com'
+GO
+
+
+
+EXEC	[AgregarAnotacionEstudiante]
+		@id_estudiante = 5,
+		@anotacion = N'Se realiza validacion de la informacion, todo correcto',
+		@correoquemodifica = N'director@gmail.com'
+GO
+
+
+EXEC	[AgregarAnotacionEstudiante]
+		@id_estudiante = 5,
+		@anotacion = N'Se realiza entrevista , el estudiante no controla emociones fuertes',
+		@correoquemodifica = N'psicologo2@gmail.com'
+GO
 
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
+create proc verhistoricoestudiante
+@id_estudiante int 
+as
+BEGIN
+	
+	select historicoestudiante.fecha_historico_expediente, historicoestudiante.descripcion_historico_expediente, Persona.Nombres, Persona.Apellidos from historicoestudiante
+			inner join empleado on empleado.id_empleado = historicoestudiante.id_empleado_historicoestudiante
+			INNER JOIN persona on empleado.empleado_directorio = Persona.id_persona
+			where historicoestudiante.id_estudiante =@id_estudiante;
+END
+GO
 
 
 

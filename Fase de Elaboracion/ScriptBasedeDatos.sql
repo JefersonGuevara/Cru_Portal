@@ -935,7 +935,7 @@ create table estado_cita
 INSERT INTO estado_cita
     (valor_estado_cita)
 VALUES
-    ('Pendiente'),
+    ('Agendada'),
     ('Atendida'),
     ('No asistio'),
     ('Cancelada');
