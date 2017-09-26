@@ -1294,11 +1294,16 @@ where Persona.id_persona  <>1
 
 
 insert into cita (fecha_cita,id_empleado_cita,id_paciente)values 
-				('2017-09-26 15:00:00.000', 5, 1),
-				('2017-09-25 18:00:00.000', 4, 2),
-				('2017-09-24 18:00:00.000', 5, 2),
+				('2017-09-25 15:00:00.000', 5, 1),
+				('2017-09-25 10:00:00.000', 4, 2),
+				('2017-09-25 18:00:00.000', 5, 2),
 				('2017-09-25 14:00:00.000', 4, 1),
-				('2017-09-25 16:00:00.000', 5, 1)
+				('2017-09-25 16:00:00.000', 5, 1),
+                ('2017-09-26 15:00:00.000', 5, 2),
+				('2017-09-26 18:00:00.000', 4, 2),
+				('2017-09-26 13:00:00.000', 5, 1),
+				('2017-09-27 14:00:00.000', 4, 1),
+				('2017-09-29 16:00:00.000', 5, 1)
 				GO
 insert into HistoricoCita (id_cita_, descripcion_anotacion, fecha_modificacion, id_empleado_historico, id_estadocita)
 							values(1, 'Se ha agendado la cita', '2017-09-22 15:00:00.000', 1, 1 ),
@@ -1306,7 +1311,13 @@ insert into HistoricoCita (id_cita_, descripcion_anotacion, fecha_modificacion, 
 								(3, 'Se ha agendado la cita', '2017-09-22 15:00:00.000', 1, 1 ),
 								(4, 'Se ha agendado la cita', '2017-09-22 15:00:00.000', 1, 1 ),
 								(5, 'Se ha agendado la cita', '2017-09-22 15:00:00.000', 1, 1 ),
-                                (4, 'Se ha cancelado la cita', '2017-09-23 15:00:00.000', 1, 4 )
+                                (4, 'Se ha cancelado la cita', '2017-09-23 15:00:00.000', 1, 4 ),
+                                (6, 'Se ha agendado la cita', '2017-09-22 18:00:00.000', 1, 1 ),
+								(7, 'Se ha agendado la cita', '2017-09-22 16:00:00.000', 1, 1 ),
+								(8, 'Se ha agendado la cita', '2017-09-22 17:00:00.000', 1, 1 ),
+								(9, 'Se ha agendado la cita', '2017-09-22 15:00:00.000', 1, 1 ),
+								(10, 'Se ha agendado la cita', '2017-09-22 15:00:00.000', 1, 1 )
+                               
 
 							go
 
@@ -1315,7 +1326,8 @@ create proc consultarCitasAgendadasAPP
 @id_estudiante int
 as
 BEGIN
-select cita.id_cita,cita.fecha_cita, Persona.Nombres , Persona.Apellidos , estado_cita.valor_estado_cita from HistoricoCita
+select cita.id_cita,
+cita.fecha_cita, Persona.Nombres , Persona.Apellidos , estado_cita.valor_estado_cita from HistoricoCita
 		inner join (select HistoricoCita.id_cita_ as id, max (HistoricoCita.fecha_modificacion)as fecha from HistoricoCita group by HistoricoCita.id_cita_ )as
 		 t1 on t1.id= HistoricoCita.id_cita_ and t1.fecha= HistoricoCita.fecha_modificacion 
 		inner join estado_cita on estado_cita.id_estado_cita = HistoricoCita.id_estadocita
@@ -1335,7 +1347,8 @@ set @id_estudiante =(select estudiante.id_estudiante from estudiante
 						inner join Persona on Persona.id_persona = estudiante.id_directorio_estudiante
 						where  Persona.correo_directorio =@correo);
 
-select cita.id_cita,cita.fecha_cita, Persona.Nombres , Persona.Apellidos , estado_cita.valor_estado_cita from HistoricoCita
+select cita.id_cita,
+    cita.fecha_cita, Persona.Nombres , Persona.Apellidos , estado_cita.valor_estado_cita from HistoricoCita
 		inner join (select HistoricoCita.id_cita_ as id, max (HistoricoCita.fecha_modificacion)as fecha from HistoricoCita group by HistoricoCita.id_cita_ )as
 		 t1 on t1.id= HistoricoCita.id_cita_ and t1.fecha= HistoricoCita.fecha_modificacion 
 		inner join estado_cita on estado_cita.id_estado_cita = HistoricoCita.id_estadocita
@@ -1496,8 +1509,24 @@ set @id_empleoad = (Select empleado.id_empleado from empleado
 END
 GO
 
+create proc Validarcita
+@id_empleado int
 
+as
+Begin
 
+select cita.fecha_cita, Persona.correo_directorio , estado_cita.valor_estado_cita from HistoricoCita
+		inner join (select HistoricoCita.id_cita_ as id, max (HistoricoCita.fecha_modificacion)as fecha from HistoricoCita group by HistoricoCita.id_cita_ )as
+		 t1 on t1.id= HistoricoCita.id_cita_ and t1.fecha= HistoricoCita.fecha_modificacion 
+		inner join estado_cita on estado_cita.id_estado_cita = HistoricoCita.id_estadocita
+		inner join cita on cita.id_cita= HistoricoCita.id_cita_
+		inner join estudiante on estudiante.id_estudiante = cita.id_paciente
+		inner join Persona on Persona.id_persona = estudiante.id_directorio_estudiante
+		where cita.id_empleado_cita=@id_empleado order by fecha_cita desc
+END
+GO
+
+--Proceso Admision
 
 create proc EstudiantesAdmision
 as
@@ -1619,192 +1648,215 @@ GO
 
 
 
+create proc Consultar_Espacios_Disponibles
+as
+SELECT espacio.id_espacio, espacio.descripcion_espacio
+FROM historico_espacio
+				inner join (select historico_espacio.id_espacio_historico, max(historico_espacio.fecha_historico_espacio) as fe from historico_espacio group by historico_espacio.id_espacio_historico ) as 
+				t1    on t1.id_espacio_historico =historico_espacio.id_espacio_historico and t1.fe = historico_espacio.fecha_historico_espacio
+				inner join  estado_espacio on estado_espacio.id_estado_espacio = historico_espacio.estado_espacio_o
+				inner join espacio on espacio.id_espacio = historico_espacio.id_espacio_historico
+				where historico_espacio.estado_espacio_o =1 and historico_espacio.id_espacio_historico <> 1 and historico_espacio.id_espacio_historico <> 2  
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
---1. Consulta el corre y contraseña y me devuelve el numero de identificacion
-
-CREATE PROCEDURE Iniciar_Sesion
-    @correo varchar (100),
-    @pass varchar (300)
-    AS
-    DECLARE @PassEncode As varchar(300)
-    DECLARE @PassDecode As varchar(50)
-    DECLARE @fecha as date
-    DECLARE @id_directorio as int
-     
-    BEGIN
-        set @fecha = (select CURRENT_TIMESTAMP);
-        SELECT @PassEncode = DirectorioActivo.contrasena
-        From DirectorioActivo
-        WHERE DirectorioActivo.correo_directorio = @correo;
-
-        SET @PassDecode = DECRYPTBYPASSPHRASE('P4zZW0r4', @PassEncode);
-        SET @id_directorio = (SELECT id_directorio_ from DirectorioActivo wHERE @correo =DirectorioActivo.correo_directorio );
-            
-                If (DirectorioActivo.correo_directorio = @correo AND @PassDecode=@pass)
-                   BEGIN
-                        Select top (1) historico_directorio.Estado_directorio_CRU from historico_directorio where @id_directorio = id_directorio_ order by fecha desc
-
-
-                                INSERT INTO historico_directorio (id_directorio_, Estado_directorio_CRU,descripcion_histoico , fecha  )
-                                values (@id_directorio, 7, 'El usuario Inicia Sesion', @fecha);
-                                SELECT DirectorioActivo.NumeroIdentificacion, DirectorioActivo.id_directorio_
-                                FROM DirectorioActivo
-                                WHERE (DirectorioActivo.correo_directorio = @correo)
-                    end
-                ELSE
-                    BEGIN
-                         INSERT INTO historico_directorio (id_directorio_, Estado_directorio_CRU,descripcion_histoico , fecha  )
-                            values (@id_directorio, 7, 'El usuario Inicia Sesion', @fecha);
-                    END
-                
-
-            
-    END
-GO
-
-Create PROCEDURE RegistrarIniciodeSesion
-    @NumeroIdentificacion varchar(15)
-    as
-    DECLARE @id_directorio as int
-        BEGIN
-        SET @id_directorio = (SELECT id_directorio_ from DirectorioActivo wHERE NumeroIdentificacion = @NumeroIdentificacion);
-        INSERT INTO historico_directorio (id_directorio_, ) values (@id_directorio, 7, 'El usuario Inicia Sesion');
-        END
 go
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+create proc Actualizar_Espacio_A_Estudiante
+    @id_Estudiante int,
+    @correo varchar(100) ,
+    @espacionuevo int, 
+	@id_espacioanterior int 
+
+as
+declare @fecha datetime, @cupo_anterior int, @cuponuevo int
+   
+
+
+BEGIN
+    set @fecha = (select CURRENT_TIMESTAMP);
+    
+    set @cupo_anterior=( select espacio.cupo from espacio where espacio.id_espacio= @id_espacioanterior);
+
+	update espacio set  espacio.cupo= @cupo_anterior+1 where espacio.id_espacio =@id_espacioanterior;
+	
+	set @cuponuevo = (select espacio.cupo from espacio where espacio.id_espacio = @id_espacioanterior);
+
+    if(@cuponuevo=0)
+
+
+    --Actualizo el espacio al estudiante
+	insert into historico_espacio (descripcion,estado_espacio_o, fecha_historico_espacio, id_estudiante_espacio, id_empleado_historico,id_espacio_historico)values();
+    update estudiante set id_espacio_estudiante =@espacionuevo where id_estudiante= @id_Estudiante;
+    --Inserto Historico del cambio
+    insert into historicoestudiante
+        (descripcion_historico_expediente,
+        fecha_historico_expediente,
+        id_estudiante, id_empleado_historicoestudiante)
+    values
+        ('El espacio ha cambiado de ' + @espacio_anterior +' a '+ @espacio_nuevo,
+            @fecha, @id_Estudiante, @id_empleado_modifica);
+    ---Actualizacion del cupo del espacio anterior 
+    set @cupo_ = (select espacio.cupo
+    from espacio
+    where espacio.id_espacio = @id_anterior);
+    set @cupo_ = @cupo_ + 1;
+
+
+    update espacio set cupo =@cupo_, estado_espacio_o= 1 where id_espacio = @id_anterior;
+    set @cupo_=0;
+
+    -----Actualizacion del cupo del espacio nuevo
+    set @cupo_ = (select espacio.cupo
+    from espacio
+    where espacio.id_espacio = @espacio_nuevo);
+    set @cupo_=@cupo_ -1;
+    begin
+        if (@cupo_=0)
+    begin
+            update espacio set cupo =@cupo_, estado_espacio_o= 2 where id_espacio = @espacio_nuevo;
+        end
+        if (@cupo_>0)
+    begin
+            update espacio set cupo =@cupo_, estado_espacio_o= 1 where id_espacio = @espacio_nuevo;
+        end
+    ENd
+
+END 
+gO
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--1
 
 
 
@@ -1980,19 +2032,6 @@ go
 
 
 
-create proc Consultar_Un_Espacio
-    @id int
-as
-
-SELECT espacio.id_espacio, espacio.descripcion_espacio, espacio.capacidad, tipo_espacio.valor_tipo_espacio, piso.valor_piso, estado_espacio.valor_estado_espacio, espacio.cupo
-FROM espacio INNER JOIN
-    estado_espacio ON espacio.estado_espacio_o = estado_espacio.id_estado_espacio INNER JOIN
-    piso ON espacio.id_piso_espacio = piso.id_piso INNER JOIN
-    tipo_espacio ON espacio.id_tipo_espacio_ = tipo_espacio.id_tipo_espacio
-where espacio.id_espacio=@id;
-
-
-go
 
 
 
@@ -2045,148 +2084,6 @@ go
 
 --************************************************************
 
-create PROCEDURE  Insertar_Admision
-
-
-    --Fijo para todos
-    @correo varchar(300),
-    @contrasena varchar (50),
-    --
-    @TipoIdentificacion   int ,
-    -- Tabla TipoID
-    @NumeroIdentificacion varchar(15) ,
-    @Nombres              varchar (100) ,
-    @Apellidos            varchar (100) ,
-
-    ---
-    @Estadocivil          int,
-    --Tabla EstadoCivil
-    @Estrato              int ,
-    @Direccion           varchar (100),
-    @Telefono            varchar (20),
-    @Tipo_sangre         int,
-    --tabla TipoSangre
-    --
-    @Fechanacimiento      datetime ,
-    @MunicipioNacimiento  varchar(100) ,
-    @DepartamentoNacimiento int ,
-    --Tabla Departamento
-    @Paisnacimiento         int ,
-    --Tabla Pais
-
-
-    ---- Para Estudiante    5
-    @Servicio_Salud                            varchar (200) ,
-    @Dispacidad_estudiante                     varchar (2) ,
-    @descripcion_dispacacidad_estudainte       varchar (200),
-    @Situaciondesplazamientoestudiante          varchar (2),
-    @Numerohermanos                             int ,
-    -- Para estudiante parte 2   4
-    @tipodevivienda_estudiante int ,
-    --Tabla  Tipovivienda
-    @apoyouniversidad                        varchar (2) ,
-    @descripcion_apoyo_                        varchar(100),
-    @raza_estudiante                           int ,
-    --Tabla Raza
-
-    ---DatosUniversidad 8
-    @Universidad                         varchar (200),
-    @Facultad                            varchar(200),
-    @Programa                            varchar (200),
-    @PuntajeBasicoMatricula              varchar (20),
-    @Promedio                            varchar (20),
-    @FechadeIngreso                      datetime,
-    @Semestre_ingreso                    int,
-    @porcentajedeavance                  varchar(2),
-    ----Acudiente 9
-    @dependencia_economica              varchar(2),
-    @Nombre_acudiente                   varchar(100),
-    @apellidosa_acudiente               varchar(100),
-    @ocupacion_acueidnete               varchar(100),
-    @Direccion_Acudiente                varchar (200),
-    @departamento_acudiente             int,
-    --DEPARTAMENTO
-    @telefono_acuediente                varchar(20),
-    @parentezco_acudiente               varchar(100),
-    @correo_acudiente                   varchar(100)
-
-as
-
-declare    @nuevoestudiante int, @fecha_modificacion datetime, @iddirectorio int
-BEGIN
-    set @fecha_modificacion = (select CURRENT_TIMESTAMP);
-
-    --Estudiante
-
-    insert into DirectorioActivo
-        (correo_directorio ,contrasena ,id_rol_Directorio ,
-        Estado_directorio_CRU , TipoIdentificacion , NumeroIdentificacion ,
-        Nombres ,
-        Apellidos ,
-
-        ---
-        Estadocivil , --Tabla EstadoCivil
-        Estrato ,
-        Direccion ,
-        Telefono ,
-        Tipo_sangre , --tabla TipoSangre
-        --
-        Fechanacimiento ,
-        MunicipioNacimiento ,
-        DepartamentoNacimiento, --Tabla Departamento
-        Paisnacimiento )
-    values
-        (@correo, ENCRYPTBYPASSPHRASE('P4zZW0r4', @contrasena) , 2,
-            4, @TipoIdentificacion, @NumeroIdentificacion, @Nombres ,
-            @Apellidos , @Estadocivil ,
-            @Estrato , @Direccion , @Telefono  ,
-            @Tipo_sangre , @Fechanacimiento ,
-            @MunicipioNacimiento  , @DepartamentoNacimiento,
-            @Paisnacimiento 
-                                                                 );
-    set @iddirectorio = @@IDENTITY;
-    --Registra el estudiante
-    insert into estudiante
-        (Servicio_Salud , Dispacidad_estudiante ,
-        descripcion_dispacacidad_estudainte , Situaciondesplazamientoestudiante ,
-        Numerohermanos ,tipodevivienda_estudiante ,
-        apoyouniversidad, descripcion_apoyo_ ,
-        raza_estudiante,
-        id_espacio_estudiante , id_directorio_estudiante)
-
-    values
-        (@Servicio_Salud, @Dispacidad_estudiante,
-            @descripcion_dispacacidad_estudainte, @Situaciondesplazamientoestudiante,
-            @Numerohermanos, @tipodevivienda_estudiante,
-            @apoyouniversidad , @descripcion_apoyo_ ,
-            @raza_estudiante  , 7  , @iddirectorio);
-    set @nuevoestudiante = @@IDENTITY;
-    --registra historico del expediente
-    insert into historicoestudiante
-        (id_estudiante, fecha_historico_expediente, descripcion_historico_expediente, id_empleado_historicoestudiante)
-    values
-        (@nuevoestudiante, @fecha_modificacion, 'Se ha registrado la admision', @iddirectorio);
-    --registra la universidad de estudiante
-    insert into datosuniversidad
-        (Universidad_estudiante, Facultad_estudiante,
-        Programa_estudiante, Puntaje_Basico_Matricula, Promedio_Academico_estudiante,
-        Año_ingreso_Universidad_, semestre_ingreso_universidad, Porcentaje_Avance, id_estudiante_datosuniversidad)
-    values(
-            @Universidad, @Facultad, @Programa, @PuntajeBasicoMatricula, @Promedio
-                                                                    , @FechadeIngreso, @Semestre_ingreso, @porcentajedeavance, @nuevoestudiante);
-    --registra acudiente del estudiante
-    insert into acudiente_estudiante
-        (dependencia_econo_, nombre_acudiente, apellidos_acudiente,
-        ocupacion_acudiente, direccion_acudiente, departamento_acudiente,
-        telefono_acudiente, parentezo_acudiente, correo_acudiente, id_estudiante_acu)
-    values
-        (@dependencia_economica, @Nombre_acudiente, @apellidosa_acudiente,
-            @ocupacion_acueidnete, @Direccion_Acudiente, @departamento_acudiente,
-            @telefono_acuediente, @parentezco_acudiente, @correo_acudiente, @nuevoestudiante);
-
-
-END
-go
 
 
 
