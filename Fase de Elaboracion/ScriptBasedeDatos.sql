@@ -852,7 +852,7 @@ create table solicitud
 );
         go
 
-create table reparacion_espacio
+create table reparacion_espaciow
 (
     id_reparacion int IDENTITY(1,1) not null,
     fecha_reparacion_espacio datetime not null,
@@ -860,7 +860,9 @@ create table reparacion_espacio
     id_solicitud_reparacion int not null,
 
     espacio_reparacion int not null,
-
+    archivo_Reparacion varchar(500),
+    antes varchar(100),
+    despues varchar (100), 
     costo bigint not null,
     
 
