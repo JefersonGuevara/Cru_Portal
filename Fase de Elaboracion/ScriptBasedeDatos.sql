@@ -1,8 +1,4 @@
-﻿use master
-Go
 
-drop database PrototipoCRU
-GO
 create database PrototipoCRU
         go
 use PrototipoCRU
@@ -852,7 +848,7 @@ create table solicitud
 );
         go
 
-create table reparacion_espaciow
+create table reparacion_espacio
 (
     id_reparacion int IDENTITY(1,1) not null,
     fecha_reparacion_espacio datetime not null,
