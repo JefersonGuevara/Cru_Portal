@@ -1660,6 +1660,41 @@ FROM historico_espacio
 go
 
 
+create proc RegistrarReparacion
+@correoestudiante varchar(100),
+@prioridad int, 
+@descripcion varchar (200),
+@quesedano varchar(500),
+@espacio int, 
+@antes varchar	(100)
+
+ as
+
+declare @fecharegistro date, @id_estudiante  int, @nuevasolicitud int
+BEgin
+
+set @fecharegistro = (select CURRENT_TIMESTAMP);
+set @id_estudiante =  (SELECT        estudiante.id_estudiante
+							FROM            estudiante INNER JOIN
+                         Persona ON estudiante.id_directorio_estudiante = Persona.id_persona where Persona.correo_directorio =@correoestudiante);
+
+insert into solicitud (id_prioridad_solciitud__, fecha_solicitud, descripcion_solicitud,id_estudiante_solicitud, id_empleado_solicitud ) values
+(@prioridad, @fecharegistro, @descripcion,@id_estudiante, 3);
+set @nuevasolicitud =@@IDENTITY;
+
+insert into historico_solicitud (id_caso_anotacion, descripcion_anotacion, fecha_modificacion, id_empleado_historico, id_estado_solicitud_) values
+(@nuevasolicitud, 'Se ha registrado la solicitud de reparacion', @fecharegistro, 1, 1);
+End
+
+insert into reparacion_espacio (fecha_reparacion_espacio, descripcion_reparacion, id_solicitud_reparacion, espacio_reparacion, antes )values 
+(@fecharegistro, @descripcion, @nuevasolicitud, @espacio, @antes);
+
+
+
+Go
+
+
+
 
 
 
