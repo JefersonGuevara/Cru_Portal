@@ -1,4 +1,7 @@
-
+use  prueba
+go
+drop database PrototipoCRU
+go
 create database PrototipoCRU
         go
 use PrototipoCRU
@@ -859,7 +862,7 @@ create table reparacion_espacio
     archivo_Reparacion varchar(500),
     antes varchar(100),
     despues varchar (100), 
-    costo bigint not null,
+    costo bigint ,
     
 
     primary key (id_reparacion),

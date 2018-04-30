@@ -1687,11 +1687,34 @@ insert into historico_solicitud (id_caso_anotacion, descripcion_anotacion, fecha
 End
 
 insert into reparacion_espacio (fecha_reparacion_espacio, descripcion_reparacion, id_solicitud_reparacion, espacio_reparacion, antes )values 
-(@fecharegistro, @descripcion, @nuevasolicitud, @espacio, @antes);
+(@fecharegistro, @quesedano, @nuevasolicitud, @espacio, @antes);
 
 
 
 Go
+
+create procedure [dbo].[Consultar_Reparaciones_Estudiante_ID]
+@id int
+as
+Begin		
+SELECT        reparacion_espacio.id_reparacion, reparacion_espacio.descripcion_reparacion,reparacion_espacio.fecha_reparacion_espacio as fechacreacion,
+				 estado_solicitud.valor_estado_solciitud,
+				 Persona.Nombres as Encargado, Persona.Apellidos
+FROM            historico_solicitud  INNER JOIN
+						(select historico_solicitud.id_caso_anotacion , max(historico_solicitud.fecha_modificacion ) as fecha from  historico_solicitud group by historico_solicitud.id_caso_anotacion ) as T1 on
+						T1.id_caso_anotacion=historico_solicitud.id_caso_anotacion and 
+						T1.fecha = historico_solicitud.fecha_modificacion
+						 INNER JOIN
+                         estado_solicitud ON historico_solicitud.id_estado_solicitud_ = estado_solicitud.id_estado_solciitud INNER JOIN
+						 solicitud on historico_solicitud.id_caso_anotacion = solicitud.id_solicitud inner join
+                         prioridad_solicitud ON solicitud.id_prioridad_solciitud__ = prioridad_solicitud.id_prioridad_solciitud INNER JOIN
+                         empleado ON empleado.id_empleado = solicitud.id_empleado_solicitud  inner join
+						 Persona on empleado.empleado_directorio= Persona.id_persona  
+						 inner join reparacion_espacio on reparacion_espacio.id_solicitud_reparacion = solicitud.id_solicitud
+						 where
+						 solicitud.id_estudiante_solicitud =@id;
+					
+end
 
 
 
