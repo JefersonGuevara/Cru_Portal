@@ -436,7 +436,7 @@ EXEC	 [dbo].[Insertar_Nuevo_Espacio]
 		@piso = 3,
 		@id_empleadoquecrea = 1
         GO
-EXEC	 [dbo].[Insertar_Nuevo_Espacio]
+EXEC	[dbo].[Insertar_Nuevo_Espacio]
 		@descripcion = N'401',
 		@capacidad = 2,
 		@tipoespacio = 1,
@@ -444,6 +444,13 @@ EXEC	 [dbo].[Insertar_Nuevo_Espacio]
 		@id_empleadoquecrea = 1
         GO        
 
+EXEC	[dbo].[Insertar_Nuevo_Espacio]
+		@descripcion = N'Exteriores',
+		@capacidad =500 ,
+		@tipoespacio = 2,
+		@piso = 1,
+		@id_empleadoquecrea = 1
+        GO
 create procedure Verificar_Persona
     @id_persona varchar(15)
     as
@@ -1659,8 +1666,7 @@ FROM historico_espacio
 
 go
 
-
-create proc RegistrarReparacion
+create proc [dbo].[RegistrarReparacion]
 @correoestudiante varchar(100),
 @prioridad int, 
 @descripcion varchar (200),
@@ -1670,28 +1676,51 @@ create proc RegistrarReparacion
 
  as
 
+
+
 declare @fecharegistro date, @id_estudiante  int, @nuevasolicitud int
 BEgin
+if(@espacio =1)
+		BEGIN
+		set @espacio = (
+					SELECT        espacio.id_espacio
+					FROM            historico_espacio INNER JOIN
+						espacio ON historico_espacio.id_espacio_historico = espacio.id_espacio INNER JOIN
+						estudiante ON historico_espacio.id_estudiante_espacio = estudiante.id_estudiante
+						INNER JOIN (select historico_espacio.id_historico_espacio , max(historico_espacio.fecha_historico_espacio ) as fecha from  historico_espacio group by historico_espacio.id_historico_espacio ) as T1
+						ON t1.id_historico_espacio = historico_espacio.id_historico_espacio  
+						INNER JOIN Persona on Persona.id_persona = estudiante.id_directorio_estudiante
+						where Persona.correo_directorio =@correoestudiante);
+		set @fecharegistro = (select CURRENT_TIMESTAMP);
+		set @id_estudiante =  (SELECT        estudiante.id_estudiante
+									FROM            estudiante INNER JOIN
+								 Persona ON estudiante.id_directorio_estudiante = Persona.id_persona where Persona.correo_directorio =@correoestudiante);
+		insert into solicitud (id_prioridad_solciitud__, fecha_solicitud, descripcion_solicitud,id_estudiante_solicitud, id_empleado_solicitud ) values
+		(@prioridad, @fecharegistro, @descripcion,@id_estudiante, 3);
+		set @nuevasolicitud =@@IDENTITY;
+		insert into historico_solicitud (id_caso_anotacion, descripcion_anotacion, fecha_modificacion, id_empleado_historico, id_estado_solicitud_) values
+		(@nuevasolicitud, 'Se ha registrado la solicitud de reparacion', @fecharegistro, 1, 1);
+		insert into reparacion_espacio (fecha_reparacion_espacio, descripcion_reparacion, id_solicitud_reparacion, espacio_reparacion, antes )values 
+		(@fecharegistro,'Se daño '+@descripcion+', '+ @quesedano, @nuevasolicitud, @espacio, @antes);
+		END
+if(@espacio=8)
+	BEGIN
+	set @fecharegistro = (select CURRENT_TIMESTAMP);
+		set @id_estudiante =  (SELECT        estudiante.id_estudiante
+									FROM            estudiante INNER JOIN
+								 Persona ON estudiante.id_directorio_estudiante = Persona.id_persona where Persona.correo_directorio =@correoestudiante);
 
-set @fecharegistro = (select CURRENT_TIMESTAMP);
-set @id_estudiante =  (SELECT        estudiante.id_estudiante
-							FROM            estudiante INNER JOIN
-                         Persona ON estudiante.id_directorio_estudiante = Persona.id_persona where Persona.correo_directorio =@correoestudiante);
+		insert into solicitud (id_prioridad_solciitud__, fecha_solicitud, descripcion_solicitud,id_estudiante_solicitud, id_empleado_solicitud ) values
+		(@prioridad, @fecharegistro, @descripcion,@id_estudiante, 3);
+		set @nuevasolicitud =@@IDENTITY;
+		insert into historico_solicitud (id_caso_anotacion, descripcion_anotacion, fecha_modificacion, id_empleado_historico, id_estado_solicitud_) values
+		(@nuevasolicitud, 'Se ha registrado la solicitud de reparacion', @fecharegistro, 1, 1);
+		insert into reparacion_espacio (fecha_reparacion_espacio, descripcion_reparacion, id_solicitud_reparacion, espacio_reparacion, antes )values 
+		(@fecharegistro, @quesedano, @nuevasolicitud, @espacio, @antes);
+	END
+END
+GO
 
-insert into solicitud (id_prioridad_solciitud__, fecha_solicitud, descripcion_solicitud,id_estudiante_solicitud, id_empleado_solicitud ) values
-(@prioridad, @fecharegistro, @descripcion,@id_estudiante, 3);
-set @nuevasolicitud =@@IDENTITY;
-
-insert into historico_solicitud (id_caso_anotacion, descripcion_anotacion, fecha_modificacion, id_empleado_historico, id_estado_solicitud_) values
-(@nuevasolicitud, 'Se ha registrado la solicitud de reparacion', @fecharegistro, 1, 1);
-End
-
-insert into reparacion_espacio (fecha_reparacion_espacio, descripcion_reparacion, id_solicitud_reparacion, espacio_reparacion, antes )values 
-(@fecharegistro, @quesedano, @nuevasolicitud, @espacio, @antes);
-
-
-
-Go
 
 create procedure [dbo].[Consultar_Reparaciones_Estudiante_ID]
 @id int
@@ -1716,11 +1745,52 @@ FROM            historico_solicitud  INNER JOIN
 					
 end
 
+GO
 
+create procedure [dbo].[Consulstar_Reparaciones_Estudiante_Correo]
+@correo VARCHAR(100)
+as
+declare @id int 
+Begin		
+set @id = (SELECT        estudiante.id_estudiante
+FROM            estudiante INNER JOIN
+                         Persona ON estudiante.id_directorio_estudiante = Persona.id_persona where Persona.correo_directorio=@correo);
+SELECT        reparacion_espacio.id_reparacion, reparacion_espacio.descripcion_reparacion,reparacion_espacio.fecha_reparacion_espacio as fechacreacion,
+				 estado_solicitud.valor_estado_solciitud,
+				 Persona.Nombres as Encargado, Persona.Apellidos
+FROM            historico_solicitud  INNER JOIN
+						(select historico_solicitud.id_caso_anotacion , max(historico_solicitud.fecha_modificacion ) as fecha from  historico_solicitud group by historico_solicitud.id_caso_anotacion ) as T1 on
+						T1.id_caso_anotacion=historico_solicitud.id_caso_anotacion and 
+						T1.fecha = historico_solicitud.fecha_modificacion
+						 INNER JOIN
+                         estado_solicitud ON historico_solicitud.id_estado_solicitud_ = estado_solicitud.id_estado_solciitud INNER JOIN
+						 solicitud on historico_solicitud.id_caso_anotacion = solicitud.id_solicitud inner join
+                         prioridad_solicitud ON solicitud.id_prioridad_solciitud__ = prioridad_solicitud.id_prioridad_solciitud INNER JOIN
+                         empleado ON empleado.id_empleado = solicitud.id_empleado_solicitud  inner join
+						 Persona on empleado.empleado_directorio= Persona.id_persona  
+						 inner join reparacion_espacio on reparacion_espacio.id_solicitud_reparacion = solicitud.id_solicitud
+						 where
+						 solicitud.id_estudiante_solicitud =@id;
+					
+end
+GO
 
+create procedure consultar_mi_Espacio
+@correo varchar (100)
 
+as
+BEGIN
 
-
+SELECT        espacio.descripcion_espacio
+FROM            historico_espacio INNER JOIN
+                         espacio ON historico_espacio.id_espacio_historico = espacio.id_espacio INNER JOIN
+                         estudiante ON historico_espacio.id_estudiante_espacio = estudiante.id_estudiante
+						INNER JOIN (select historico_espacio.id_historico_espacio , max(historico_espacio.fecha_historico_espacio ) as fecha from  historico_espacio group by historico_espacio.id_historico_espacio ) as T1
+		ON t1.id_historico_espacio = historico_espacio.id_historico_espacio  
+		INNER JOIN Persona on Persona.id_persona = estudiante.id_directorio_estudiante
+	where Persona.correo_directorio =@correo
+END
+GO
 
 
 
@@ -2257,12 +2327,12 @@ Create proc Consultar_Estudiantes_Admision
 
 as
 BEGIN
-    SELECT DirectorioActivo.Nombres, DirectorioActivo.Apellidos, DirectorioActivo.id_directorio_, estado_usuario_cru.Descripcion_estado_usuario_cru, espacio.descripcion_espacio
-    FROM DirectorioActivo INNER JOIN
-        estudiante ON DirectorioActivo.id_directorio_ = estudiante.id_directorio_estudiante INNER JOIN
-        espacio ON estudiante.id_espacio_estudiante = espacio.id_espacio INNER JOIN
-        estado_usuario_cru ON DirectorioActivo.Estado_directorio_CRU = estado_usuario_cru.Id_estado_usuario_cru
-    where espacio.id_espacio = 1
+		SELECT DirectorioActivo.Nombres, DirectorioActivo.Apellidos, DirectorioActivo.id_directorio_, estado_usuario_cru.Descripcion_estado_usuario_cru, espacio.descripcion_espacio
+		FROM DirectorioActivo INNER JOIN
+			estudiante ON DirectorioActivo.id_directorio_ = estudiante.id_directorio_estudiante INNER JOIN
+			espacio ON estudiante.id_espacio_estudiante = espacio.id_espacio INNER JOIN
+			estado_usuario_cru ON DirectorioActivo.Estado_directorio_CRU = estado_usuario_cru.Id_estado_usuario_cru
+		where espacio.id_espacio = 1
 END
 go
 
