@@ -1007,22 +1007,22 @@ END
 Go
 
 insert into solicitud (id_prioridad_solciitud__, fecha_solicitud, descripcion_solicitud,id_estudiante_solicitud, id_empleado_solicitud ) values 
-(1,'2017-09-18 12:27:58.610', 'Certificacion de cupo asignado',1,2	),
-(2,'2017-09-18 12:27:58.610', 'Certificacion Actualizacion de Datos',2,2	),
-(3,'2017-09-18 12:27:58.610', 'Cancelacion de Cupo',3,2),
-(4,'2017-09-18 12:27:58.610', 'Actualizacion de Acudiente',3,2	),
-(3,'2017-09-18 12:27:58.610', 'Cambio de Apartamento',4,2	),
-(2,'2017-09-18 12:27:58.610', 'Asignacion de cama nueva',2,2	)
+(1,'2018-05-02 12:27:58.610', 'Certificacion de cupo asignado',1,2	),
+(2,'2018-05-02 12:27:58.610', 'Certificacion Actualizacion de Datos',2,2	),
+(3,'2018-05-02 12:27:58.610', 'Cancelacion de Cupo',3,2),
+(4,'2018-05-02 12:27:58.610', 'Actualizacion de Acudiente',3,2	),
+(3,'2018-05-02 12:27:58.610', 'Cambio de Apartamento',4,2	),
+(2,'2018-05-02 12:27:58.610', 'Asignacion de cama nueva',2,2	)
 Go
 
 
 insert into historico_solicitud (id_caso_anotacion, descripcion_anotacion, fecha_modificacion, id_empleado_historico, id_estado_solicitud_)
-values(1, 'Se ha registrado la peticion', '2017-09-18 12:27:58.610',1,1 ),
-(2, 'Se ha registrado la peticion', '2017-09-18 12:27:58.610',1,1 ),
-(3, 'Se ha registrado la peticion', '2017-09-18 12:27:58.610',1,1 ),
-(4, 'Se ha registrado la peticion', '2017-09-18 12:27:58.610',1,1 ),
-(5, 'Se ha registrado la peticion', '2017-09-18 12:27:58.610',1,1 ),
-(6, 'Se ha registrado la peticion', '2017-09-18 12:27:58.610',1,1 )
+values(1, 'Se ha registrado la peticion', '2018-05-02 12:27:58.610',1,1 ),
+(2, 'Se ha registrado la peticion', '2018-05-02 12:27:58.610',1,1 ),
+(3, 'Se ha registrado la peticion', '2018-05-02 12:27:58.610',1,1 ),
+(4, 'Se ha registrado la peticion', '2018-05-02 12:27:58.610',1,1 ),
+(5, 'Se ha registrado la peticion', '2018-05-02 12:27:58.610',1,1 ),
+(6, 'Se ha registrado la peticion', '2018-05-02 12:27:58.610',1,1 )
 GO
 
 Create procedure Consultar_Solcitudes_Estudiante
@@ -1048,7 +1048,7 @@ FROM            historico_solicitud  INNER JOIN
 						 solicitud on historico_solicitud.id_caso_anotacion = solicitud.id_solicitud inner join
                          prioridad_solicitud ON solicitud.id_prioridad_solciitud__ = prioridad_solicitud.id_prioridad_solciitud INNER JOIN
                          empleado ON empleado.id_empleado = solicitud.id_empleado_solicitud  inner join
-						 Persona on empleado.empleado_directorio= Persona.id_persona where solicitud.id_estudiante_solicitud =@id_estudiante
+						 Persona on empleado.empleado_directorio= Persona.id_persona where solicitud.id_estudiante_solicitud =@id_estudiante and (Persona.id_rol_Directorio=1 or Persona.id_rol_Directorio=4)
 
 						 
 
@@ -1078,7 +1078,7 @@ FROM            historico_solicitud  INNER JOIN
 						 solicitud on historico_solicitud.id_caso_anotacion = solicitud.id_solicitud inner join
                          prioridad_solicitud ON solicitud.id_prioridad_solciitud__ = prioridad_solicitud.id_prioridad_solciitud INNER JOIN
                          empleado ON empleado.id_empleado = solicitud.id_empleado_solicitud  inner join
-						 Persona on empleado.empleado_directorio= Persona.id_persona where solicitud.id_estudiante_solicitud =@id;
+						 Persona on empleado.empleado_directorio= Persona.id_persona where solicitud.id_estudiante_solicitud =@id and (Persona.id_rol_Directorio=1 or Persona.id_rol_Directorio=4);
 
 						 
 
@@ -1300,29 +1300,29 @@ where Persona.id_persona  <>1
 
 
 insert into cita (fecha_cita,id_empleado_cita,id_paciente)values 
-				('2017-09-25 15:00:00.000', 5, 1),
-				('2017-09-25 10:00:00.000', 4, 2),
-				('2017-09-25 18:00:00.000', 5, 2),
-				('2017-09-25 14:00:00.000', 4, 1),
-				('2017-09-25 16:00:00.000', 5, 1),
-                ('2017-09-26 15:00:00.000', 5, 2),
-				('2017-09-26 18:00:00.000', 4, 2),
-				('2017-09-26 13:00:00.000', 5, 1),
-				('2017-09-27 14:00:00.000', 4, 1),
-				('2017-09-29 16:00:00.000', 5, 1)
+				('2018-05-04 15:00:00.000', 5, 1),
+				('2018-05-05 10:00:00.000', 4, 2),
+				('2018-05-03 18:00:00.000', 5, 2),
+				('2018-05-05 14:00:00.000', 4, 1),
+				('2018-05-04 16:00:00.000', 5, 1),
+                ('2018-05-03 15:00:00.000', 5, 2),
+				('2018-05-05 18:00:00.000', 4, 2),
+				('2018-05-04 13:00:00.000', 5, 1),
+				('2018-05-03 14:00:00.000', 4, 1),
+				('2018-05-06 16:00:00.000', 5, 1)
 				GO
 insert into HistoricoCita (id_cita_, descripcion_anotacion, fecha_modificacion, id_empleado_historico, id_estadocita)
-							values(1, 'Se ha agendado la cita', '2017-09-22 15:00:00.000', 1, 1 ),
-								(2, 'Se ha agendado la cita', '2017-09-22 15:00:00.000', 1, 1 ),
-								(3, 'Se ha agendado la cita', '2017-09-22 15:00:00.000', 1, 1 ),
-								(4, 'Se ha agendado la cita', '2017-09-22 15:00:00.000', 1, 1 ),
-								(5, 'Se ha agendado la cita', '2017-09-22 15:00:00.000', 1, 1 ),
-                                (4, 'Se ha cancelado la cita', '2017-09-23 15:00:00.000', 1, 4 ),
-                                (6, 'Se ha agendado la cita', '2017-09-22 18:00:00.000', 1, 1 ),
-								(7, 'Se ha agendado la cita', '2017-09-22 16:00:00.000', 1, 1 ),
-								(8, 'Se ha agendado la cita', '2017-09-22 17:00:00.000', 1, 1 ),
-								(9, 'Se ha agendado la cita', '2017-09-22 15:00:00.000', 1, 1 ),
-								(10, 'Se ha agendado la cita', '2017-09-22 15:00:00.000', 1, 1 )
+							values(1, 'Se ha agendado la cita', '2018-05-03 15:00:00.000', 1, 1 ),
+								(2, 'Se ha agendado la cita', '2018-05-03 10:00:00.000', 1, 1 ),
+								(3, 'Se ha agendado la cita', '2018-05-03 18:00:00.000', 1, 1 ),
+								(4, 'Se ha agendado la cita', '2018-05-03 14:00:00.000', 1, 1 ),
+								(5, 'Se ha agendado la cita', '2018-05-03 16:00:00.000', 1, 1 ),
+                                (4, 'Se ha cancelado la cita', '2018-05-03 15:00:00.000', 1, 4 ),
+                                (6, 'Se ha agendado la cita', '2018-05-03 15:00:00.000', 1, 1 ),
+								(7, 'Se ha agendado la cita', '2018-05-03 18:00:00.000', 1, 1 ),
+								(8, 'Se ha agendado la cita', '2018-05-04 13:00:00.000', 1, 1 ),
+								(9, 'Se ha agendado la cita', '2018-05-03 14:00:00.000', 1, 1 ),
+								(10, 'Se ha agendado la cita', '2018-05-02 16:00:00.000', 1, 1 )
                                
 
 							go
@@ -1792,11 +1792,61 @@ FROM            historico_espacio INNER JOIN
 END
 GO
 
+create procedure Adjuntar_archivo
+@nombrearchivoa varchar (100),
+@antesodespues int,
+@id_reparacion int
+as
+
+BEGIN
+IF (@antesodespues =1)
+BEGIN
+	update reparacion_espacio set antes = @nombrearchivoa where reparacion_espacio.id_reparacion = @id_reparacion
+END
+IF (@antesodespues =0)
+BEGIN
+	update reparacion_espacio set despues = @nombrearchivoa where reparacion_espacio.id_reparacion = @id_reparacion
+END
+
+END
+
+GO
 
 
 
+create proc verdetalle_reparacion
+@id_reparacion int
+as
+BEGIN
+SELECT        reparacion_espacio.id_reparacion, reparacion_espacio.descripcion_reparacion, reparacion_espacio.id_solicitud_reparacion, reparacion_espacio.espacio_reparacion, solicitud.id_solicitud, solucion.descripcion_solucion, 
+                         solucion.id_solicitud_solucion, espacio.descripcion_espacio, solicitud.descripcion_solicitud, prioridad_solicitud.valor_prioridad_solciitud, solucion.fecha_solucion
+FROM            reparacion_espacio INNER JOIN
+                         solicitud ON reparacion_espacio.id_solicitud_reparacion = solicitud.id_solicitud INNER JOIN
+                         prioridad_solicitud ON solicitud.id_prioridad_solciitud__ = prioridad_solicitud.id_prioridad_solciitud INNER JOIN
+                         solucion ON solicitud.id_solicitud = solucion.id_solicitud_solucion INNER JOIN
+                         espacio ON reparacion_espacio.espacio_reparacion = espacio.id_espacio
+						 where reparacion_espacio.id_solicitud_reparacion =@id_reparacion
+END
+GO
 
 
+create procedure solucionar_reparacion
+@reparacion int,
+@solucion varchar(100), 
+@empleado_que_repara varchar(100)
+as
+declare @id_solicitud int , @fecha datetime, @id_empleado int 
+
+BEGIN
+	 set @fecha= (select CURRENT_TIMESTAMP);
+	 set @id_empleado = (select empleado.id_empleado from Persona inner join empleado on empleado.empleado_directorio = Persona.id_persona where Persona.correo_directorio =@empleado_que_repara);
+	 set @id_solicitud =( select solicitud.id_solicitud from reparacion_espacio inner join solicitud on solicitud.id_solicitud = reparacion_espacio.id_solicitud_reparacion where reparacion_espacio.id_reparacion= @reparacion);
+
+	 insert historico_solicitud (id_caso_anotacion, descripcion_anotacion, fecha_modificacion, id_empleado_historico, id_estado_solicitud_) 
+						values  (@id_solicitud, 'Se ha solucionado la solicitud de reparación', @fecha, @id_empleado,  4);
+	insert solucion (id_solicitud_solucion, fecha_solucion, descripcion_solucion, id_empleado_solucion)
+					values (@id_solicitud, @fecha, @solucion, @id_empleado);
+END
 
 
 
