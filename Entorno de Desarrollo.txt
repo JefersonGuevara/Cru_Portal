@@ -1,0 +1,124 @@
+Microsoft Visual Studio Community 2017 
+Versión 15.2 (26430.15) Release
+VisualStudio.15.Release/15.2.0+26430.15
+Microsoft .NET Framework
+Versión 4.7.02556
+
+Versión instalada: Community
+
+Visual Basic 2017   00369-60000-00001-AA637
+Microsoft Visual Basic 2017
+
+Visual C# 2017   00369-60000-00001-AA637
+Microsoft Visual C# 2017
+
+Visual C++ 2017   00369-60000-00001-AA637
+Microsoft Visual C++ 2017
+
+Visual F# 4.1   00369-60000-00001-AA637
+Microsoft Visual F# 4.1
+
+Administrador de paquetes NuGet   4.2.0
+Administrador de paquetes NuGet de Visual Studio. Para obtener más información acerca de NuGet, visite http://docs.nuget.org/.
+
+ASP.NET Web Frameworks and Tools 2012   4.0.11203.0
+For additional information, visit https://www.asp.net/
+
+ASP.NET Web Frameworks and Tools 2017   5.2.50303.0
+For additional information, visit https://www.asp.net/
+
+ASP.NET y Web Tools 2017   15.0.30503.0
+ASP.NET y Web Tools 2017
+
+Azure Data Lake Node   1.0
+This package contains the Data Lake integration nodes for Server Explorer.
+
+Azure Data Lake Tools for Visual Studio   2.2.5000.0
+Microsoft Azure Data Lake Tools for Visual Studio
+
+Cookiecutter   3.0.17114.1
+Proporciona herramientas para buscar, crear instancias y personalizar plantillas con el formato de Cookiecutter.
+
+Fabric.DiagnosticEvents   1.0
+Fabric Diagnostic Events
+
+Herramientas comunes de Windows Azure   1.9
+Ofrece servicios comunes para su uso con los servicios móviles de Microsoft Azure y Microsoft Azure Tools.
+
+Herramientas de Azure App Service v3.0.0   15.0.30209.0
+Herramientas de Azure App Service v3.0.0
+
+JavaScript UWP Project System   2.0
+JavaScript UWP Project System
+
+KofePackagePackage Extension   1.0
+KofePackagePackage Visual Studio Extension Detailed Info
+
+Merq   1.1.17-rc (cba4571)
+Command Bus, Event Stream and Async Manager for Visual Studio extensions.
+
+Microsoft Azure Hive Query Language Service   2.2.5000.0
+Language service for Hive query
+
+Microsoft Azure Tools   2.9
+Microsoft Azure Tools for Microsoft Visual Studio 2017 - v2.9.50131.1
+
+Microsoft MI-Based Debugger   1.0
+Provides support for connecting Visual Studio to MI compatible debuggers
+
+Mono Debugging for Visual Studio   Mono.Debugging.VisualStudio
+Support for debugging Mono processes with Visual Studio.
+
+Node.js Tools   1.3.50417.1
+Agrega compatibilidad con el desarrollo y la depuración de aplicaciones de Node.js en Visual Studio
+
+Paquete VC de Microsoft Visual Studio   1.0
+Paquete VC de Microsoft Visual Studio
+
+Python   3.0.17114.1
+Permite usar IntelliSense, proyectos, plantillas, depuración, ventanas interactivas y otras características para desarrolladores de Python.
+
+Python: compatibilidad de Django   3.0.17114.1
+Permite usar plantillas y facilita la integración con el marco web de Django.
+
+Python: compatibilidad de IronPython   3.0.17114.1
+Permite usar plantillas y facilita la integración con proyectos basados en IronPython.
+
+Python: compatibilidad de la generación de perfiles   3.0.17114.1
+Compatibilidad con la generación de perfiles para proyectos de Python.
+
+Redgate SQL Search   2.3.10.1131
+Search functionality for SQL Server databases, from within Visual Studio
+
+Servicio de lenguaje JavaScript   2.0
+Servicio de lenguaje JavaScript
+
+Sistema del proyecto JavaScript   2.0
+Sistema del proyecto JavaScript
+
+SQL Server Data Tools   15.1.61702.140
+Microsoft SQL Server Data Tools
+
+ToolWindowHostedEditor   1.0
+Hosting json editor into a tool window
+
+TypeScript   2.2.2.0
+Herramientas de TypeScript para Visual Studio
+
+Visual Studio Tools para Apache Cordova   15.113.6201.1
+Visual Studio Tools para Apache Cordova
+
+Visual Studio Tools para aplicaciones Windows universales   15.0.26430.06
+Visual Studio Tools para aplicaciones Windows universales permite crear una experiencia de aplicación universal sencilla para todos los dispositivos que ejecutan Windows 10: teléfono, tableta, PC y más. Incluye el kit de desarrollo de software de Microsoft Windows 10.
+
+Visual Studio tools para CMake   1.0
+Visual Studio tools para CMake
+
+Xamarin   4.5.0.486 (fec6f88)
+Extensión de Visual Studio para habilitar la implementación de Xamarin.iOS y Xamarin.Android.
+
+Xamarin.Android SDK   7.3.1.2 (9dbc4c5)
+Xamarin.Android Reference Assemblies and MSBuild support.
+
+Xamarin.iOS and Xamarin.Mac SDK   10.10.0.37 (ad35de4)
+Xamarin.iOS and Xamarin.Mac Reference Assemblies and MSBuild support.
